@@ -1,0 +1,82 @@
+import sys
+
+# 显示内存地址
+a = 1
+print(id(a))
+
+# 基本类型
+int_a = 1
+float_a = 0.1
+complex_a = 0.1j
+str_a = 'str_a'
+
+# \转义,r取消转义
+da = 'aa\n'
+da2 = 'aa\\n'
+da3 = r'aa\n'
+print(da)
+print(da2)
+print(da3)
+
+# range步长
+for i in range(2, 101, 2):
+    print(i)
+
+# list方法
+l = ['1', '2', '3']
+x = '5'
+l.append(x)
+l.insert(1,x)
+l.remove(x) # 删除值=x的
+l.pop(1) # 删除第i个else最后一个
+l.sort() # 排序
+l.reverse() # 反转
+l.clear()
+# 元组()
+# 元组内有list时,是可以改变这个list的内容
+(1,2,3,l)
+
+
+# 集合
+set()
+a = {1,2,3}
+b = {3,4,5}
+
+a.union(b)
+a.intersection(b)
+a.difference(b)
+
+# 字典
+a = {}
+b = a.fromkeys(('a','b','c'),'1')
+print(b)
+# 字典推导式
+x = {i: i+1 for i in range(4)}
+print(x)
+# dir()列出当前导入的所有方法和变量
+print(dir())
+print(dir(sys))
+
+# *list 解包 **dict 解包
+ll = ['1','2','3']
+print('ll is {}+{}+{}'.format(*ll))
+dd = {'a': 1,
+      'b': 2,
+      'c': 3}
+print('dd is {a}+{b}+{c}'.format(**dd))
+
+# f标志在''里面自动格式化读取变量和lambda和def,不需要解包,不支持转义符\
+name1 = 'abcd'
+name2 = f'1234+{name1}'
+name3 = f'1234+{name1[0]}'
+name4 = f'1234+{(lambda x: x+1)(1)}'
+
+def fff(x):
+    return x+1
+
+name5 = f'1234+{fff(3)}'
+print(name2)
+print(name3)
+print(name4)
+print(name5)
+

@@ -1,0 +1,46 @@
+- centos8 install docker:
+    - 删除旧的docker: sudo yum remove docker \
+          docker-client \
+          docker-client-latest \
+          docker-common \
+          docker-latest \
+          docker-latest-logrotate \
+          docker-logrotate \
+          docker-engine
+    - 删除 podman: dnf remove podman
+    - 安装 containerd.io:
+          1.yum install -y https://download.docker.com/linux/centos/8/x86_64/stable/Packages/containerd.io-1.4.4-3.1.el8.x86_64.rpm --allowerasing
+          #自带的系统软件似乎和这个冲突,用--allowerasing命令自动卸载掉
+          2.rpm -ivh containerd.io-1.4.4-3.1.el8.x86_64.rpm
+    - 使用在线脚本安装docker: curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+    - 启动 docker: sudo systemctl start docker
+    - verify docker engine: sudo docker run hello-world
+    - 配置 aliyun mirror: sudo mkdir -p /etc/docker
+                            sudo tee /etc/docker/daemon.json <<-'EOF'
+                            {
+                              "registry-mirrors": ["https://8opijlwn.mirror.aliyuncs.com"]
+                            }
+                            EOF
+                            sudo systemctl daemon-reload
+                            sudo systemctl restart docker
+    -配置开机启动: systemctl enable docker.service
+
+- install docker-compose: 1. sudo curl -L "https://github.com/docker/compose/releases/download/1.29.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                          2. sudo chmod +x /usr/local/bin/docker-compose
+                          3. docker-compose migrate-to-labels
+                          4. https://github.com/docker/compose/releases
+                          5. mv  docker-compose-Linux-x86_64  /usr/local/bin/docker-compose
+                          6. sudo chmod +x /usr/local/bin/docker-compose
+
+- build centos: 构建一个编译环境用来打包项目
+  - 安装启动centos: 1.docker pull centos | 2.docker run -d -i -t -v /var/tmp:/var/tmp centos /bin/bash |
+  - 进入容器命令行: docker exec CONTAINER ID bash
+  - 升级系统: yum update -y
+  - 安装git: yum install -y git
+  - 搜索jdk版本: yum search java|grep jdk
+  - 安装jdk: yum install -y java-1.8.0-openjdk.x86_64
+  - 安装node: yum install -y nodejs
+  - 安装maven: yum install -y maven
+  - 重新打包一个安装好依赖的image : docker commit CONTAINER ID build_env
+
+
