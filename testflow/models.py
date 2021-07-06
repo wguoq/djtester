@@ -13,7 +13,7 @@ from django.db import models
 # Create your models here.
 
 
-class TestFlowS(models.Model):
+class Test_Flow(models.Model):
     name = models.CharField(max_length=128,
                             blank=True,
                             null=True,

@@ -11,7 +11,7 @@ def not_none_field(model_dict):
     return d
 
 
-class TestCaseIdentity(models.Model):
+class Tc_Identity(models.Model):
     test_case_id = models.CharField(max_length=32,  # 32字符=64字节
                                     unique=True,
                                     null=True,
@@ -34,7 +34,7 @@ class TestCaseIdentity(models.Model):
         return a.keys()
 
 
-class TestCaseAction(models.Model):
+class Tc_Action(models.Model):
     action_type = models.CharField(max_length=32,
                                    blank=True,
                                    null=True,
@@ -50,7 +50,7 @@ class TestCaseAction(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return self.action.name
+        return self.action_name
 
     def to_dict(self):
         return dict(action_type=self.action_type,
@@ -61,7 +61,7 @@ class TestCaseAction(models.Model):
         return a.keys()
 
 
-class TestCaseData(models.Model):
+class Tc_Data(models.Model):
     data_type = models.CharField(max_length=32,
                                  blank=True,
                                  null=True,
@@ -75,6 +75,9 @@ class TestCaseData(models.Model):
                             verbose_name="测试用例数据")
     objects = models.Manager()
 
+    def __str__(self):
+        return self.data_name
+
     def to_dict(self):
         return dict(data_type=self.data_type,
                     data=self.data)
@@ -84,7 +87,7 @@ class TestCaseData(models.Model):
         return a.keys()
 
 
-class TestCaseCheckPoint(models.Model):
+class Tc_Check_Point(models.Model):
     check_point_type = models.CharField(max_length=32,
                                         blank=True,
                                         null=True,
@@ -99,6 +102,9 @@ class TestCaseCheckPoint(models.Model):
 
     objects = models.Manager()
 
+    def __str__(self):
+        return self.check_point_name
+
     def to_dict(self):
         return dict(check_point_type=self.check_point_type,
                     check_point=self.check_point)
@@ -108,29 +114,29 @@ class TestCaseCheckPoint(models.Model):
         return a.keys()
 
 
-class TestCaseS(models.Model):
+class Test_Case(models.Model):
     test_case_type = models.CharField(max_length=32,
                                       null=True,
                                       # 设置不用必填
                                       blank=True,
                                       verbose_name="测试用例类型")
-    tc_identity = models.ForeignKey(to=TestCaseIdentity,
+    tc_identity = models.ForeignKey(to=Tc_Identity,
                                     null=True,
                                     blank=True,
                                     on_delete=models.CASCADE,
                                     verbose_name="测试用例身份信息")
 
-    tc_action = models.ForeignKey(to=TestCaseAction,
+    tc_action = models.ForeignKey(to=Tc_Action,
                                   null=True,
                                   on_delete=models.SET_NULL,
                                   blank=True,
                                   verbose_name="测试用例行为")
-    tc_data = models.ForeignKey(to=TestCaseData,
+    tc_data = models.ForeignKey(to=Tc_Data,
                                 null=True,
                                 on_delete=models.SET_NULL,
                                 blank=True,
                                 verbose_name="测试用例数据")
-    tc_check_list = models.ManyToManyField(to=TestCaseCheckPoint,
+    tc_check_list = models.ManyToManyField(to=Tc_Check_Point,
                                            blank=True,
                                            verbose_name="测试用例验证")
 

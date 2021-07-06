@@ -1,8 +1,8 @@
-from testflow.models import TestFlowS
+from testflow.models import Test_Flow
 
 
 class TestFlowSDBHelper:
-    def __init__(self, test_flow: TestFlowS):
+    def __init__(self, test_flow: Test_Flow):
         self.tf = test_flow
 
     def save_this_one(self):
@@ -24,12 +24,12 @@ class TestFlowSDBHelper:
 
     @staticmethod
     def get_all(offset: int, limit: int):
-        return TestFlowS.objects.all()[offset: (offset + limit)]
+        return Test_Flow.objects.all()[offset: (offset + limit)]
 
     @staticmethod
     def get_by(kwargs):
-        return TestFlowS.objects.get(**kwargs)
+        return Test_Flow.objects.get(**kwargs)
 
     @staticmethod
     def filter_by(kwargs):
-        return TestFlowS.objects.filter(**kwargs)
+        return Test_Flow.objects.filter(**kwargs)

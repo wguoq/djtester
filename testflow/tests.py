@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.test import TestCase
 
 from testflow.domain.test_flow import TestFlow
-from testflow.models import TestFlowS
+from testflow.models import Test_Flow
 from testflow.repositories import TestFlowSDBHelper
 
 case1 = {
@@ -219,11 +219,11 @@ class TestTF(TestCase):
     def test_tflow(self):
         from djtester.testcase_service import TestCaseService
         TestCaseService.save_testcase([case1, case2])
-        f1 = TestFlowSDBHelper(TestFlowS(**test_flow1)).save_this_one()
+        f1 = TestFlowSDBHelper(Test_Flow(**test_flow1)).save_this_one()
         print(f'f1===\n {model_to_dict(f1)}')
-        f2 = TestFlowSDBHelper(TestFlowS(**test_flow2)).save_this_one()
+        f2 = TestFlowSDBHelper(Test_Flow(**test_flow2)).save_this_one()
         print(f'f2===\n {model_to_dict(f2)}')
-        f3 = TestFlowSDBHelper(TestFlowS(**test_flow3)).save_this_one()
+        f3 = TestFlowSDBHelper(Test_Flow(**test_flow3)).save_this_one()
         print(f'f3===\n {model_to_dict(f3)}')
 
         tf1 = TestFlow(model_to_dict(f1)).run()

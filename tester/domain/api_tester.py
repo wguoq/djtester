@@ -145,11 +145,11 @@ class ApiTester:
     def _do_str_check(name, check_target, check_operator, check_expect) -> dict:
         try:
             if str_check(check_target, check_operator, check_expect):
-                return {'result': 'PASS', 'msg': f'{name} pass'}
+                return {'result': 'pass', 'msg': f'{name} pass'}
             else:
-                return {'result': 'FAIL', 'msg': f'{name} fail'}
+                return {'result': 'fail', 'msg': f'{name} fail'}
         except Exception as e:
-            return {'result': 'FAIL', 'msg': f'{name} fail {e}'}
+            return {'result': 'fail', 'msg': f'{name} fail {e}'}
 
     @staticmethod
     def _do_json_schema_check(name, check_target, json_schema) -> dict:

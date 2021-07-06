@@ -53,31 +53,31 @@ class TestCaseEnums:
 class TestCaseIdentityService:
     @staticmethod
     def init_tc_identity():
-        return TestCaseIdentity().to_dict
+        return Tc_Identity().to_dict
 
     @staticmethod
-    def save_identity(identity_list: list[dict]):
+    def save_identity(identity_list: list[dict]) -> list[dict]:
         aaa = []
         for identity in identity_list:
-            a = TestCaseIdentityDBHelper(TestCaseIdentity(**identity)).save_this_one()
+            a = TestCaseIdentityDBHelper(Tc_Identity(**identity)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
 
     @staticmethod
-    def get_all(offset: int = 0, limit: int = 1000):
+    def get_all(offset: int = 0, limit: int = 1000) -> list[dict]:
         aaa = TestCaseIdentityDBHelper.get_all(offset, limit)
-        all_ = []
+        all_aaa = []
         for a in aaa:
-            all_.append(model_to_dict(a))
-        return all_
+            all_aaa.append(model_to_dict(a))
+        return all_aaa
 
     @staticmethod
-    def get_by_pk(pk):
+    def get_by_pk(pk) -> dict:
         a = TestCaseIdentityDBHelper.get_by({'pk': pk})
         return model_to_dict(a)
 
     @staticmethod
-    def filter_by_kwargs(kwargs: dict):
+    def filter_by_kwargs(kwargs: dict) -> dict:
         a = TestCaseIdentityDBHelper.filter_by(kwargs)
         # filter返回的是queryset需要序列化成json
         ss = serializers.serialize('json', a)
@@ -87,13 +87,13 @@ class TestCaseIdentityService:
 class TestCaseActionService:
     @staticmethod
     def init_tc_action():
-        return TestCaseAction().to_dict
+        return Tc_Action().to_dict
 
     @staticmethod
     def save_action(action_list: list[dict]):
         aaa = []
         for action in action_list:
-            a = TestCaseActionDBHelper(TestCaseAction(**action)).save_this_one()
+            a = TestCaseActionDBHelper(Tc_Action(**action)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
 
@@ -120,13 +120,13 @@ class TestCaseActionService:
 class TestCaseDataService:
     @staticmethod
     def init_tc_data():
-        return TestCaseData().to_dict
+        return Tc_Data().to_dict
 
     @staticmethod
     def save_data(data_list: list[dict]):
         aaa = []
         for data in data_list:
-            a = TestCaseDataDBHelper(TestCaseData(**data)).save_this_one()
+            a = TestCaseDataDBHelper(Tc_Data(**data)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
 
@@ -153,13 +153,13 @@ class TestCaseDataService:
 class TestCaseCheckPointService:
     @staticmethod
     def init_tc_checkpoint():
-        return TestCaseCheckPoint().to_dict
+        return Tc_Check_Point().to_dict
 
     @staticmethod
     def save_checkpoint(cp_list: list[dict]):
         aaa = []
         for cp in cp_list:
-            a = TestCaseCheckPointDBHelper(TestCaseCheckPoint(**cp)).save_this_one()
+            a = TestCaseCheckPointDBHelper(Tc_Check_Point(**cp)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
 
@@ -193,18 +193,34 @@ def _get_check_point_pk(tc_check_list: list):
         return ll
 
 
-def _get_full_case(case_dict):
-    identity = TestCaseIdentityService.get_by_pk(case_dict.get('tc_identity'))
-    action = TestCaseActionService.get_by_pk(case_dict.get('tc_action'))
-    data = TestCaseDataService.get_by_pk(case_dict.get('tc_data'))
-    check_list = []
-    for check in case_dict.get('tc_check_list'):
-        if check:
-            check_list.append(model_to_dict(check))
-    case_dict['tc_identity'] = identity
-    case_dict['tc_action'] = action
-    case_dict['tc_data'] = data
-    case_dict['tc_check_list'] = check_list
+def _get_full_case(case_dict) -> dict:
+    tc_identity = case_dict.get('tc_identity')
+    tc_action = case_dict.get('tc_action')
+    tc_data = case_dict.get('tc_data')
+    tc_check_list = case_dict.get('tc_check_list')
+    if tc_identity is None or len(str(tc_identity)) == 0:
+        case_dict['tc_identity'] = {}
+    else:
+        case_dict['tc_identity'] = TestCaseIdentityService.get_by_pk(case_dict.get('tc_identity'))
+
+    if tc_action is None or len(str(tc_action)) == 0:
+        case_dict['tc_action'] = {}
+    else:
+        case_dict['tc_action'] = TestCaseActionService.get_by_pk(case_dict.get('tc_action'))
+
+    if tc_data is None or len(str(tc_data)) == 0:
+        case_dict['tc_data'] = {}
+    else:
+        case_dict['tc_data'] = TestCaseDataService.get_by_pk(case_dict.get('tc_data'))
+
+    if tc_check_list is None or len(tc_check_list) == 0:
+        case_dict['tc_check_list'] = []
+    else:
+        check_list = []
+        for check in tc_check_list:
+            if check:
+                check_list.append(model_to_dict(check))
+        case_dict['tc_check_list'] = check_list
     return case_dict
 
 
@@ -217,17 +233,17 @@ class TestCaseService:
         if case_type == CaseType.API.value:
             test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
             a = TcTestCase(test_case_type=case_type,
-                           tc_identity=TestCaseIdentity(test_case_id=test_case_id).to_dict(),
-                           tc_action=TestCaseAction(action_type="ApiAction",
-                                                    action_name="", action=ApiAction().to_dict).to_dict(),
-                           tc_data=TestCaseData(data_type="ApiParams",
-                                                data_name="", data=ApiParams().to_dict).to_dict(),
-                           tc_check_list=[TestCaseCheckPoint(check_point_type="ApiStrCheck",
-                                                             check_point_name="",
-                                                             check_point=ApiStrCheck().to_dict).to_dict(),
-                                          TestCaseCheckPoint(check_point_type="ApiJsonSchemaCheck",
-                                                             check_point_name="",
-                                                             check_point=ApiJsonSchemaCheck().to_dict).to_dict()])
+                           tc_identity=Tc_Identity(test_case_id=test_case_id).to_dict(),
+                           tc_action=Tc_Action(action_type="ApiAction",
+                                               action_name="", action=ApiAction().to_dict).to_dict(),
+                           tc_data=Tc_Data(data_type="ApiParams",
+                                           data_name="", data=ApiParams().to_dict).to_dict(),
+                           tc_check_list=[Tc_Check_Point(check_point_type="ApiStrCheck",
+                                                         check_point_name="",
+                                                         check_point=ApiStrCheck().to_dict).to_dict(),
+                                          Tc_Check_Point(check_point_type="ApiJsonSchemaCheck",
+                                                         check_point_name="",
+                                                         check_point=ApiJsonSchemaCheck().to_dict).to_dict()])
 
             return a.to_dict
         elif case_type == CaseType.UI.value:
@@ -263,7 +279,7 @@ class TestCaseService:
         return all_case
 
     @staticmethod
-    def get_by_pk(pk):
+    def get_by_pk(pk) -> dict:
         # 要把testcase里面的外键都查出来,返回一个完整的dict
         case = TestCaseSDBHelper.get_by_pk(pk)
         case_dict = model_to_dict(case)
@@ -278,7 +294,7 @@ class TestCaseService:
         return ss
 
     @staticmethod
-    def filter_by_case_id(test_case_id_list: list):
+    def filter_by_case_id(test_case_id_list: list) -> list:
         case_list = []
         for test_case_id in test_case_id_list:
             a = TestCaseSDBHelper.filter_by_case_id(test_case_id)

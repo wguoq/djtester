@@ -36,3 +36,13 @@ def init_mobile_testcase(request):
     else:
         mobile_test = TestCaseService.init_testcase(case_type='mobile')
         return HttpResponse(json.dumps(mobile_test))
+
+
+def get_all_testcase(request):
+    if request.method != 'GET':
+        raise Exception(' only GET ')
+    else:
+        all_case = TestCaseService.get_all()
+        # return HttpResponse(json.dumps(all_case))
+        context = {'data': all_case}
+        return render(request, 'testcase/test_case.html', context)

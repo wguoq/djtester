@@ -3,14 +3,14 @@ testcase领域聚合
 """
 from django.db import transaction
 from testcase.domain.tc_model import TcTestCase
-from testcase.models import TestCaseS
+from testcase.models import Test_Case
 from testcase.repositories import *
 
 
 class TestCaseSDBHelper:
     def __init__(self, tc_testcase: TcTestCase):
         self.tc_testcase = tc_testcase
-        self.testcaseS = TestCaseS()
+        self.testcaseS = Test_Case()
         self.testcaseS.pk = self.tc_testcase.id
         self.testcaseS.test_case_type = self.tc_testcase.test_case_type
 
@@ -18,21 +18,21 @@ class TestCaseSDBHelper:
         # tc_identity
         if self.tc_testcase.tc_identity:
             self.testcaseS.tc_identity = TestCaseIdentityDBHelper(
-                TestCaseIdentity(**self.tc_testcase.tc_identity)).save_this_one()
+                Tc_Identity(**self.tc_testcase.tc_identity)).save_this_one()
         # tc_action
         if self.tc_testcase.tc_action:
             self.testcaseS.tc_action = TestCaseActionDBHelper(
-                TestCaseAction(**self.tc_testcase.tc_action)).save_this_one()
+                Tc_Action(**self.tc_testcase.tc_action)).save_this_one()
         # tc_data
         if self.tc_testcase.tc_data:
-            self.testcaseS.tc_data = TestCaseDataDBHelper(TestCaseData(**self.tc_testcase.tc_data)).save_this_one()
+            self.testcaseS.tc_data = TestCaseDataDBHelper(Tc_Data(**self.tc_testcase.tc_data)).save_this_one()
 
     def _save_m2m(self):
         new_check_list = []
         if self.tc_testcase.tc_check_list:
             for check in self.tc_testcase.tc_check_list:
                 if check:
-                    new_check = TestCaseCheckPointDBHelper(TestCaseCheckPoint(**check)).save_this_one()
+                    new_check = TestCaseCheckPointDBHelper(Tc_Check_Point(**check)).save_this_one()
                     new_check_list.append(new_check)
         self.testcaseS.tc_check_list.add(*new_check_list)
 
@@ -66,24 +66,24 @@ class TestCaseSDBHelper:
 
     @staticmethod
     def get_all(offset: int, limit: int):
-        return TestCaseS.objects.all()[offset: (offset + limit)]
+        return Test_Case.objects.all()[offset: (offset + limit)]
 
     @staticmethod
     def get_by_pk(pk):
-        return TestCaseS.objects.get(pk=pk)
+        return Test_Case.objects.get(pk=pk)
 
     @staticmethod
     def filter_by(kwargs: dict):
-        return TestCaseS.objects.filter(**kwargs)
+        return Test_Case.objects.filter(**kwargs)
 
     @staticmethod
     def filter_by_case_id(test_case_id):
         # test_case_id在TcIdentity表里面是唯一的可以用get
         ide = TestCaseIdentityDBHelper.get_by(dict(test_case_id=test_case_id))
-        return TestCaseS.objects.filter(tc_identity=ide)
+        return Test_Case.objects.filter(tc_identity=ide)
 
     @staticmethod
     def filter_by_case_name(test_case_name):
         # test_case_name在TcIdentity表里面是唯一的可以用get
         ide = TestCaseIdentityDBHelper.get_by(dict(test_case_name=test_case_name))
-        return TestCaseS.objects.filter(tc_identity=ide)
+        return Test_Case.objects.filter(tc_identity=ide)

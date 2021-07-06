@@ -1,6 +1,6 @@
 from tester.domain.api_tester import ApiTester
 from tester.domain.tt_models import ApiCaseConfig
-from djtester.testcase_service import *
+
 
 
 class TesterService:
@@ -17,7 +17,7 @@ class TesterService:
             return a
         else:
             print(f'test_case_type != api')
-            # TcCaseService.get_testcase_by_case_id()
+
 
 
 

@@ -1,11 +1,11 @@
-from testcase.models import TestCaseIdentity, TestCaseAction, TestCaseData, TestCaseCheckPoint
+from testcase.models import Tc_Identity, Tc_Action, Tc_Data, Tc_Check_Point
 
 
 class TestCaseIdentityDBHelper:
-    def __init__(self, testcase_identity: TestCaseIdentity):
+    def __init__(self, testcase_identity: Tc_Identity):
         self.identity = testcase_identity
 
-    def save_this_one(self) -> TestCaseIdentity:
+    def save_this_one(self) -> Tc_Identity:
         # 无论新增还是修改都要判断id和name是否重复
         if self.has_case_id(self.identity.test_case_id):
             raise Exception(f'test_case_id {self.identity.test_case_id} 已存在')
@@ -29,16 +29,16 @@ class TestCaseIdentityDBHelper:
 
     @staticmethod
     def get_all(offset: int, limit: int):
-        return TestCaseIdentity.objects.all()[offset: (offset + limit)]
+        return Tc_Identity.objects.all()[offset: (offset + limit)]
 
     @staticmethod
     def get_by(kwargs):
-        a = TestCaseIdentity.objects.get(**kwargs)
+        a = Tc_Identity.objects.get(**kwargs)
         return a
 
     @staticmethod
     def filter_by(kwargs):
-        return TestCaseIdentity.objects.filter(**kwargs)
+        return Tc_Identity.objects.filter(**kwargs)
 
     def has_case_id(self, test_case_id):
         if self.filter_by({"test_case_id": test_case_id}).count():
@@ -54,7 +54,7 @@ class TestCaseIdentityDBHelper:
 
 
 class TestCaseActionDBHelper:
-    def __init__(self, testcase_action: TestCaseAction):
+    def __init__(self, testcase_action: Tc_Action):
         self.action = testcase_action
 
     def save_this_one(self):
@@ -76,19 +76,19 @@ class TestCaseActionDBHelper:
 
     @staticmethod
     def get_all(offset: int, limit: int):
-        return TestCaseAction.objects.all()[offset: (offset + limit)]
+        return Tc_Action.objects.all()[offset: (offset + limit)]
 
     @staticmethod
     def get_by(kwargs):
-        return TestCaseAction.objects.get(**kwargs)
+        return Tc_Action.objects.get(**kwargs)
 
     @staticmethod
     def filter_by(kwargs):
-        return TestCaseAction.objects.filter(**kwargs)
+        return Tc_Action.objects.filter(**kwargs)
 
 
 class TestCaseDataDBHelper:
-    def __init__(self, testcase_data: TestCaseData):
+    def __init__(self, testcase_data: Tc_Data):
         self.data = testcase_data
 
     def save_this_one(self):
@@ -109,19 +109,19 @@ class TestCaseDataDBHelper:
 
     @staticmethod
     def get_all(offset: int, limit: int):
-        return TestCaseData.objects.all()[offset: (offset + limit)]
+        return Tc_Data.objects.all()[offset: (offset + limit)]
 
     @staticmethod
     def get_by(kwargs):
-        return TestCaseData.objects.get(**kwargs)
+        return Tc_Data.objects.get(**kwargs)
 
     @staticmethod
     def filter_by(kwargs):
-        return TestCaseData.objects.filter(**kwargs)
+        return Tc_Data.objects.filter(**kwargs)
 
 
 class TestCaseCheckPointDBHelper:
-    def __init__(self, testcase_check_point: TestCaseCheckPoint):
+    def __init__(self, testcase_check_point: Tc_Check_Point):
         self.check_point = testcase_check_point
 
     def save_this_one(self):
@@ -142,12 +142,12 @@ class TestCaseCheckPointDBHelper:
 
     @staticmethod
     def get_all(offset: int, limit: int):
-        return TestCaseCheckPoint.objects.all()[offset: (offset + limit)]
+        return Tc_Check_Point.objects.all()[offset: (offset + limit)]
 
     @staticmethod
     def get_by(kwargs):
-        return TestCaseCheckPoint.objects.get(**kwargs)
+        return Tc_Check_Point.objects.get(**kwargs)
 
     @staticmethod
     def filter_by(kwargs):
-        return TestCaseCheckPoint.objects.filter(**kwargs)
+        return Tc_Check_Point.objects.filter(**kwargs)
