@@ -1,6 +1,6 @@
 import json
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from djtester.testcase_service import TestCaseService
 # Create your views here.
@@ -13,4 +13,4 @@ def run_test_case(request):
     result = TesterService.run_testcase(test_case).get_test_result
     data = {"test_case_pk": test_case_pk,
             "result": result}
-    return HttpResponse(json.dumps(data))
+    return JsonResponse(data, status=200)
