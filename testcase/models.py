@@ -120,6 +120,7 @@ class Test_Case(models.Model):
                                       # 设置不用必填
                                       blank=True,
                                       verbose_name="测试用例类型")
+
     tc_identity = models.ForeignKey(to=Tc_Identity,
                                     null=True,
                                     blank=True,
@@ -131,14 +132,21 @@ class Test_Case(models.Model):
                                   on_delete=models.SET_NULL,
                                   blank=True,
                                   verbose_name="测试用例行为")
+
     tc_data = models.ForeignKey(to=Tc_Data,
                                 null=True,
                                 on_delete=models.SET_NULL,
                                 blank=True,
                                 verbose_name="测试用例数据")
+
     tc_check_list = models.ManyToManyField(to=Tc_Check_Point,
                                            blank=True,
                                            verbose_name="测试用例验证")
+
+    version = models.IntegerField(null=True,
+                                  blank=True,
+                                  default=1,
+                                  verbose_name="测试用例版本")
 
     objects = models.Manager()
 
