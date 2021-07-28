@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'hello',
     'testcase',
     'tester',
-    'testflow'
+    'testflow',
+    'mock',
 ]
 
 MIDDLEWARE = [

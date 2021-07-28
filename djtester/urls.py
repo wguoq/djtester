@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('testcase/', include('testcase.urls')),
     path('tester/', include('tester.urls')),
+    path('mock/', include('mock.urls')),
 
 ]
 
