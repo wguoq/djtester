@@ -3,7 +3,7 @@ import requests
 
 from tester.domain.tt_enums import *
 from tester.domain.tt_models import *
-from tester.utils import str_check, json_schema_check
+from tester.utils import *
 
 
 class ApiTester:
@@ -105,17 +105,17 @@ class ApiTester:
             check_point = check.get('check_point')
             response_property = check_point.get('response_property')
             property_key = check_point.get('property_key')
-            operator = check_point.get('operator')
+            operator_ = check_point.get('operator')
             expect = check_point.get('expect')
             json_schema = check_point.get('json_schema')
 
             # 判断check类型
             if check_point_type == 'ApiStrCheck':
                 check_target = self._get_check_target(response_property, property_key)
-                a = self._do_str_check(name, check_target, operator, expect)
+                a = self._do_str_check(name, check_target, operator_, expect)
                 result_list.append(a)
             elif check_point_type == 'ApiJsonSchemaCheck':
-                # todo 还没测试不知道行不行
+                # todo 还没测试
                 check_target = self._get_check_target(ResponseProperty.JSON.value, None)
                 b = self._do_json_schema_check(name, check_target, json_schema)
                 result_list.append(b)
@@ -168,12 +168,17 @@ class ApiTester:
             return None
         else:
             check_target = self._get_response_property(response_property)
+
         # 从response的属性里面取出需要的值
         # todo 还没测试
         if property_key is None or len(property_key) == 0:
             return check_target
         else:
-            return check_target.get(property_key)
+            # 如果有__就判断是需要使用规则匹配json的值
+            if '__' in property_key:
+                return get_json_value(check_target, property_key)
+            else:
+                return check_target.get(property_key)
 
     def _get_response_property(self, response_property: str):
         if response_property == ResponseProperty.STATUS_CODE.value:
@@ -186,7 +191,7 @@ class ApiTester:
             try:
                 return self._response.json()
             except Exception as e:
-                # raise Exception(f'取出response里的json出错 {e}')
+                print(f'使用response.json() error \n{e}')
                 return {}
         else:
             raise Exception(f'只支持取出status_code,headers,cookies,json')
