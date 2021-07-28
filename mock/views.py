@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 from django.shortcuts import render
 
 # Create your views here.
@@ -218,3 +218,10 @@ json2 = {
 
 def test_token(request):
     return JsonResponse(json2, status=200)
+
+
+def index(request):
+    if request.method != 'GET':
+        return HttpResponseNotFound
+    else:
+        return render(request, 'mock/index.html')
