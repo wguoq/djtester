@@ -1,6 +1,8 @@
 import json
 from django.core import serializers
 from django.forms import model_to_dict
+
+from testcase import models
 from testcase.domain.tc_repositories import *
 from testcase.domain.tc_enums import *
 from testcase.repositories import *
@@ -44,137 +46,105 @@ class TestCaseEnums:
         return list(e.value for e in MobileMethod)
 
 
-class TestCaseIdentityService:
-    @staticmethod
-    def init_tc_identity():
-        return Tc_Identity().to_dict
+class _BaseService:
+    def __init__(self, db_helper: models):
+        self.DBHelper = db_helper
 
     @staticmethod
-    def save_identity(identity_list: list[dict]) -> list[dict]:
+    def new(*args, **kwargs):
+        pass
+
+    @staticmethod
+    def save(*args, **kwargs):
+        pass
+
+    def get_all(self, offset: int = 0, limit: int = 1000) -> list[dict]:
+        aaa = self.DBHelper.get_all(offset, limit)
+        all_aaa = []
+        for a in aaa:
+            all_aaa.append(model_to_dict(a))
+        return all_aaa
+
+    def get_by_pk(self, pk: int):
+        a = self.DBHelper.get_by({'pk': pk})
+        return model_to_dict(a)
+
+    def filter_by_kwargs(self, kwargs: dict):
+        a = self.DBHelper.filter_by(kwargs)
+        s = serializers.serialize('json', a)
+        dd = json.loads(s)
+        dict_list = []
+        for d in dd:
+            dict_list.append(_query_set_dict_to_model_dict(d))
+        return dict_list
+
+
+class TestCaseIdentityService(_BaseService):
+    def __init__(self):
+        super().__init__(TestCaseIdentityDBHelper)
+
+    @staticmethod
+    def new():
+        return Tc_Identity().empty_fields_dict()
+
+    @staticmethod
+    def save(identity_list: list[dict]) -> list[dict]:
         aaa = []
         for identity in identity_list:
             a = TestCaseIdentityDBHelper(Tc_Identity(**identity)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
 
-    @staticmethod
-    def get_all(offset: int = 0, limit: int = 1000) -> list[dict]:
-        aaa = TestCaseIdentityDBHelper.get_all(offset, limit)
-        all_aaa = []
-        for a in aaa:
-            all_aaa.append(model_to_dict(a))
-        return all_aaa
+
+class TestCaseActionService(_BaseService):
+    def __init__(self):
+        super().__init__(TestCaseActionDBHelper)
 
     @staticmethod
-    def get_by_pk(pk) -> dict:
-        a = TestCaseIdentityDBHelper.get_by({'pk': pk})
-        return model_to_dict(a)
+    def new():
+        return Tc_Action().empty_fields_dict()
 
     @staticmethod
-    def filter_by_kwargs(kwargs: dict) -> dict:
-        a = TestCaseIdentityDBHelper.filter_by(kwargs)
-        # filter返回的是queryset需要序列化成json
-        ss = serializers.serialize('json', a)
-        return ss
-
-
-class TestCaseActionService:
-    @staticmethod
-    def init_tc_action():
-        return Tc_Action().to_dict
-
-    @staticmethod
-    def save_action(action_list: list[dict]):
+    def save(action_list: list[dict]):
         aaa = []
         for action in action_list:
             a = TestCaseActionDBHelper(Tc_Action(**action)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
 
-    @staticmethod
-    def get_by_pk(pk):
-        a = TestCaseActionDBHelper.get_by(dict(pk=pk))
-        return model_to_dict(a)
+
+class TestCaseDataService(_BaseService):
+    def __init__(self):
+        super().__init__(TestCaseDataDBHelper)
 
     @staticmethod
-    def get_all(offset: int = 0, limit: int = 1000):
-        aaa = TestCaseActionDBHelper.get_all(offset, limit)
-        all_act = []
-        for a in aaa:
-            all_act.append(model_to_dict(a))
-        return all_act
-
-    @staticmethod
-    def filter_by_kwargs(kwargs: dict):
-        a = TestCaseActionDBHelper.filter_by(kwargs)
-        ss = serializers.serialize('json', a)
-        return ss
-
-
-class TestCaseDataService:
-    @staticmethod
-    def init_tc_data():
+    def new():
         return Tc_Data().to_dict
 
     @staticmethod
-    def save_data(data_list: list[dict]):
+    def save(data_list: list[dict]):
         aaa = []
         for data in data_list:
             a = TestCaseDataDBHelper(Tc_Data(**data)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
 
-    @staticmethod
-    def get_by_pk(pk):
-        a = TestCaseDataDBHelper.get_by(dict(pk=pk))
-        return model_to_dict(a)
+
+class TestCaseCheckPointService(_BaseService):
+    def __init__(self):
+        super().__init__(TestCaseCheckPointDBHelper)
 
     @staticmethod
-    def get_all(offset: int = 0, limit: int = 1000):
-        aaa = TestCaseDataDBHelper.get_all(offset, limit)
-        all_td = []
-        for a in aaa:
-            all_td.append(model_to_dict(a))
-        return all_td
-
-    @staticmethod
-    def filter_by_kwargs(kwargs: dict):
-        a = TestCaseDataDBHelper.filter_by(kwargs)
-        ss = serializers.serialize('json', a)
-        return ss
-
-
-class TestCaseCheckPointService:
-    @staticmethod
-    def init_tc_checkpoint():
+    def new():
         return Tc_Check_Point().to_dict
 
     @staticmethod
-    def save_checkpoint(cp_list: list[dict]):
+    def save(cp_list: list[dict]):
         aaa = []
         for cp in cp_list:
             a = TestCaseCheckPointDBHelper(Tc_Check_Point(**cp)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
-
-    @staticmethod
-    def get_by_pk(pk):
-        a = TestCaseCheckPointDBHelper.get_by(dict(pk=pk))
-        return model_to_dict(a)
-
-    @staticmethod
-    def get_all(offset: int = 0, limit: int = 100):
-        aaa = TestCaseCheckPointDBHelper.get_all(offset, limit)
-        all_cp = []
-        for a in aaa:
-            all_cp.append(model_to_dict(a))
-        return all_cp
-
-    @staticmethod
-    def filter_by_kwargs(kwargs: dict):
-        a = TestCaseCheckPointDBHelper.filter_by(kwargs)
-        ss = serializers.serialize('json', a)
-        return ss
 
 
 def _get_check_point_pk(tc_check_list: list):
@@ -198,17 +168,17 @@ def _get_full_case(case_dict) -> dict:
     if tc_identity is None or len(str(tc_identity)) == 0:
         case_dict['tc_identity'] = {}
     else:
-        case_dict['tc_identity'] = TestCaseIdentityService.get_by_pk(case_dict.get('tc_identity'))
+        case_dict['tc_identity'] = TestCaseIdentityService().get_by_pk(case_dict.get('tc_identity'))
 
     if tc_action is None or len(str(tc_action)) == 0:
         case_dict['tc_action'] = {}
     else:
-        case_dict['tc_action'] = TestCaseActionService.get_by_pk(case_dict.get('tc_action'))
+        case_dict['tc_action'] = TestCaseActionService().get_by_pk(case_dict.get('tc_action'))
 
     if tc_data is None or len(str(tc_data)) == 0:
         case_dict['tc_data'] = {}
     else:
-        case_dict['tc_data'] = TestCaseDataService.get_by_pk(case_dict.get('tc_data'))
+        case_dict['tc_data'] = TestCaseDataService().get_by_pk(case_dict.get('tc_data'))
 
     if tc_check_list is None or len(tc_check_list) == 0:
         case_dict['tc_check_list'] = []
@@ -218,26 +188,31 @@ def _get_full_case(case_dict) -> dict:
             if isinstance(check, Tc_Check_Point):
                 check_list.append(model_to_dict(check))
             elif isinstance(check, int):
-                c = TestCaseCheckPointService.get_by_pk(check)
+                c = TestCaseCheckPointService().get_by_pk(check)
                 check_list.append(c)
         case_dict['tc_check_list'] = check_list
     return case_dict
+
+
+def _query_set_dict_to_model_dict(query_set_dict: dict):
+    pk = query_set_dict.get('pk')
+    fields = query_set_dict.get('fields')
+    model_dict = {}
+    model_dict.update({'id': pk})
+    model_dict.update(fields)
+    return model_dict
 
 
 def _query_set_to_case_dict(query_set):
     # 用serializers.serialize把QuerySet序列化成json,
     s = serializers.serialize('json', query_set)
     dd = json.loads(s)
-    query_set_dict = []
+    case_dict_list = []
     for d in dd:
-        pk = d.get('pk')
-        fields = d.get('fields')
-        case_dict = {}
-        case_dict.update({'id': pk})
-        case_dict.update(fields)
-        full_case = _get_full_case(case_dict)
-        query_set_dict.append(full_case)
-    return query_set_dict
+        model_dict = _query_set_dict_to_model_dict(d)
+        case_dict = _get_full_case(model_dict)
+        case_dict_list.append(case_dict)
+    return case_dict_list
 
 
 class TestCaseService:
@@ -245,6 +220,7 @@ class TestCaseService:
         """
         返回一个空的api_test_case数据模板
         """
+
         @staticmethod
         def api_test_case():
             return TcTestCase().new_api_test_case()
@@ -299,9 +275,3 @@ class TestCaseService:
                 a = TestCaseSDBHelper.filter_by_case_name(test_case_name)
                 case_list.append(_query_set_to_case_dict(a))
             return case_list
-
-
-
-
-
-
