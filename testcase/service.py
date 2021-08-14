@@ -1,13 +1,7 @@
-import random
-import time
-
+import json
 from django.core import serializers
 from django.forms import model_to_dict
-
-from testcase.domain.models.tc_api_model import *
-from testcase.domain.models.tc_mobile_model import *
 from testcase.domain.tc_repositories import *
-from testcase.domain.models.tc_ui_model import *
 from testcase.domain.tc_enums import *
 from testcase.repositories import *
 
@@ -194,6 +188,9 @@ def _get_check_point_pk(tc_check_list: list):
 
 
 def _get_full_case(case_dict) -> dict:
+    """
+    把testcase里面的外键关联的数据都查出来,组装成一个dict
+    """
     tc_identity = case_dict.get('tc_identity')
     tc_action = case_dict.get('tc_action')
     tc_data = case_dict.get('tc_data')
@@ -218,48 +215,46 @@ def _get_full_case(case_dict) -> dict:
     else:
         check_list = []
         for check in tc_check_list:
-            if check:
+            if isinstance(check, Tc_Check_Point):
                 check_list.append(model_to_dict(check))
+            elif isinstance(check, int):
+                c = TestCaseCheckPointService.get_by_pk(check)
+                check_list.append(c)
         case_dict['tc_check_list'] = check_list
     return case_dict
 
 
+def _query_set_to_case_dict(query_set):
+    # 用serializers.serialize把QuerySet序列化成json,
+    s = serializers.serialize('json', query_set)
+    dd = json.loads(s)
+    query_set_dict = []
+    for d in dd:
+        pk = d.get('pk')
+        fields = d.get('fields')
+        case_dict = {}
+        case_dict.update({'id': pk})
+        case_dict.update(fields)
+        full_case = _get_full_case(case_dict)
+        query_set_dict.append(full_case)
+    return query_set_dict
+
+
 class TestCaseService:
-    @staticmethod
-    def init_testcase(case_type: str) -> dict:
+    class new:
         """
-        根据case_type返回TcTestCase的dict
+        返回一个空的api_test_case数据模板
         """
-        if case_type == CaseType.API.value:
-            test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
-            a = TcTestCase(test_case_type=case_type,
-                           tc_identity=Tc_Identity(test_case_id=test_case_id).to_dict(),
-                           tc_action=Tc_Action(action_type="ApiAction",
-                                               action_name="", action=ApiAction().to_dict).to_dict(),
-                           tc_data=Tc_Data(data_type="ApiParams",
-                                           data_name="", data=ApiParams().to_dict).to_dict(),
-                           tc_check_list=[Tc_Check_Point(check_point_type="ApiStrCheck",
-                                                         check_point_name="",
-                                                         check_point=ApiStrCheck().to_dict).to_dict(),
-                                          Tc_Check_Point(check_point_type="ApiJsonSchemaCheck",
-                                                         check_point_name="",
-                                                         check_point=ApiJsonSchemaCheck().to_dict).to_dict()])
-
-            return a.to_dict
-        elif case_type == CaseType.UI.value:
-            # todo
-            return {}
-
-        elif case_type == CaseType.MOBILE.value:
-            # todo
-            return {}
-
-        else:
-            raise Exception(f'没有对应 {case_type} 类型的用例模板,现在支持的类型是 {TestCaseEnums.case_type()}')
+        @staticmethod
+        def api_test_case():
+            return TcTestCase().new_api_test_case()
 
     @staticmethod
     @transaction.atomic
-    def save_testcase(test_case_list: list[dict]):
+    def save(test_case_list: list[dict]):
+        """
+        保存test_case_list,新增和编辑都一起
+        """
         aaa = []
         for test_case in test_case_list:
             case_saved = TestCaseSDBHelper(TcTestCase(**test_case)).save_this_one()
@@ -268,45 +263,45 @@ class TestCaseService:
             aaa.append(case_dict)
         return aaa
 
-    @staticmethod
-    def get_all(offset=0, limit=1000):
-        get_all = TestCaseSDBHelper.get_all(offset=offset, limit=limit)
-        all_case = []
-        for a in get_all:
-            case_dict = model_to_dict(a)
-            # case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
-            all_case.append(_get_full_case(case_dict))
-        return all_case
+    class query:
+        @staticmethod
+        def get_all(offset=0, limit=1000):
+            get_all = TestCaseSDBHelper.get_all(offset=offset, limit=limit)
+            all_case = []
+            for a in get_all:
+                case_dict = model_to_dict(a)
+                all_case.append(_get_full_case(case_dict))
+            return all_case
 
-    @staticmethod
-    def get_by_pk(pk) -> dict:
-        # 要把testcase里面的外键都查出来,返回一个完整的dict
-        case = TestCaseSDBHelper.get_by_pk(pk)
-        case_dict = model_to_dict(case)
-        # case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
-        return _get_full_case(case_dict)
+        @staticmethod
+        def get_by_pk(pk) -> dict:
+            case = TestCaseSDBHelper.get_by_pk(pk)
+            case_dict = model_to_dict(case)
+            return _get_full_case(case_dict)
 
-    @staticmethod
-    def filter_by_kwargs(kwargs: dict):
-        a = TestCaseSDBHelper.filter_by(kwargs)
-        # filter返回的是QuerySet，用serializers.serialize序列化成json,结果格式和get方法取出来的不一样
-        ss = serializers.serialize('json', a)
-        return ss
+        @staticmethod
+        def filter_by(kwargs: dict):
+            a = TestCaseSDBHelper.filter_by(kwargs)
+            return _query_set_to_case_dict(a)
 
-    @staticmethod
-    def filter_by_case_id(test_case_id_list: list) -> list:
-        case_list = []
-        for test_case_id in test_case_id_list:
-            a = TestCaseSDBHelper.filter_by_case_id(test_case_id)
-            ss = serializers.serialize('json', a)
-            case_list.append(ss)
-        return case_list
+        @staticmethod
+        def filter_by_case_id(test_case_id_list: list) -> list:
+            case_list = []
+            for test_case_id in test_case_id_list:
+                a = TestCaseSDBHelper.filter_by_case_id(test_case_id)
+                case_list.append(_query_set_to_case_dict(a))
+            return case_list
 
-    @staticmethod
-    def filter_by_case_name(test_case_name_list: list):
-        case_list = []
-        for test_case_name in test_case_name_list:
-            a = TestCaseSDBHelper.filter_by_case_name(test_case_name)
-            ss = serializers.serialize('json', a)
-            case_list.append(ss)
-        return case_list
+        @staticmethod
+        def filter_by_case_name(test_case_name_list: list):
+            case_list = []
+            for test_case_name in test_case_name_list:
+                a = TestCaseSDBHelper.filter_by_case_name(test_case_name)
+                case_list.append(_query_set_to_case_dict(a))
+            return case_list
+
+
+
+
+
+
