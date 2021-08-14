@@ -25,6 +25,10 @@ class Tc_Identity(models.Model):
     def __str__(self):
         return self.test_case_name
 
+    @staticmethod
+    def empty_fields_dict():
+        return dict(test_case_id=None, test_case_name=None)
+
     def to_dict(self):
         return dict(test_case_id=self.test_case_id,
                     test_case_name=self.test_case_name)
@@ -52,6 +56,10 @@ class Tc_Action(models.Model):
     def __str__(self):
         return self.action_name
 
+    @staticmethod
+    def empty_fields_dict():
+        return dict(action_type=None, action=None)
+
     def to_dict(self):
         return dict(action_type=self.action_type,
                     action=self.action)
@@ -77,6 +85,10 @@ class Tc_Data(models.Model):
 
     def __str__(self):
         return self.data_name
+
+    @staticmethod
+    def empty_fields_dict():
+        return dict(data_type=None, data=None)
 
     def to_dict(self):
         return dict(data_type=self.data_type,
@@ -104,6 +116,10 @@ class Tc_Check_Point(models.Model):
 
     def __str__(self):
         return self.check_point_name
+
+    @staticmethod
+    def empty_fields_dict():
+        return dict(check_point_type=None, check_point=None)
 
     def to_dict(self):
         return dict(check_point_type=self.check_point_type,
