@@ -1,0 +1,30 @@
+安装node.js: https://nodejs.org/zh-cn/download
+安装jdk: https://www.oracle.com/java/technologies/java-se-glance.html #用11版本
+安装Android SDK: https://developer.android.com/studio
+检查和配置环境变量: ANDROID_HOME=C:\Users\wgq1218\AppData\Local\Android\Sdk; path里面 %ANDROID_HOME%\platform-tools; %ANDROID_HOME%\tools
+打开模拟器开发者模式: 版本号点5次
+adb获取Package名和Activity名: adb shell dumpsys window windows | findstr mFocusedApp
+获取app的启动时间: adb shell am start -W Package/Activity
+获取手机的日志: adb logcat
+进入shell: adb shell
+安装appium-desktop: https://github.com/appium/appium-desktop/releases/tag/v1.21.0 #和npm版本是一样的,多了ui界面
+命令行安装appium: npm install -g appium 或者 npm --registry http://registry.cnpmjs.org install -g appium 或者 http://appium.io/downloads.html 卸载 npm uninstall -g appium
+安装appium-doctor: npm install -g appium-doctor 然后运行appium-doctor检查环境
+运行appium服务: appium 应该显示Appium REST http interface listener started on 0.0.0.0:4723
+安装appium-python-client: pip install appium-python-client
+获取设备名: adb devices; List of devices attached; emulator-5558   device
+有时候会报错尝试卸载uiautomator2: adb uninstall io.appium.uiautomator2.server.test
+改了java环境变量需要重启appium-server:
+重启adb-server: adb kill-server;adb start-server
+python代码:  from appium import webdriver
+            desired_caps = dict()
+            desired_caps['platformName'] = 'Android'
+            desired_caps['platformVersion'] = '7.1.2'
+            desired_caps['deviceName'] = 'emulator-5558'
+            desired_caps['appPackage'] = 'com.android.settings'
+            desired_caps['appActivity'] = '.Settings'
+            driver = webdriver.Remote('http://127.0.0.1:4723/wd/hub', desired_caps)
+            driver.quit()
+
+是否重置: noReset=True/Fales;fullReset=True/Fale
+中文键盘: unicodeKeyBoard=True/Fale;resetKeyBoard=True/Fale

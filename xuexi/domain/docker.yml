@@ -12,7 +12,7 @@
           1.yum install -y https://download.docker.com/linux/centos/8/x86_64/stable/Packages/containerd.io-1.4.4-3.1.el8.x86_64.rpm --allowerasing
           #自带的系统软件似乎和这个冲突,用--allowerasing命令自动卸载掉
           2.rpm -ivh containerd.io-1.4.4-3.1.el8.x86_64.rpm
-    - 使用在线脚本安装docker: curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+    - 使用在线脚本安装docker: curl -fsSL https://get.docker.com | bash.yml -s docker --mirror Aliyun
     - 启动 docker: sudo systemctl start docker
     - verify docker engine: sudo docker run hello-world
     - 配置 aliyun mirror: sudo mkdir -p /etc/docker
@@ -33,8 +33,8 @@
                           6. sudo chmod +x /usr/local/bin/docker-compose
 
 - build centos: 构建一个编译环境用来打包项目
-  - 安装启动centos: 1.docker pull centos | 2.docker run -d -i -t -v /var/tmp:/var/tmp centos /bin/bash |
-  - 进入容器命令行: docker exec CONTAINER ID bash
+  - 安装启动centos: 1.docker pull centos | 2.docker run -d -i -t -v /var/tmp:/var/tmp centos /bin/bash.yml |
+  - 进入容器命令行: docker exec CONTAINER ID bash.yml
   - 升级系统: yum update -y
   - 安装git: yum install -y git
   - 搜索jdk版本: yum search java|grep jdk
