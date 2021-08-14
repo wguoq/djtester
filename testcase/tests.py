@@ -168,16 +168,16 @@ class TestTC(TestCase):
         case_filter_check = TestCaseService.query.filter_by({'tc_check_list': 1})
         print(f'11.11.11.11\nfilter tc_check字段的值查询case =======\n{case_filter_check}')
 
-        identity1 = TestCaseIdentityService.get_by_pk(1)
+        identity1 = TestCaseIdentityService().get_by_pk(1)
         print(f'12.12.12.12.12\nget identity 1 =======\n{identity1}')
 
-        action1 = TestCaseActionService.get_by_pk(1)
+        action1 = TestCaseActionService().get_by_pk(1)
         print(f'13.13.13.13.13\nget action 1 =======\n{action1}')
 
-        data1 = TestCaseDataService.get_by_pk(1)
+        data1 = TestCaseDataService().get_by_pk(1)
         print(f'14.14.14.14.14\nget data 1 =======\n{data1}')
 
-        checkpoint1 = TestCaseCheckPointService.get_by_pk(1)
+        checkpoint1 = TestCaseCheckPointService().get_by_pk(1)
         print(f'15.15.15.15.15\nget checkpoint 1 =======\n{checkpoint1}')
 
         # 写入
@@ -224,7 +224,7 @@ class TestTC(TestCase):
             },
         }
         new_case4_1 = TestCaseService.save([case4_1])
-        new_name = TestCaseIdentityService.get_by_pk(4)
+        new_name = TestCaseIdentityService().get_by_pk(4)
         print(f'18.18.18.18.18\n只修改test_case_name =======\n{new_case4_1}\n{new_name}')
         case4_2 = {
             "id": 4,
@@ -253,3 +253,8 @@ class TestTC(TestCase):
         new_case4_4 = TestCaseService.save([case4_4])
         print(f'21.21.21.21\n只修改tc_check字段 =======\n{new_case4_4}')
 
+        new_identity = TestCaseIdentityService().new()
+        print(f'22.22.22.22\nnew_identity===========\n{new_identity}')
+
+        identity_filter_by_kwargs_test_case_name = TestCaseIdentityService().filter_by_kwargs(dict(test_case_name='test_case_name001'))
+        print(f'23.23.23.23\nnew_identity===========\n{identity_filter_by_kwargs_test_case_name}')
