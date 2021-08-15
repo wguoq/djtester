@@ -22,17 +22,17 @@ class TestCaseSDBHelper:
         # tc_action
         if self.tc_testcase.tc_action:
             self.testcaseS.tc_action = TestCaseActionDBHelper(
-                Tc_Action(**self.tc_testcase.tc_action)).save_this_one()
+                Tc_Action(**self.tc_testcase.tc_action)).save_this()
         # tc_data
         if self.tc_testcase.tc_data:
-            self.testcaseS.tc_data = TestCaseDataDBHelper(Tc_Data(**self.tc_testcase.tc_data)).save_this_one()
+            self.testcaseS.tc_data = TestCaseDataDBHelper(Tc_Data(**self.tc_testcase.tc_data)).save_this()
 
     def _save_m2m(self):
         new_check_list = []
         if self.tc_testcase.tc_check_list:
             for check in self.tc_testcase.tc_check_list:
                 if check:
-                    new_check = TestCaseCheckPointDBHelper(Tc_Check_Point(**check)).save_this_one()
+                    new_check = TestCaseCheckPointDBHelper(Tc_Check_Point(**check)).save_this()
                     new_check_list.append(new_check)
         self.testcaseS.tc_check_list.add(*new_check_list)
 
@@ -79,11 +79,11 @@ class TestCaseSDBHelper:
     @staticmethod
     def filter_by_case_id(test_case_id):
         # test_case_id在TcIdentity表里面是唯一的可以用get
-        ide = TestCaseIdentityDBHelper.get_by(dict(test_case_id=test_case_id))
+        ide = TestCaseIdentityDBHelper(Tc_Identity()).get_by(dict(test_case_id=test_case_id))
         return Test_Case.objects.filter(tc_identity=ide)
 
     @staticmethod
     def filter_by_case_name(test_case_name):
         # test_case_name在TcIdentity表里面是唯一的可以用get
-        ide = TestCaseIdentityDBHelper.get_by(dict(test_case_name=test_case_name))
+        ide = TestCaseIdentityDBHelper(Tc_Identity()).get_by(dict(test_case_name=test_case_name))
         return Test_Case.objects.filter(tc_identity=ide)
