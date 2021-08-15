@@ -118,8 +118,9 @@ class TestFlow:
         # if self._status is None:
         #     raise Exception('流程状态status is None')
         if self._status == 'finish':
-            raise Exception('流程已完成status为finish')
+            raise Exception(f'流程已完成 status为 {self._status}')
         else:
+            self._status = 'running'
             # 执行step_list
             self._run_step_list()
             # 根据_result_rule决定流程结果
@@ -138,6 +139,8 @@ class TestFlow:
                 raise Exception(f'{step_name} 的step_order字段有没有值')
             elif not isinstance(step_order, int):
                 raise Exception(f'{step_name} 的step_order字段 {step_order} 不是int ')
+            elif step_order < 0:
+                raise Exception(f'step_order 不能小于0 {step_order}')
 
         self._step_list = sorted(self._step_list, key=itemgetter('step_order'), reverse=False)
 
@@ -157,24 +160,7 @@ class TestFlow:
         dynamic_data_rule = step.get('dynamic_data_rule')
         step_data = self._data
 
-        # 先判断是否满足运行条件
-        # 1.上一步的step_status =='finish';
-        # 2.本step的step_status !='finish';
-        # 3._check_step_rule = True
-        if step_order > 0:
-            # 先排序保证index = step_order
-            self._step_result_list = sorted(self._step_result_list, key=itemgetter('step_order'), reverse=False)
-            pre_step_status = self._step_result_list[step_order - 1].get('step_status')
-            if pre_step_status != 'finish':
-                return dict(step_id=step_id,
-                            step_type=step_type,
-                            step_name=step_name,
-                            step_order=step_order,
-                            step_result=step_result,
-                            step_status=step_status)
-        # if step_status is None:
-        #     raise Exception(f'step {step_name} 状态 is None')
-        if step_status == 'finish':
+        def _step_return():
             return dict(step_id=step_id,
                         step_type=step_type,
                         step_name=step_name,
@@ -182,14 +168,26 @@ class TestFlow:
                         step_result=step_result,
                         step_status=step_status)
 
+        # 先判断是否满足运行条件
+        # 1.上一步的step_status =='finish';
+        # 2.本step的step_status !='finish';
+        # 3._check_step_rule = True
+
+        if step_order == 0:
+            pass
+        if step_order > 0:
+            # 先排序保证index = step_order
+            self._step_result_list = sorted(self._step_result_list, key=itemgetter('step_order'), reverse=False)
+            pre_step_status = self._step_result_list[step_order - 1].get('step_status')
+            if pre_step_status != 'finish':
+                return _step_return()
+
+        if step_status == 'finish':
+            return _step_return()
+
         if self._check_step_rule(step_rule) is False:
             step_status = 'not run'
-            return dict(step_id=step_id,
-                        step_type=step_type,
-                        step_name=step_name,
-                        step_order=step_order,
-                        step_result=step_result,
-                        step_status=step_status)
+            return _step_return()
         else:
             step_status = 'running'
 
@@ -206,26 +204,14 @@ class TestFlow:
         else:
             if step_type == 'test_case':
                 step_result = self._run_test_case(step_pk, step_data)
-                if step_result:
-                    step_status = 'finish'
-                return dict(step_id=step_id,
-                            step_type=step_type,
-                            step_name=step_name,
-                            step_order=step_order,
-                            step_result=step_result,
-                            step_status=step_status)
             elif step_type == 'test_flow':
-                step_result = self._run_test_flow(step_pk, step_data)
-                if step_result:
-                    step_status = 'finish'
-                return dict(step_id=step_id,
-                            step_type=step_type,
-                            step_name=step_name,
-                            step_order=step_order,
-                            step_result=step_result,
-                            step_status=step_status)
+                step_result = self._run_test_flow(step_pk)
             else:
                 raise Exception(f'不支持的的step_type {step_type}')
+
+            if step_result:
+                step_status = 'finish'
+            return _step_return()
 
     def _check_step_rule(self, step_rule):
         # todo
@@ -237,16 +223,14 @@ class TestFlow:
 
     @staticmethod
     def _run_test_case(step_pk, step_data):
-        #time.sleep(0.1)
         print(f'====_run_test_case==== {step_pk}')
         from djtester.testcase_service import TestCaseService
         from djtester.tester_service import TesterService
-        test_case = TestCaseService.get_by_pk(step_pk)
+        test_case = TestCaseService.query.get_by_pk(step_pk)
         a = TesterService.run_testcase(test_case=test_case, test_config=step_data)
         return a
 
-    def _run_test_flow(self, step_pk, step_data):
-        #time.sleep(0.1)
+    def _run_test_flow(self, step_pk):
         self._n += 1
         print(f'=====_run_test_flow==== {step_pk}')
         tf = TestFlowSDBHelper.get_by(dict(pk=step_pk))
@@ -259,13 +243,13 @@ class TestFlow:
             return None
 
     def _check_result_rule(self, step_list_result):
+        # 需要定义各种类型的规则
         # todo
         self._result = 'pass'
 
     def _set_flow_status(self):
-        # todow
+        # todo
         if self._result:
             self._status = 'finish'
         else:
             self._status = 'running'
-
