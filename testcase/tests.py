@@ -137,35 +137,35 @@ class TestTC(TestCase):
     def test_TcCaseService(self):
         print(f'1111111111111\n获取一个Enums:TcEnums.case_type()==========\n{TestCaseEnums.case_type()}')
 
-        api_case = TestCaseService().new.api_test_case()
+        api_case = TestCaseService().new()
         print(f'222222222222\n初始化一个api_case======\n{json.dumps(api_case)}')
 
         # 写入
         new_case12 = TestCaseService().save([case1, case2])
         print(f'33333333333333\n写入2条所有字段都是新的且完整的 new_case12=======\n{new_case12}')
         # 查询
-        all_case = TestCaseService().query.get_all()
+        all_case = TestCaseService().get_all()
         print(f'44444444444444\nget all查询全部case ======\n{all_case}')
 
-        case_pk1 = TestCaseService().query.get_by_pk(1)
+        case_pk1 = TestCaseService().get_by_pk(1)
         print(f'555555555555\nget pk查询case =======\n{json.dumps(case_pk1)}')
 
-        case_id12 = TestCaseService().query.filter_by_case_id(['tc1622690409', 'tc1628342459'])
+        case_id12 = TestCaseService().filter_by_case_id(['tc1622690409', 'tc1628342459'])
         print(f'666666666666\nfilter case_id查询case12 =======\n{case_id12}')
 
-        case_name1 = TestCaseService().query.filter_by_case_name(['test_case_name002'])
+        case_name1 = TestCaseService().filter_by_case_name(['test_case_name002'])
         print(f'7777777777\nfilter case_name查询case1 =======\n{case_name1}')
 
-        case_filter_identity = TestCaseService().query.filter_by({'tc_identity': 1})
+        case_filter_identity = TestCaseService().filter_by({'tc_identity': 1})
         print(f'8888888888\nfilter tc_identity字段的值查询case =======\n{case_filter_identity}')
 
-        case_filter_action = TestCaseService().query.filter_by({'tc_action': 1})
+        case_filter_action = TestCaseService().filter_by({'tc_action': 1})
         print(f'9999999999\nfilter tc_action字段的值查询case =======\n{case_filter_action}')
 
-        case_filter_data = TestCaseService().query.filter_by({'tc_data': 1})
+        case_filter_data = TestCaseService().filter_by({'tc_data': 1})
         print(f'10.10.10.10.10\nfilter tc_data字段的值查询case =======\n{case_filter_data}')
 
-        case_filter_check = TestCaseService().query.filter_by({'tc_check_list': 1})
+        case_filter_check = TestCaseService().filter_by({'tc_check_list': 1})
         print(f'11.11.11.11\nfilter tc_check字段的值查询case =======\n{case_filter_check}')
 
         identity1 = TestCaseIdentityService().get_by_pk(1)
@@ -256,5 +256,5 @@ class TestTC(TestCase):
         new_identity = TestCaseIdentityService().new()
         print(f'22.22.22.22\nnew_identity===========\n{new_identity}')
 
-        identity_filter_by_kwargs_test_case_name = TestCaseIdentityService().filter_by_kwargs(dict(test_case_name='test_case_name001'))
+        identity_filter_by_kwargs_test_case_name = TestCaseIdentityService().filter_by(dict(test_case_name='test_case_name001'))
         print(f'23.23.23.23\nnew_identity===========\n{identity_filter_by_kwargs_test_case_name}')
