@@ -16,7 +16,7 @@ class ApiTester:
 
     def run_test_case(self):
         if self.test_case is None:
-            raise Exception(f' test_case is None')
+            raise Exception(f' api_test_case is None ')
         else:
             self._test_result = self._config()._send_request()._verify()
         return self
@@ -170,7 +170,6 @@ class ApiTester:
             check_target = self._get_response_property(response_property)
 
         # 从response的属性里面取出需要的值
-        # todo 还没测试
         if property_key is None or len(property_key) == 0:
             return check_target
         else:
