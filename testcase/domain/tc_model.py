@@ -21,7 +21,7 @@ class TcTestCase(BaseModel):
     def to_dict(self):
         return self.__dict__
 
-    def new_api_test_case(self) -> dict:
+    def new_api_testcase(self) -> dict:
         test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
         self.test_case_type = CaseType.API.value
         self.tc_identity = Tc_Identity(test_case_id=test_case_id).to_dict()

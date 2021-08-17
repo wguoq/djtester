@@ -1,8 +1,6 @@
 import json
 from django.core import serializers
 from django.forms import model_to_dict
-
-from testcase import models
 from testcase.domain.tc_repositories import *
 from testcase.domain.tc_enums import *
 from testcase.repositories import *
@@ -46,16 +44,11 @@ class TestCaseEnums:
         return list(e.value for e in MobileMethod)
 
 
-class BaseService:
+class BaseTcServicer:
     def __init__(self, db_helper: models):
         self.DBHelper = db_helper
 
-    @staticmethod
-    def new(*args, **kwargs):
-        pass
-
-    @staticmethod
-    def save(*args, **kwargs):
+    def save(self, *args, **kwargs):
         pass
 
     def get_all(self, offset: int = 0, limit: int = 1000) -> list[dict]:
@@ -79,7 +72,7 @@ class BaseService:
         return dict_list
 
 
-class TestCaseIdentityService(BaseService):
+class TestCaseIdentityServicer(BaseTcServicer):
     def __init__(self):
         super().__init__(TestCaseIdentityDBHelper(Tc_Identity()))
 
@@ -96,7 +89,7 @@ class TestCaseIdentityService(BaseService):
         return aaa
 
 
-class TestCaseActionService(BaseService):
+class TestCaseActionServicer(BaseTcServicer):
     def __init__(self):
         super().__init__(TestCaseActionDBHelper(Tc_Action()))
 
@@ -113,7 +106,7 @@ class TestCaseActionService(BaseService):
         return aaa
 
 
-class TestCaseDataService(BaseService):
+class TestCaseDataServicer(BaseTcServicer):
     def __init__(self):
         super().__init__(TestCaseDataDBHelper(Tc_Data()))
 
@@ -130,7 +123,7 @@ class TestCaseDataService(BaseService):
         return aaa
 
 
-class TestCaseCheckPointService(BaseService):
+class TestCaseCheckPointServicer(BaseTcServicer):
     def __init__(self):
         super().__init__(TestCaseCheckPointDBHelper(Tc_Check_Point()))
 
@@ -147,88 +140,17 @@ class TestCaseCheckPointService(BaseService):
         return aaa
 
 
-def _get_check_point_pk(tc_check_list: list):
-    if tc_check_list is None:
-        return []
-    else:
-        ll = []
-        for c in tc_check_list:
-            ll.append(c.pk)
-        return ll
-
-
-def _get_full_case(case_dict) -> dict:
-    """
-    把testcase里面的外键关联的数据都查出来,组装成一个dict
-    """
-    tc_identity = case_dict.get('tc_identity')
-    tc_action = case_dict.get('tc_action')
-    tc_data = case_dict.get('tc_data')
-    tc_check_list = case_dict.get('tc_check_list')
-    if tc_identity is None or len(str(tc_identity)) == 0:
-        case_dict['tc_identity'] = {}
-    else:
-        case_dict['tc_identity'] = TestCaseIdentityService().get_by_pk(case_dict.get('tc_identity'))
-
-    if tc_action is None or len(str(tc_action)) == 0:
-        case_dict['tc_action'] = {}
-    else:
-        case_dict['tc_action'] = TestCaseActionService().get_by_pk(case_dict.get('tc_action'))
-
-    if tc_data is None or len(str(tc_data)) == 0:
-        case_dict['tc_data'] = {}
-    else:
-        case_dict['tc_data'] = TestCaseDataService().get_by_pk(case_dict.get('tc_data'))
-
-    if tc_check_list is None or len(tc_check_list) == 0:
-        case_dict['tc_check_list'] = []
-    else:
-        check_list = []
-        for check in tc_check_list:
-            if isinstance(check, Tc_Check_Point):
-                check_list.append(model_to_dict(check))
-            elif isinstance(check, int):
-                c = TestCaseCheckPointService().get_by_pk(check)
-                check_list.append(c)
-        case_dict['tc_check_list'] = check_list
-    return case_dict
-
-
-def _query_set_dict_to_model_dict(query_set_dict: dict):
-    pk = query_set_dict.get('pk')
-    fields = query_set_dict.get('fields')
-    model_dict = {}
-    model_dict.update({'id': pk})
-    model_dict.update(fields)
-    return model_dict
-
-
-def _query_set_to_case_dict(query_set):
-    # 用serializers.serialize把QuerySet序列化成json,
-    s = serializers.serialize('json', query_set)
-    dd = json.loads(s)
-    case_dict_list = []
-    for d in dd:
-        model_dict = _query_set_dict_to_model_dict(d)
-        case_dict = _get_full_case(model_dict)
-        case_dict_list.append(case_dict)
-    return case_dict_list
-
-
-class TestCaseService(BaseService):
+class TestCaseServicer(BaseTcServicer):
     def __init__(self):
         super().__init__(TestCaseSDBHelper(TcTestCase()))
 
     @staticmethod
-    def new():
-        return TcTestCase().new_api_test_case()
+    def new_api_testcase():
+        return TcTestCase().new_api_testcase()
 
     @staticmethod
     @transaction.atomic
     def save(test_case_list: list[dict]):
-        """
-        保存test_case_list,新增和编辑都一起
-        """
         aaa = []
         for test_case in test_case_list:
             case_saved = TestCaseSDBHelper(TcTestCase(**test_case)).save_this_one()
@@ -269,3 +191,71 @@ class TestCaseService(BaseService):
             a = TestCaseSDBHelper.filter_by_case_name(test_case_name)
             case_list.append(_query_set_to_case_dict(a))
         return case_list
+
+
+def _get_check_point_pk(tc_check_list: list):
+    if tc_check_list is None:
+        return []
+    else:
+        ll = []
+        for c in tc_check_list:
+            ll.append(c.pk)
+        return ll
+
+
+def _get_full_case(case_dict) -> dict:
+    """
+    把testcase里面的外键关联的数据都查出来,组装成一个dict
+    """
+    tc_identity = case_dict.get('tc_identity')
+    tc_action = case_dict.get('tc_action')
+    tc_data = case_dict.get('tc_data')
+    tc_check_list = case_dict.get('tc_check_list')
+    if tc_identity is None or len(str(tc_identity)) == 0:
+        case_dict['tc_identity'] = {}
+    else:
+        case_dict['tc_identity'] = TestCaseIdentityServicer().get_by_pk(case_dict.get('tc_identity'))
+
+    if tc_action is None or len(str(tc_action)) == 0:
+        case_dict['tc_action'] = {}
+    else:
+        case_dict['tc_action'] = TestCaseActionServicer().get_by_pk(case_dict.get('tc_action'))
+
+    if tc_data is None or len(str(tc_data)) == 0:
+        case_dict['tc_data'] = {}
+    else:
+        case_dict['tc_data'] = TestCaseDataServicer().get_by_pk(case_dict.get('tc_data'))
+
+    if tc_check_list is None or len(tc_check_list) == 0:
+        case_dict['tc_check_list'] = []
+    else:
+        check_list = []
+        for check in tc_check_list:
+            if isinstance(check, Tc_Check_Point):
+                check_list.append(model_to_dict(check))
+            elif isinstance(check, int):
+                c = TestCaseCheckPointServicer().get_by_pk(check)
+                check_list.append(c)
+        case_dict['tc_check_list'] = check_list
+    return case_dict
+
+
+def _query_set_dict_to_model_dict(query_set_dict: dict):
+    pk = query_set_dict.get('pk')
+    fields = query_set_dict.get('fields')
+    model_dict = {}
+    model_dict.update({'id': pk})
+    model_dict.update(fields)
+    return model_dict
+
+
+def _query_set_to_case_dict(query_set):
+    # 用serializers.serialize把QuerySet序列化成json,
+    s = serializers.serialize('json', query_set)
+    dd = json.loads(s)
+    case_dict_list = []
+    for d in dd:
+        model_dict = _query_set_dict_to_model_dict(d)
+        case_dict = _get_full_case(model_dict)
+        case_dict_list.append(case_dict)
+    return case_dict_list

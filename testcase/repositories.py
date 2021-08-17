@@ -42,13 +42,13 @@ class TestCaseIdentityDBHelper(BaseDBHelper):
         self.identity = tc_identity
 
     def has_case_id(self, test_case_id):
-        if super().filter_by({"test_case_id": test_case_id}).count():
+        if super().filter_by({"test_case_id": test_case_id}).exists():
             return True
         else:
             return False
 
     def has_case_name(self, test_case_name):
-        if super().filter_by({"test_case_name": test_case_name}).count():
+        if super().filter_by({"test_case_name": test_case_name}).exists():
             return True
         else:
             return False
