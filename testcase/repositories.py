@@ -36,7 +36,7 @@ class BaseDBHelper:
         return self.entity.objects.filter(**kwargs)
 
 
-class TestCaseIdentityDBHelper(BaseDBHelper):
+class TcIdentityDBHelper(BaseDBHelper):
     def __init__(self, tc_identity: Tc_Identity):
         super().__init__(tc_identity)
         self.identity = tc_identity
@@ -63,16 +63,16 @@ class TestCaseIdentityDBHelper(BaseDBHelper):
             return super().save_this()
 
 
-class TestCaseActionDBHelper(BaseDBHelper):
+class TcActionDBHelper(BaseDBHelper):
     def __init__(self, tc_action: Tc_Action):
         super().__init__(tc_action)
 
 
-class TestCaseDataDBHelper(BaseDBHelper):
+class TcDataDBHelper(BaseDBHelper):
     def __init__(self, tc_data: Tc_Data):
         super().__init__(tc_data)
 
 
-class TestCaseCheckPointDBHelper(BaseDBHelper):
+class TcCheckPointDBHelper(BaseDBHelper):
     def __init__(self, tc_check_point: Tc_Check_Point):
         super().__init__(tc_check_point)

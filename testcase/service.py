@@ -74,7 +74,7 @@ class BaseTcServicer:
 
 class TestCaseIdentityServicer(BaseTcServicer):
     def __init__(self):
-        super().__init__(TestCaseIdentityDBHelper(Tc_Identity()))
+        super().__init__(TcIdentityDBHelper(Tc_Identity()))
 
     @staticmethod
     def new():
@@ -84,14 +84,14 @@ class TestCaseIdentityServicer(BaseTcServicer):
     def save(identity_list: list[dict]) -> list[dict]:
         aaa = []
         for identity in identity_list:
-            a = TestCaseIdentityDBHelper(Tc_Identity(**identity)).save_this_one()
+            a = TcIdentityDBHelper(Tc_Identity(**identity)).save_this_one()
             aaa.append(model_to_dict(a))
         return aaa
 
 
 class TestCaseActionServicer(BaseTcServicer):
     def __init__(self):
-        super().__init__(TestCaseActionDBHelper(Tc_Action()))
+        super().__init__(TcActionDBHelper(Tc_Action()))
 
     @staticmethod
     def new():
@@ -101,14 +101,14 @@ class TestCaseActionServicer(BaseTcServicer):
     def save(action_list: list[dict]):
         aaa = []
         for action in action_list:
-            a = TestCaseActionDBHelper(Tc_Action(**action)).save_this()
+            a = TcActionDBHelper(Tc_Action(**action)).save_this()
             aaa.append(model_to_dict(a))
         return aaa
 
 
 class TestCaseDataServicer(BaseTcServicer):
     def __init__(self):
-        super().__init__(TestCaseDataDBHelper(Tc_Data()))
+        super().__init__(TcDataDBHelper(Tc_Data()))
 
     @staticmethod
     def new():
@@ -118,14 +118,14 @@ class TestCaseDataServicer(BaseTcServicer):
     def save(data_list: list[dict]):
         aaa = []
         for data in data_list:
-            a = TestCaseDataDBHelper(Tc_Data(**data)).save_this()
+            a = TcDataDBHelper(Tc_Data(**data)).save_this()
             aaa.append(model_to_dict(a))
         return aaa
 
 
 class TestCaseCheckPointServicer(BaseTcServicer):
     def __init__(self):
-        super().__init__(TestCaseCheckPointDBHelper(Tc_Check_Point()))
+        super().__init__(TcCheckPointDBHelper(Tc_Check_Point()))
 
     @staticmethod
     def new():
@@ -135,7 +135,7 @@ class TestCaseCheckPointServicer(BaseTcServicer):
     def save(cp_list: list[dict]):
         aaa = []
         for cp in cp_list:
-            a = TestCaseCheckPointDBHelper(Tc_Check_Point(**cp)).save_this()
+            a = TcCheckPointDBHelper(Tc_Check_Point(**cp)).save_this()
             aaa.append(model_to_dict(a))
         return aaa
 

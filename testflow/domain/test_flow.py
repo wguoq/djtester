@@ -47,7 +47,7 @@ from operator import itemgetter
 
 from django.forms import model_to_dict
 
-from testcase.repositories import TestCaseIdentityDBHelper
+from testcase.repositories import TcIdentityDBHelper
 from testflow.repositories import TestFlowSDBHelper
 
 test_flow1 = {
