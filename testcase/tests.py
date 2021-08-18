@@ -138,10 +138,10 @@ class TestTC(TestCase):
         print(f'1111111111111\n获取一个Enums:TcEnums.case_type()==========\n{TestCaseEnums.case_type()}')
 
         api_case = TestCaseServicer().new_api_testcase()
-        print(f'222222222222\n初始化一个api_case======\n{json.dumps(api_case)}')
+        print(f'222222222222\n初始化一个api_case======\n{api_case}')
 
         # 写入
-        new_case12 = TestCaseServicer().save([case1, case2])
+        new_case12 = TestCaseServicer([case1, case2]).save()
         print(f'33333333333333\n写入2条所有字段都是新的且完整的 new_case12=======\n{new_case12}')
         # 查询
         all_case = TestCaseServicer().get_all()
@@ -204,7 +204,7 @@ class TestTC(TestCase):
 
             ],
         }
-        new_case3 = TestCaseServicer.save([case3])
+        new_case3 = TestCaseServicer([case3]).save()
         print(f'16.16.16.16.\n写入新case使用已存在的外键 =======\n{new_case3}')
         case4 = {
             "test_case_type": "api",
@@ -213,7 +213,7 @@ class TestTC(TestCase):
                 "test_case_name": "test_case_name04"
             }
         }
-        new_case4 = TestCaseServicer.save([case4])
+        new_case4 = TestCaseServicer([case4]).save()
         print(f'17.17.17.17\n写入只写了名字的新case =======\n{new_case4}')
         # 修改
         case4_1 = {
@@ -223,7 +223,7 @@ class TestTC(TestCase):
                 "test_case_name": "test_case_name444444444"
             },
         }
-        new_case4_1 = TestCaseServicer.save([case4_1])
+        new_case4_1 = TestCaseServicer([case4_1]).save()
         new_name = TestCaseIdentityServicer().get_by_pk(4)
         print(f'18.18.18.18.18\n只修改test_case_name =======\n{new_case4_1}\n{new_name}')
         case4_2 = {
@@ -232,7 +232,7 @@ class TestTC(TestCase):
                 "id": 1
             },
         }
-        new_case4_2 = TestCaseServicer.save([case4_2])
+        new_case4_2 = TestCaseServicer([case4_2]).save()
         print(f'19.19.19.19\n只修改tc_action字段 =======\n{new_case4_2}')
         case4_3 = {
             "id": 4,
@@ -240,7 +240,7 @@ class TestTC(TestCase):
                 "id": 1
             },
         }
-        new_case4_3 = TestCaseServicer.save([case4_3])
+        new_case4_3 = TestCaseServicer([case4_3]).save()
         print(f'20.20.20.20.20\n只修改tc_data字段 =======\n{new_case4_3}')
         case4_4 = {
             "id": 4,
@@ -250,7 +250,7 @@ class TestTC(TestCase):
                 }
             ],
         }
-        new_case4_4 = TestCaseServicer.save([case4_4])
+        new_case4_4 = TestCaseServicer([case4_4]).save()
         print(f'21.21.21.21\n只修改tc_check字段 =======\n{new_case4_4}')
 
         new_identity = TestCaseIdentityServicer().new()
