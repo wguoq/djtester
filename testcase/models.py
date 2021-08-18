@@ -1,16 +1,6 @@
 from django.db import models
 
 
-def not_none_field(model_dict):
-    d = {}
-    for k, v in model_dict.items():
-        if v is None:
-            pass
-        else:
-            d.update({k: v})
-    return d
-
-
 class Tc_Identity(models.Model):
     test_case_id = models.CharField(max_length=32,  # 32字符=64字节
                                     unique=True,
@@ -22,20 +12,15 @@ class Tc_Identity(models.Model):
                                       verbose_name="测试用例名称")
     objects = models.Manager()
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self):
         return self.test_case_name
 
-    @staticmethod
-    def empty_fields_dict():
-        return dict(test_case_id=None, test_case_name=None)
-
-    def to_dict(self):
+    def fields_dict(self):
         return dict(test_case_id=self.test_case_id,
                     test_case_name=self.test_case_name)
-
-    def update_fields(self):
-        a = not_none_field(self.to_dict())
-        return a.keys()
 
 
 class Tc_Action(models.Model):
@@ -53,20 +38,16 @@ class Tc_Action(models.Model):
 
     objects = models.Manager()
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self):
         return self.action_name
 
-    @staticmethod
-    def empty_fields_dict():
-        return dict(action_type=None, action=None)
-
-    def to_dict(self):
+    def fields_dict(self):
         return dict(action_type=self.action_type,
+                    action_name=self.action_name,
                     action=self.action)
-
-    def update_fields(self):
-        a = not_none_field(self.to_dict())
-        return a.keys()
 
 
 class Tc_Data(models.Model):
@@ -81,22 +62,19 @@ class Tc_Data(models.Model):
     data = models.JSONField(null=True,
                             blank=True,
                             verbose_name="测试用例数据")
+
     objects = models.Manager()
+
+    class Meta:
+        ordering = ['-id']
 
     def __str__(self):
         return self.data_name
 
-    @staticmethod
-    def empty_fields_dict():
-        return dict(data_type=None, data=None)
-
-    def to_dict(self):
+    def fields_dict(self):
         return dict(data_type=self.data_type,
+                    data_name=self.data_name,
                     data=self.data)
-
-    def update_fields(self):
-        a = not_none_field(self.to_dict())
-        return a.keys()
 
 
 class Tc_Check_Point(models.Model):
@@ -114,20 +92,16 @@ class Tc_Check_Point(models.Model):
 
     objects = models.Manager()
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self):
         return self.check_point_name
 
-    @staticmethod
-    def empty_fields_dict():
-        return dict(check_point_type=None, check_point=None)
-
-    def to_dict(self):
+    def fields_dict(self):
         return dict(check_point_type=self.check_point_type,
+                    check_point_name=self.check_point_name,
                     check_point=self.check_point)
-
-    def update_fields(self):
-        a = not_none_field(self.to_dict())
-        return a.keys()
 
 
 class Test_Case(models.Model):
@@ -166,20 +140,20 @@ class Test_Case(models.Model):
 
     objects = models.Manager()
 
-    def to_dict(self):
+    def fields_dict(self):
         return dict(test_case_type=self.test_case_type,
                     tc_identity=self.tc_identity,
                     tc_action=self.tc_action,
                     tc_data=self.tc_data,
                     tc_check_list=self.tc_check_list)
 
-    def update_fields(self):
-        a = not_none_field(self.to_dict())
-        if 'id' in a.keys():
-            a.pop('id')
-        if 'tc_check_list' in a.keys():
-            a.pop('tc_check_list')
-        return a.keys()
+    # def update_fields(self):
+    #     a = not_none_fields(self.to_dict())
+    #     if 'id' in a.keys():
+    #         a.pop('id')
+    #     if 'tc_check_list' in a.keys():
+    #         a.pop('tc_check_list')
+    #     return a.keys()
 
     class Meta:
         ordering = ['-id']

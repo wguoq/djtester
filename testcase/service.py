@@ -1,5 +1,6 @@
 import json
 from django.core import serializers
+from django.db import models
 from django.forms import model_to_dict
 from testcase.domain.tc_repositories import *
 from testcase.domain.tc_enums import *
@@ -73,94 +74,93 @@ class BaseTcServicer:
 
 
 class TestCaseIdentityServicer(BaseTcServicer):
-    def __init__(self):
-        super().__init__(TcIdentityDBHelper(Tc_Identity()))
+    def __init__(self, data_list: list[dict] = None):
+        self.data_list = data_list
+        super().__init__(TcIdentityDBHelper())
 
     @staticmethod
     def new():
-        return Tc_Identity().empty_fields_dict()
+        return Tc_Identity().fields_dict()
 
-    @staticmethod
-    def save(identity_list: list[dict]) -> list[dict]:
+    def save(self) -> list[dict]:
         aaa = []
-        for identity in identity_list:
-            a = TcIdentityDBHelper(Tc_Identity(**identity)).save_this_one()
+        for data in self.data_list:
+            a = TcIdentityDBHelper(data).save_this()
             aaa.append(model_to_dict(a))
         return aaa
 
 
 class TestCaseActionServicer(BaseTcServicer):
-    def __init__(self):
-        super().__init__(TcActionDBHelper(Tc_Action()))
+    def __init__(self, data_list: list[dict] = None):
+        self.data_list = data_list
+        super().__init__(TcActionDBHelper())
 
     @staticmethod
     def new():
-        return Tc_Action().empty_fields_dict()
+        return Tc_Action().fields_dict()
 
-    @staticmethod
-    def save(action_list: list[dict]):
+    def save(self) -> list[dict]:
         aaa = []
-        for action in action_list:
-            a = TcActionDBHelper(Tc_Action(**action)).save_this()
+        for data in self.data_list:
+            a = TcActionDBHelper(data).save_this()
             aaa.append(model_to_dict(a))
         return aaa
 
 
 class TestCaseDataServicer(BaseTcServicer):
-    def __init__(self):
-        super().__init__(TcDataDBHelper(Tc_Data()))
+    def __init__(self, data_list: list[dict] = None):
+        self.data_list = data_list
+        super().__init__(TcDataDBHelper())
 
     @staticmethod
     def new():
-        return Tc_Data().to_dict
+        return Tc_Data().fields_dict
 
-    @staticmethod
-    def save(data_list: list[dict]):
+    def save(self) -> list[dict]:
         aaa = []
-        for data in data_list:
-            a = TcDataDBHelper(Tc_Data(**data)).save_this()
+        for data in self.data_list:
+            a = TcDataDBHelper(data).save_this()
             aaa.append(model_to_dict(a))
         return aaa
 
 
 class TestCaseCheckPointServicer(BaseTcServicer):
-    def __init__(self):
-        super().__init__(TcCheckPointDBHelper(Tc_Check_Point()))
+    def __init__(self, data_list: list[dict] = None):
+        self.data_list = data_list
+        super().__init__(TcCheckPointDBHelper())
 
     @staticmethod
     def new():
-        return Tc_Check_Point().to_dict
+        return Tc_Check_Point().fields_dict
 
-    @staticmethod
-    def save(cp_list: list[dict]):
+    def save(self) -> list[dict]:
         aaa = []
-        for cp in cp_list:
-            a = TcCheckPointDBHelper(Tc_Check_Point(**cp)).save_this()
+        for data in self.data_list:
+            a = TcCheckPointDBHelper(data).save_this()
             aaa.append(model_to_dict(a))
         return aaa
 
 
 class TestCaseServicer(BaseTcServicer):
-    def __init__(self):
-        super().__init__(TestCaseSDBHelper(TcTestCase()))
+    def __init__(self, data_list: list[dict] = None):
+        self.data_list = data_list
+        super().__init__(TcTestCaseDBHelper())
 
     @staticmethod
     def new_api_testcase():
         return TcTestCase().new_api_testcase()
 
-    @staticmethod
-    @transaction.atomic
-    def save(test_case_list: list[dict]):
+    def save(self) -> list[dict]:
         aaa = []
-        for test_case in test_case_list:
-            case_saved = TestCaseSDBHelper(TcTestCase(**test_case)).save_this_one()
+        for data in self.data_list:
+            case_saved = TcTestCaseDBHelper(data).save_this()
             case_dict = model_to_dict(case_saved)
             case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
             aaa.append(case_dict)
         return aaa
 
     def get_all(self, offset=0, limit=1000):
-        get_all = TestCaseSDBHelper.get_all(offset=offset, limit=limit)
+        get_all = TcTestCaseDBHelper.get_all(offset=offset, limit=limit)
         all_case = []
         for a in get_all:
             case_dict = model_to_dict(a)
@@ -168,19 +168,19 @@ class TestCaseServicer(BaseTcServicer):
         return all_case
 
     def get_by_pk(self, pk) -> dict:
-        case = TestCaseSDBHelper.get_by_pk(pk)
+        case = TcTestCaseDBHelper.get_by_pk(pk)
         case_dict = model_to_dict(case)
         return _get_full_case(case_dict)
 
     def filter_by(self, kwargs: dict):
-        a = TestCaseSDBHelper.filter_by(kwargs)
+        a = TcTestCaseDBHelper.filter_by(kwargs)
         return _query_set_to_case_dict(a)
 
     @staticmethod
     def filter_by_case_id(test_case_id_list: list) -> list:
         case_list = []
         for test_case_id in test_case_id_list:
-            a = TestCaseSDBHelper.filter_by_case_id(test_case_id)
+            a = TcTestCaseDBHelper.filter_by_case_id(test_case_id)
             case_list.append(_query_set_to_case_dict(a))
         return case_list
 
@@ -188,7 +188,7 @@ class TestCaseServicer(BaseTcServicer):
     def filter_by_case_name(test_case_name_list: list):
         case_list = []
         for test_case_name in test_case_name_list:
-            a = TestCaseSDBHelper.filter_by_case_name(test_case_name)
+            a = TcTestCaseDBHelper.filter_by_case_name(test_case_name)
             case_list.append(_query_set_to_case_dict(a))
         return case_list
 
@@ -205,7 +205,7 @@ def _get_check_point_pk(tc_check_list: list):
 
 def _get_full_case(case_dict) -> dict:
     """
-    把testcase里面的外键关联的数据都查出来,组装成一个dict
+    把testcase里面的外键关联的数据一个个都查出来,组装成一个dict
     """
     tc_identity = case_dict.get('tc_identity')
     tc_action = case_dict.get('tc_action')
