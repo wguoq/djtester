@@ -1,3 +1,4 @@
+import importlib
 import sys
 
 # 显示内存地址
@@ -106,7 +107,7 @@ def main():
     module_name = "mytest"  # 模块名
     method = "echo"  # 方法名
 
-    module = __import__(module_name)  # import module
+    module = importlib.import_module(module_name)  # import module
     print
     "#module:", module
     c = getattr(module, class_name)

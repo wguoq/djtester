@@ -1,8 +1,3 @@
-"""
-testcase领域聚合
-"""
-from django.db import transaction
-from testcase.domain.tc_model import TcTestCase
 from testcase.models import Test_Case
 from testcase.repositories import *
 
@@ -51,7 +46,7 @@ class TcTestCaseDBHelper:
             # 先写1对1外键
             self._save_foreignkey()
 
-            # 保存Test_Case里有数据的字段但是要排除id,tc_check_list字段
+            # 保存Test_Case有数据的字段,但是要排除id,tc_check_list字段
             test_case_dict: dict = self.test_case.fields_dict()
             update_fields = []
             for (k, v) in test_case_dict.items():
