@@ -2,6 +2,8 @@ import json
 from django.core import serializers
 from django.db import models
 from django.forms import model_to_dict
+
+from testcase.domain.tc_model import TcTestCase
 from testcase.domain.tc_repositories import *
 from testcase.domain.tc_enums import *
 from testcase.repositories import *
@@ -160,7 +162,7 @@ class TestCaseServicer(BaseTcServicer):
         return aaa
 
     def get_all(self, offset=0, limit=1000):
-        get_all = TcTestCaseDBHelper.get_all(offset=offset, limit=limit)
+        get_all = TcTestCaseDBHelper().get_all(offset=offset, limit=limit)
         all_case = []
         for a in get_all:
             case_dict = model_to_dict(a)
@@ -168,12 +170,12 @@ class TestCaseServicer(BaseTcServicer):
         return all_case
 
     def get_by_pk(self, pk) -> dict:
-        case = TcTestCaseDBHelper.get_by_pk(pk)
+        case = TcTestCaseDBHelper().get_by({'pk': pk})
         case_dict = model_to_dict(case)
         return _get_full_case(case_dict)
 
     def filter_by(self, kwargs: dict):
-        a = TcTestCaseDBHelper.filter_by(kwargs)
+        a = TcTestCaseDBHelper().filter_by(kwargs)
         return _query_set_to_case_dict(a)
 
     @staticmethod

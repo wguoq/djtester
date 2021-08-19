@@ -1,14 +1,17 @@
 from testcase.models import Test_Case
 from testcase.repositories import *
+MODELS_PATH = 'testcase.models'
 
 
-class TcTestCaseDBHelper:
+class TcTestCaseDBHelper(BaseDBHelper):
     def __init__(self, data: dict = None):
         self.data = data
+        self.test_case = Test_Case()
         if self.data:
-            self.test_case = Test_Case()
             self.test_case.pk = self.data.get('id')
             self.test_case.test_case_type = self.data.get('test_case_type')
+
+        super().__init__(MODELS_PATH, Test_Case.__name__, None)
 
     def _save_foreignkey(self):
         tc_identity = self.data.get('tc_identity')
@@ -39,7 +42,7 @@ class TcTestCaseDBHelper:
         if pk:
             # 查出数据修改
             try:
-                self.test_case = self.get_by_pk(pk)
+                self.test_case = super().get_by({'pk': pk})
             except Exception as e:
                 raise Exception(f'Test_Case表 查询 id为 {pk} 的数据报错: {e}')
 
@@ -66,18 +69,6 @@ class TcTestCaseDBHelper:
             self.test_case.save()
             self.test_case.tc_check_list.add(*self._save_m2m())
             return self.test_case
-
-    @staticmethod
-    def get_all(offset: int, limit: int):
-        return Test_Case.objects.all()[offset: (offset + limit)]
-
-    @staticmethod
-    def get_by_pk(pk):
-        return Test_Case.objects.get(pk=pk)
-
-    @staticmethod
-    def filter_by(kwargs: dict):
-        return Test_Case.objects.filter(**kwargs)
 
     @staticmethod
     def filter_by_case_id(test_case_id):

@@ -147,13 +147,5 @@ class Test_Case(models.Model):
                     tc_data=self.tc_data,
                     tc_check_list=self.tc_check_list)
 
-    # def update_fields(self):
-    #     a = not_none_fields(self.to_dict())
-    #     if 'id' in a.keys():
-    #         a.pop('id')
-    #     if 'tc_check_list' in a.keys():
-    #         a.pop('tc_check_list')
-    #     return a.keys()
-
     class Meta:
         ordering = ['-id']
