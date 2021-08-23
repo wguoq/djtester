@@ -10,29 +10,19 @@ class TcIdentityDBHelper(BaseDBHelper):
         self.data = data
         super().__init__(MODELS_PATH, Tc_Identity.__name__, data)
 
-    def has_case_id(self, test_case_id):
+    def has_case_id(self):
+        test_case_id = self.data.get('test_case_id')
         if super().filter_by({"test_case_id": test_case_id}).exists():
             return True
         else:
             return False
 
-    def has_case_name(self, test_case_name):
+    def has_case_name(self):
+        test_case_name = self.data.get('test_case_name')
         if super().filter_by({"test_case_name": test_case_name}).exists():
             return True
         else:
             return False
-
-    @transaction.atomic
-    def save_this(self):
-        # 无论新增还是修改都要判断id和name是否重复
-        test_case_id = self.data.get('test_case_id')
-        test_case_name = self.data.get('test_case_name')
-        if self.has_case_id(test_case_id):
-            raise Exception(f'test_case_id {test_case_id} 已存在')
-        elif self.has_case_name(test_case_name):
-            raise Exception(f'test_case_name {test_case_name} 已存在')
-        else:
-            return super().save_this()
 
 
 class TcActionDBHelper(BaseDBHelper):
