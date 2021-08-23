@@ -1,4 +1,7 @@
 import json
+import random
+import time
+
 from django.core import serializers
 from django.db import models
 from django.forms import model_to_dict
@@ -51,8 +54,11 @@ class BaseTcServicer:
     def __init__(self, db_helper: models):
         self.DBHelper = db_helper
 
-    def save(self, *args, **kwargs):
-        pass
+    def add(self):
+        return self.DBHelper.save_this()
+
+    def edit(self):
+        return self.DBHelper.save_this()
 
     def get_all(self, offset: int = 0, limit: int = 1000) -> list[dict]:
         aaa = self.DBHelper.get_all(offset, limit)
@@ -76,90 +82,72 @@ class BaseTcServicer:
 
 
 class TestCaseIdentityServicer(BaseTcServicer):
-    def __init__(self, data_list: list[dict] = None):
-        self.data_list = data_list
-        super().__init__(TcIdentityDBHelper())
+    def __init__(self, data: dict = None):
+        self.data = data
+        super().__init__(TcIdentityDBHelper(self.data))
 
     @staticmethod
     def new():
-        return Tc_Identity().fields_dict()
+        test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
+        return Tc_Identity(test_case_id=test_case_id).fields_dict()
 
-    def save(self) -> list[dict]:
-        aaa = []
-        for data in self.data_list:
-            a = TcIdentityDBHelper(data).save_this()
-            aaa.append(model_to_dict(a))
-        return aaa
+    def add(self):
+        if TcIdentityDBHelper(self.data).has_case_id() or TcIdentityDBHelper(self.data).has_case_name():
+            raise Exception(f'test_case_id 或 test_case_name 已经存在')
+        else:
+            return TcIdentityDBHelper(self.data).save_this()
 
 
 class TestCaseActionServicer(BaseTcServicer):
-    def __init__(self, data_list: list[dict] = None):
-        self.data_list = data_list
-        super().__init__(TcActionDBHelper())
+    def __init__(self, data: dict = None):
+        self.data = data
+        super().__init__(TcActionDBHelper(self.data))
 
     @staticmethod
     def new():
         return Tc_Action().fields_dict()
 
-    def save(self) -> list[dict]:
-        aaa = []
-        for data in self.data_list:
-            a = TcActionDBHelper(data).save_this()
-            aaa.append(model_to_dict(a))
-        return aaa
-
 
 class TestCaseDataServicer(BaseTcServicer):
-    def __init__(self, data_list: list[dict] = None):
-        self.data_list = data_list
-        super().__init__(TcDataDBHelper())
+    def __init__(self,  data: dict = None):
+        self.data = data
+        super().__init__(TcDataDBHelper(self.data))
 
     @staticmethod
     def new():
         return Tc_Data().fields_dict
 
-    def save(self) -> list[dict]:
-        aaa = []
-        for data in self.data_list:
-            a = TcDataDBHelper(data).save_this()
-            aaa.append(model_to_dict(a))
-        return aaa
-
 
 class TestCaseCheckPointServicer(BaseTcServicer):
-    def __init__(self, data_list: list[dict] = None):
-        self.data_list = data_list
-        super().__init__(TcCheckPointDBHelper())
+    def __init__(self, data: dict = None):
+        self.data = data
+        super().__init__(TcCheckPointDBHelper(self.data))
 
     @staticmethod
     def new():
         return Tc_Check_Point().fields_dict
 
-    def save(self) -> list[dict]:
-        aaa = []
-        for data in self.data_list:
-            a = TcCheckPointDBHelper(data).save_this()
-            aaa.append(model_to_dict(a))
-        return aaa
-
 
 class TestCaseServicer(BaseTcServicer):
-    def __init__(self, data_list: list[dict] = None):
-        self.data_list = data_list
-        super().__init__(TcTestCaseDBHelper())
+    def __init__(self, data: dict = None):
+        self.data = data
+        super().__init__(TcTestCaseDBHelper(self.data))
 
     @staticmethod
     def new_api_testcase():
         return TcTestCase().new_api_testcase()
 
-    def save(self) -> list[dict]:
-        aaa = []
-        for data in self.data_list:
-            case_saved = TcTestCaseDBHelper(data).save_this()
-            case_dict = model_to_dict(case_saved)
-            case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
-            aaa.append(case_dict)
-        return aaa
+    def add(self):
+        case_saved = TcTestCaseDBHelper(self.data).save_this()
+        case_dict = model_to_dict(case_saved)
+        case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
+        return case_dict
+
+    def edit(self):
+        case_saved = TcTestCaseDBHelper(self.data).save_this()
+        case_dict = model_to_dict(case_saved)
+        case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
+        return case_dict
 
     def get_all(self, offset=0, limit=1000):
         get_all = TcTestCaseDBHelper().get_all(offset=offset, limit=limit)
