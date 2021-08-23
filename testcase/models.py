@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Tc_Identity(models.Model):
+    id = models.AutoField(primary_key=True)
+
     test_case_id = models.CharField(max_length=32,  # 32字符=64字节
                                     unique=True,
                                     null=True,
@@ -24,6 +26,8 @@ class Tc_Identity(models.Model):
 
 
 class Tc_Action(models.Model):
+    id = models.AutoField(primary_key=True)
+
     action_type = models.CharField(max_length=32,
                                    blank=True,
                                    null=True,
@@ -51,6 +55,8 @@ class Tc_Action(models.Model):
 
 
 class Tc_Data(models.Model):
+    id = models.AutoField(primary_key=True)
+
     data_type = models.CharField(max_length=32,
                                  blank=True,
                                  null=True,
@@ -78,6 +84,8 @@ class Tc_Data(models.Model):
 
 
 class Tc_Check_Point(models.Model):
+    id = models.AutoField(primary_key=True)
+
     check_point_type = models.CharField(max_length=32,
                                         blank=True,
                                         null=True,
@@ -105,6 +113,8 @@ class Tc_Check_Point(models.Model):
 
 
 class Test_Case(models.Model):
+    id = models.AutoField(primary_key=True)
+
     test_case_type = models.CharField(max_length=32,
                                       null=True,
                                       # 设置不用必填
