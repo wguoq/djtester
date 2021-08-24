@@ -1,6 +1,20 @@
 from django.db import models
 
 
+# class ModelTools(object):
+#     def all_fields_dict(self):
+#         """
+#         把model的所有Fields和对应的值组成一个dict
+#         """
+#         all_fields = []
+#         for a in self._meta.fields:
+#             all_fields.append(a.name)
+#         fields_dict = {}
+#         for field in all_fields:
+#             fields_dict.update({field: self.__dict__.get(field)})
+#         return fields_dict
+
+
 class Tc_Identity(models.Model):
     id = models.AutoField(primary_key=True)
 
@@ -19,10 +33,6 @@ class Tc_Identity(models.Model):
 
     def __str__(self):
         return self.test_case_name
-
-    def fields_dict(self):
-        return dict(test_case_id=self.test_case_id,
-                    test_case_name=self.test_case_name)
 
 
 class Tc_Action(models.Model):
@@ -48,11 +58,6 @@ class Tc_Action(models.Model):
     def __str__(self):
         return self.action_name
 
-    def fields_dict(self):
-        return dict(action_type=self.action_type,
-                    action_name=self.action_name,
-                    action=self.action)
-
 
 class Tc_Data(models.Model):
     id = models.AutoField(primary_key=True)
@@ -77,11 +82,6 @@ class Tc_Data(models.Model):
     def __str__(self):
         return self.data_name
 
-    def fields_dict(self):
-        return dict(data_type=self.data_type,
-                    data_name=self.data_name,
-                    data=self.data)
-
 
 class Tc_Check_Point(models.Model):
     id = models.AutoField(primary_key=True)
@@ -105,11 +105,6 @@ class Tc_Check_Point(models.Model):
 
     def __str__(self):
         return self.check_point_name
-
-    def fields_dict(self):
-        return dict(check_point_type=self.check_point_type,
-                    check_point_name=self.check_point_name,
-                    check_point=self.check_point)
 
 
 class Test_Case(models.Model):
@@ -149,13 +144,6 @@ class Test_Case(models.Model):
                                   verbose_name="测试用例版本")
 
     objects = models.Manager()
-
-    def fields_dict(self):
-        return dict(test_case_type=self.test_case_type,
-                    tc_identity=self.tc_identity,
-                    tc_action=self.tc_action,
-                    tc_data=self.tc_data,
-                    tc_check_list=self.tc_check_list)
 
     class Meta:
         ordering = ['-id']
