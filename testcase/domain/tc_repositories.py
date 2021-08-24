@@ -5,24 +5,20 @@ MODELS_PATH = 'testcase.models'
 
 class TcTestCaseDBHelper(BaseDBHelper):
     def __init__(self, data: dict = None):
-        self.data = data
-        self.test_case = Test_Case()
-        if self.data:
-            self.test_case.pk = self.data.get('id')
-            self.test_case.test_case_type = self.data.get('test_case_type')
-
         super().__init__(MODELS_PATH, Test_Case.__name__, None)
+        self.data = data
 
     def _save_foreignkey(self):
         tc_identity = self.data.get('tc_identity')
         tc_action = self.data.get('tc_action')
         tc_data = self.data.get('tc_data')
         if tc_identity:
-            self.test_case.tc_identity = TcIdentityDBHelper(tc_identity).save_this()
+            self.data['tc_identity'] = TcIdentityDBHelper(tc_identity).save_this()
         if tc_action:
-            self.test_case.tc_action = TcActionDBHelper(tc_action).save_this()
+            self.data['tc_action'] = TcActionDBHelper(tc_action).save_this()
         if tc_data:
-            self.test_case.tc_data = TcDataDBHelper(tc_data).save_this()
+            self.data['tc_data'] = TcDataDBHelper(tc_data).save_this()
+        return self.data
 
     def _save_m2m(self):
         new_check_list = []
@@ -31,44 +27,39 @@ class TcTestCaseDBHelper(BaseDBHelper):
                 if check:
                     new_check = TcCheckPointDBHelper(check).save_this()
                     new_check_list.append(new_check)
-        return new_check_list
+            return new_check_list
+        else:
+            return None
 
     # m2m的字段要单独处理
     # 需要事务
     @transaction.atomic
     def save_this(self):
         # 通过pk判断是否新增
-        pk = self.test_case.pk
+        pk = self.data.get('id')
         if pk:
-            # 查出数据修改
-            try:
-                self.test_case = super().get_by({'pk': pk})
-            except Exception as e:
-                raise Exception(f'Test_Case表 查询 id为 {pk} 的数据报错: {e}')
-
-            # 先写1对1外键
-            self._save_foreignkey()
-
-            # 保存Test_Case有数据的字段,但是要排除id,tc_check_list字段
-            test_case_dict: dict = self.test_case.fields_dict()
-            update_fields = []
-            for (k, v) in test_case_dict.items():
-                if v is None or k in ['id', 'tc_check_list']:
-                    continue
-                else:
-                    update_fields.append(k)
-            self.test_case.save(update_fields=update_fields)
-
-            # 保存m2m
-            self.test_case.tc_check_list.add(*self._save_m2m())
-            return self.test_case
-
+            # 先写外键
+            foreignkey_data = self._save_foreignkey()
+            m2m = self._save_m2m()
+            new = Test_Case.objects.update(**foreignkey_data)
+            obj = Test_Case.objects.get(pk=new)
+            if m2m:
+                obj.tc_check_list.add(*m2m)
+            return obj
         else:
-            # 新增
-            self._save_foreignkey()
-            self.test_case.save()
-            self.test_case.tc_check_list.add(*self._save_m2m())
-            return self.test_case
+            # 新增外键
+            foreignkey_data = self._save_foreignkey()
+            m2m = self._save_m2m()
+            # 移除m2m字段
+            if "tc_check_list" in foreignkey_data.keys():
+                foreignkey_data.pop('tc_check_list')
+            # 保存
+            new = Test_Case(**foreignkey_data)
+            new.save()
+            # 保存m2m
+            if m2m:
+                new.tc_check_list.add(*m2m)
+            return new
 
     @staticmethod
     def filter_by_case_id(test_case_id):
