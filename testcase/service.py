@@ -88,8 +88,11 @@ class TestCaseIdentityServicer(BaseTcServicer):
 
     @staticmethod
     def new():
+        """
+        默认随机test_case_id
+        """
         test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
-        return Tc_Identity(test_case_id=test_case_id).fields_dict()
+        return model_to_dict(Tc_Identity(test_case_id=test_case_id))
 
     def add(self):
         if TcIdentityDBHelper(self.data).has_case_id() or TcIdentityDBHelper(self.data).has_case_name():
@@ -105,7 +108,7 @@ class TestCaseActionServicer(BaseTcServicer):
 
     @staticmethod
     def new():
-        return Tc_Action().fields_dict()
+        return model_to_dict(Tc_Action())
 
 
 class TestCaseDataServicer(BaseTcServicer):
@@ -115,7 +118,7 @@ class TestCaseDataServicer(BaseTcServicer):
 
     @staticmethod
     def new():
-        return Tc_Data().fields_dict
+        return model_to_dict(Tc_Data())
 
 
 class TestCaseCheckPointServicer(BaseTcServicer):
@@ -125,7 +128,7 @@ class TestCaseCheckPointServicer(BaseTcServicer):
 
     @staticmethod
     def new():
-        return Tc_Check_Point().fields_dict
+        return model_to_dict(Tc_Check_Point())
 
 
 class TestCaseServicer(BaseTcServicer):
