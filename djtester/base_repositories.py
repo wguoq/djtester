@@ -11,16 +11,19 @@ class BaseDBHelper:
         self.entity = self.model()
         if self.data:
             self.entity = self.model(**self.data)
+        '''
         # 取出所有field.name以后用
         self.fields_name = []
         for f in self.entity._meta.fields:
             self.fields_name.append(f.name)
+        '''
 
     @transaction.atomic
     def save_this(self):
         pk = self.entity.pk
         if pk:
             # 有pk判断为修改
+            '''
             # 先把原始数据查出来
             original = self.model.objects.get(pk=pk).__dict__
             # 把新数据的内容写进来,只写不为None的字段
@@ -36,7 +39,9 @@ class BaseDBHelper:
             # 生成新的实体保存
             new_entity = self.model(**new)
             new_entity.save()
-            return new_entity
+            '''
+            update = self.model.objects.update(**self.data)
+            return self.model.objects.get(pk=update)
         else:
             # 没有pk判断为新增
             self.entity.save()
