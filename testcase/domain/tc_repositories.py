@@ -16,17 +16,39 @@ class TcTestCaseDBHelper(BaseDBHelper):
                 self.data.pop('tc_check_list')
 
     def _save_foreignkey(self):
-        self.data['tc_identity'] = TcIdentityDBHelper(self.tc_identity).save_this() if self.tc_identity else None
-        self.data['tc_action'] = TcActionDBHelper(self.tc_action).save_this() if self.tc_action else None
-        self.data['tc_data'] = TcDataDBHelper(self.tc_data).save_this() if self.tc_data else None
+        # 需要处理数据是dict或者id的情况
+        if self.tc_identity is None:
+            self.data['tc_identity'] = None
+        elif isinstance(self.tc_identity, dict):
+            self.data['tc_identity'] = TcIdentityDBHelper(self.tc_identity).save_this()
+        else:
+            self.data['tc_identity'] = TcIdentityDBHelper().get_by(dict(pk=self.tc_identity))
+
+        if self.tc_action is None:
+            self.data['tc_action'] = None
+        elif isinstance(self.tc_action, dict):
+            self.data['tc_action'] = TcActionDBHelper(self.tc_action).save_this()
+        else:
+            self.data['tc_action'] = TcActionDBHelper().get_by(dict(pk=self.tc_action))
+
+        if self.tc_data is None:
+            self.data['tc_data'] = None
+        elif isinstance(self.tc_data, dict):
+            self.data['tc_data'] = TcDataDBHelper(self.tc_data).save_this()
+        else:
+            self.data['tc_data'] = TcDataDBHelper().get_by(dict(pk=self.tc_data))
+
         return self.data
 
     def _save_m2m(self):
         new_check_list = []
         if self.tc_check_list:
             for check in self.tc_check_list:
-                if check:
+                if isinstance(check, dict):
                     new_check = TcCheckPointDBHelper(check).save_this()
+                    new_check_list.append(new_check)
+                else:
+                    new_check = TcCheckPointDBHelper().get_by(dict(pk=check))
                     new_check_list.append(new_check)
             return new_check_list
         else:
@@ -51,13 +73,13 @@ class TcTestCaseDBHelper(BaseDBHelper):
             Test_Case.objects.filter(pk=pk).update(**new_data)
             new = Test_Case.objects.get(pk=pk)
             if m2m:
-                new.tc_check_list.add(*m2m)
+                new.tc_check_list.set(m2m)
             return new
         else:
             new = Test_Case(**self.data)
             new.save()
             if m2m:
-                new.tc_check_list.add(*m2m)
+                new.tc_check_list.set(m2m)
             return new
 
     @staticmethod
