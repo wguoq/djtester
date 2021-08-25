@@ -84,7 +84,8 @@ class BaseTcServicer:
 class TestCaseIdentityServicer(BaseTcServicer):
     def __init__(self, data: dict = None):
         self.data = data
-        super().__init__(TcIdentityDBHelper(self.data))
+        self.DBHelper = TcIdentityDBHelper(self.data)
+        super().__init__(self.DBHelper)
 
     @staticmethod
     def new():
@@ -95,16 +96,17 @@ class TestCaseIdentityServicer(BaseTcServicer):
         return model_to_dict(Tc_Identity(test_case_id=test_case_id))
 
     def add(self):
-        if TcIdentityDBHelper(self.data).has_case_id() or TcIdentityDBHelper(self.data).has_case_name():
+        if self.DBHelper.has_case_id() or self.DBHelper.has_case_name():
             raise Exception(f'test_case_id 或 test_case_name 已经存在')
         else:
-            return TcIdentityDBHelper(self.data).save_this()
+            return self.DBHelper.save_this()
 
 
 class TestCaseActionServicer(BaseTcServicer):
     def __init__(self, data: dict = None):
         self.data = data
-        super().__init__(TcActionDBHelper(self.data))
+        self.DBHelper = TcActionDBHelper(self.data)
+        super().__init__(self.DBHelper)
 
     @staticmethod
     def new():
@@ -114,7 +116,8 @@ class TestCaseActionServicer(BaseTcServicer):
 class TestCaseDataServicer(BaseTcServicer):
     def __init__(self,  data: dict = None):
         self.data = data
-        super().__init__(TcDataDBHelper(self.data))
+        self.DBHelper = TcDataDBHelper(self.data)
+        super().__init__(self.DBHelper)
 
     @staticmethod
     def new():
@@ -124,7 +127,8 @@ class TestCaseDataServicer(BaseTcServicer):
 class TestCaseCheckPointServicer(BaseTcServicer):
     def __init__(self, data: dict = None):
         self.data = data
-        super().__init__(TcCheckPointDBHelper(self.data))
+        self.DBHelper = TcCheckPointDBHelper(self.data)
+        super().__init__(self.DBHelper)
 
     @staticmethod
     def new():
@@ -134,20 +138,21 @@ class TestCaseCheckPointServicer(BaseTcServicer):
 class TestCaseServicer(BaseTcServicer):
     def __init__(self, data: dict = None):
         self.data = data
-        super().__init__(TcTestCaseDBHelper(self.data))
+        self.DBHelper = TcTestCaseDBHelper(self.data)
+        super().__init__(self.DBHelper)
 
     @staticmethod
     def new_api_testcase():
         return TcTestCase().new_api_testcase()
 
     def add(self):
-        case_saved = TcTestCaseDBHelper(self.data).save_this()
+        case_saved = self.DBHelper.save_this()
         case_dict = model_to_dict(case_saved)
         case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
         return case_dict
 
     def edit(self):
-        case_saved = TcTestCaseDBHelper(self.data).save_this()
+        case_saved = self.DBHelper.save_this()
         case_dict = model_to_dict(case_saved)
         case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
         return case_dict
