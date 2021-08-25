@@ -6,24 +6,25 @@ MODELS_PATH = 'testcase.models'
 class TcTestCaseDBHelper(BaseDBHelper):
     def __init__(self, data: dict = None):
         super().__init__(MODELS_PATH, Test_Case.__name__, None)
-        self.data = data
+        if data:
+            self.data = data
+            self.tc_identity = self.data.get('tc_identity')
+            self.tc_action = self.data.get('tc_action')
+            self.tc_data = self.data.get('tc_data')
+            self.tc_check_list = self.data.get('tc_check_list')
+            if self.tc_check_list:
+                self.data.pop('tc_check_list')
 
     def _save_foreignkey(self):
-        tc_identity = self.data.get('tc_identity')
-        tc_action = self.data.get('tc_action')
-        tc_data = self.data.get('tc_data')
-        if tc_identity:
-            self.data['tc_identity'] = TcIdentityDBHelper(tc_identity).save_this()
-        if tc_action:
-            self.data['tc_action'] = TcActionDBHelper(tc_action).save_this()
-        if tc_data:
-            self.data['tc_data'] = TcDataDBHelper(tc_data).save_this()
+        self.data['tc_identity'] = TcIdentityDBHelper(self.tc_identity).save_this() if self.tc_identity else None
+        self.data['tc_action'] = TcActionDBHelper(self.tc_action).save_this() if self.tc_action else None
+        self.data['tc_data'] = TcDataDBHelper(self.tc_data).save_this() if self.tc_data else None
         return self.data
 
     def _save_m2m(self):
         new_check_list = []
-        if self.data.get('tc_check_list'):
-            for check in self.data.get('tc_check_list'):
+        if self.tc_check_list:
+            for check in self.tc_check_list:
                 if check:
                     new_check = TcCheckPointDBHelper(check).save_this()
                     new_check_list.append(new_check)
@@ -35,28 +36,26 @@ class TcTestCaseDBHelper(BaseDBHelper):
     # 需要事务
     @transaction.atomic
     def save_this(self):
+        # 存1:1外键
+        self._save_foreignkey()
+        # 存m2m
+        m2m = self._save_m2m()
         # 通过pk判断是否新增
         pk = self.data.get('id')
         if pk:
-            # 先写外键
-            foreignkey_data = self._save_foreignkey()
-            m2m = self._save_m2m()
-            new = Test_Case.objects.update(**foreignkey_data)
-            obj = Test_Case.objects.get(pk=new)
+            # 修改前先排除值为None的字段
+            new_data = {}
+            for k, v in self.data.items():
+                if v:
+                    new_data.update({k: v})
+            Test_Case.objects.filter(pk=pk).update(**new_data)
+            new = Test_Case.objects.get(pk=pk)
             if m2m:
-                obj.tc_check_list.add(*m2m)
-            return obj
+                new.tc_check_list.add(*m2m)
+            return new
         else:
-            # 新增外键
-            foreignkey_data = self._save_foreignkey()
-            m2m = self._save_m2m()
-            # 移除m2m字段
-            if "tc_check_list" in foreignkey_data.keys():
-                foreignkey_data.pop('tc_check_list')
-            # 保存
-            new = Test_Case(**foreignkey_data)
+            new = Test_Case(**self.data)
             new.save()
-            # 保存m2m
             if m2m:
                 new.tc_check_list.add(*m2m)
             return new
