@@ -253,9 +253,37 @@ class Test1(TestCase):
         a = TestCaseServicer(case1).add()
         print(a)
 
-        print(f' test_case 修改 =====')
+        print(f' test_case 只修改 test_case_type =====')
         case1_1 = {"id": 1,
                    "test_case_type": "api_修改",
                    }
         a = TestCaseServicer(case1_1).edit()
         print(a)
+        print(TestCaseServicer().get_by_pk(1))
+        ##########################################################################
+        print(f' test_case 修改 外键字段dict =====')
+        case1_2 = {'id': 1, 'test_case_type': 'api_修改',
+                   'tc_identity': {'id': 2, 'test_case_id': 'tc1622690409', 'test_case_name': 'test_case_name001-修改'},
+                   'tc_action': {'id': 2, 'action_type': 'ApiAction', 'action_name': 'get index-修改',
+                                 'action': {'method': 'get', 'protocol': 'http', 'host': '127.0.0.1', 'port': '8000',
+                                            'path': ''}},
+                   'tc_data': {'id': 2, 'data_type': 'ApiParams', 'data_name': 'defApiParams=修改',
+                               'data': {'timeout': 120, 'allow_redirects': True, 'verify': False, 'headers': {},
+                                        'cookies': {},
+                                        'data': {}, 'json_data': {}, 'files': {}}}, 'version': 1,
+                   'tc_check_list': [
+                       {'id': 3, 'check_point_type': 'ApiJsonSchemaCheck', 'check_point_name': 'json_schema-修改',
+                        'check_point': {'json_schema': ''}},
+                       {'id': 2, 'check_point_type': 'ApiStrCheck', 'check_point_name': 'status_code == 200 修改',
+                        'check_point': {'response_property': 'status_code', 'property_key': '', 'operator': 'equals',
+                                        'expect': '200'}}]}
+        a = TestCaseServicer(case1_2).edit()
+        print(a)
+        print(TestCaseServicer().get_by_pk(1))
+        ##############################################################################
+        print(f' test_case 修改 外键字段id =====')
+        case1_3 = {'id': 1, 'test_case_type': 'api_修改', 'tc_identity': 1, 'tc_action': 1, 'tc_data': 1, 'version': 1,
+                   'tc_check_list': [1, 2]}
+        a = TestCaseServicer(case1_3).edit()
+        print(a)
+        print(TestCaseServicer().get_by_pk(1))
