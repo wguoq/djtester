@@ -14,6 +14,8 @@ class TcTestCaseDBHelper(BaseDBHelper):
             self.tc_check_list = self.data.get('tc_check_list')
             if self.tc_check_list:
                 self.data.pop('tc_check_list')
+        else:
+            self.data = {}
 
     def _save_foreignkey(self):
         # 需要处理数据是dict或者id的情况
@@ -42,7 +44,11 @@ class TcTestCaseDBHelper(BaseDBHelper):
 
     def _save_m2m(self):
         new_check_list = []
-        if self.tc_check_list:
+        if self.tc_check_list is None:
+            return None
+        elif len(self.tc_check_list) == 0:
+            return new_check_list
+        else:
             for check in self.tc_check_list:
                 if isinstance(check, dict):
                     new_check = TcCheckPointDBHelper(check).save_this()
@@ -51,11 +57,9 @@ class TcTestCaseDBHelper(BaseDBHelper):
                     new_check = TcCheckPointDBHelper().get_by(dict(pk=check))
                     new_check_list.append(new_check)
             return new_check_list
-        else:
-            return None
 
     # m2m的字段要单独处理
-    # 需要事务
+    # 事务
     @transaction.atomic
     def save_this(self):
         # 存1:1外键
@@ -84,12 +88,10 @@ class TcTestCaseDBHelper(BaseDBHelper):
 
     @staticmethod
     def filter_by_case_id(test_case_id):
-        # test_case_id在TcIdentity表里面是唯一的可以用get
         ide = TcIdentityDBHelper().get_by(dict(test_case_id=test_case_id))
         return Test_Case.objects.filter(tc_identity=ide)
 
     @staticmethod
     def filter_by_case_name(test_case_name):
-        # test_case_name在TcIdentity表里面是唯一的可以用get
         ide = TcIdentityDBHelper().get_by(dict(test_case_name=test_case_name))
         return Test_Case.objects.filter(tc_identity=ide)

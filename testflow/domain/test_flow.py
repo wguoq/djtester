@@ -224,10 +224,9 @@ class TestFlow:
     @staticmethod
     def _run_test_case(step_pk, step_data):
         print(f'====_run_test_case==== {step_pk}')
-        from djtester.testcase_service import TestCaseServicer
-        from djtester.tester_service import TesterService
-        test_case = TestCaseServicer.query.get_by_pk(step_pk)
-        a = TesterService.run_testcase(test_case=test_case, test_config=step_data)
+        from djtester.all_app_service import Tester
+        a = Tester.service()
+        a.TesterServicer(test_case=step_pk, test_config=step_data).run_testcase()
         return a
 
     def _run_test_flow(self, step_pk):

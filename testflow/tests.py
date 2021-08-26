@@ -217,7 +217,7 @@ test_flow3 = {
 
 class TestTF(TestCase):
     def test_tflow(self):
-        from djtester.testcase_service import TestCaseServicer
+        from djtester.all_app_service import TestCaseServicer
         TestCaseServicer.save([case1, case2])
         f1 = TestFlowSDBHelper(Test_Flow(**test_flow1)).save_this_one()
         print(f'f1===\n {model_to_dict(f1)}')
