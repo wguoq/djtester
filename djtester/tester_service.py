@@ -1,1 +1,0 @@
-from tester.service import *

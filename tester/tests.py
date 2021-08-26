@@ -1,8 +1,7 @@
-import json
-
 from django.test import TestCase
 
-from .service import *
+from tester.adapter import TestCaseServiceAdapterLocal
+from tester.service import TesterServicer
 
 case1 = {
     "test_case_type": "api",
@@ -178,71 +177,21 @@ case3 = {
     ],
 }
 
-case4 = {
-    "test_case_type": "api",
-    "tc_identity": {
-        "test_case_id": "tc16565457049",
-        "test_case_name": "test_case_name004"
-    },
-    "tc_action": {
-        "action_type": "ApiAction",
-        "action_name": "get test_json",
-        "action": {
-            "method": "get",
-            "protocol": "http",
-            "host": "127.0.0.1",
-            "port": "8000",
-            "path": "/testcase/test_json/"
-        }
-    },
-    "tc_data": {
-        "data_type": "ApiParams",
-        "data_name": "defApiParams",
-        "data": {
-            "timeout": 120,
-            "allow_redirects": True,
-            "verify": False,
-            "headers": {
-
-            },
-            "cookies": {
-
-            },
-            "data": {
-
-            },
-            "json_data": {
-
-            },
-            "files": {
-
-            }
-        }
-    },
-    "tc_check_list": [
-        {
-            "check_point_type": "ApiStrCheck",
-            "check_point_name": "json check 测试一号",
-            "check_point": {
-                "response_property": "json",
-                "property_key": "data__rows__[2]__customerName",
-                "operator": "equals",
-                "expect": "测试一号"
-            }
-        },
-
-    ],
-}
+case4 = 1
 
 class TestTT(TestCase):
     def test_service(self):
-        config = TesterService.init_test_config()
+        config = TesterServicer.new_test_config()
         print(f'init_test_config ===============\n{config}')
-        aaa = TesterService.run_testcase(case1)
+        aaa = TesterServicer(case1).run_testcase()
         print(f'test_result ==========\n{aaa.get_test_result}')
-        bbb = TesterService.run_testcase(case2)
+        bbb = TesterServicer(case2).run_testcase()
         print(f'test_result ==========\n{bbb.get_test_result}')
-        ccc = TesterService.run_testcase(case3)
+        ccc = TesterServicer(case3).run_testcase()
         print(f'test_result ==========\n{ccc.get_test_result}')
-        ddd = TesterService.run_testcase(case4)
+
+        TestCaseServiceAdapterLocal.testcase_service().TestCaseServicer(case1).add()
+
+
+        ddd = TesterServicer(case4).run_testcase()
         print(f'test_result ==========\n{ddd.get_test_result}')
