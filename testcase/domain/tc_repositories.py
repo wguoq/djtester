@@ -1,6 +1,24 @@
+import importlib
+
 from testcase.models import Test_Case
 from testcase.repositories import *
 MODELS_PATH = 'testcase.models'
+
+helper = {'tc_identity': 'TcIdentityDBHelper',
+          'tc_action': 'TcActionDBHelper',
+          'tc_data': 'TcDataDBHelper'}
+
+
+def _save_foreignkey(foreignkey_name, data):
+    models = importlib.import_module('testcase.repositories')
+    model_name = helper.get(foreignkey_name)
+    model = getattr(models, model_name)
+    if data is None:
+        return None
+    elif isinstance(data, dict):
+        return model(data).save_this()
+    else:
+        return model().get_by(dict(pk=data))
 
 
 class TcTestCaseDBHelper(BaseDBHelper):
@@ -17,32 +35,35 @@ class TcTestCaseDBHelper(BaseDBHelper):
         else:
             self.data = {}
 
-    def _save_foreignkey(self):
+    def _set_foreignkey(self):
         # 需要处理数据是dict或者id的情况
-        if self.tc_identity is None:
-            self.data['tc_identity'] = None
-        elif isinstance(self.tc_identity, dict):
-            self.data['tc_identity'] = TcIdentityDBHelper(self.tc_identity).save_this()
-        else:
-            self.data['tc_identity'] = TcIdentityDBHelper().get_by(dict(pk=self.tc_identity))
-
-        if self.tc_action is None:
-            self.data['tc_action'] = None
-        elif isinstance(self.tc_action, dict):
-            self.data['tc_action'] = TcActionDBHelper(self.tc_action).save_this()
-        else:
-            self.data['tc_action'] = TcActionDBHelper().get_by(dict(pk=self.tc_action))
-
-        if self.tc_data is None:
-            self.data['tc_data'] = None
-        elif isinstance(self.tc_data, dict):
-            self.data['tc_data'] = TcDataDBHelper(self.tc_data).save_this()
-        else:
-            self.data['tc_data'] = TcDataDBHelper().get_by(dict(pk=self.tc_data))
+        # if self.tc_identity is None:
+        #     self.data['tc_identity'] = None
+        # elif isinstance(self.tc_identity, dict):
+        #     self.data['tc_identity'] = TcIdentityDBHelper(self.tc_identity).save_this()
+        # else:
+        #     self.data['tc_identity'] = TcIdentityDBHelper().get_by(dict(pk=self.tc_identity))
+        #
+        # if self.tc_action is None:
+        #     self.data['tc_action'] = None
+        # elif isinstance(self.tc_action, dict):
+        #     self.data['tc_action'] = TcActionDBHelper(self.tc_action).save_this()
+        # else:
+        #     self.data['tc_action'] = TcActionDBHelper().get_by(dict(pk=self.tc_action))
+        #
+        # if self.tc_data is None:
+        #     self.data['tc_data'] = None
+        # elif isinstance(self.tc_data, dict):
+        #     self.data['tc_data'] = TcDataDBHelper(self.tc_data).save_this()
+        # else:
+        #     self.data['tc_data'] = TcDataDBHelper().get_by(dict(pk=self.tc_data))
+        self.data['tc_identity'] = _save_foreignkey('tc_identity', self.tc_identity)
+        self.data['tc_action'] = _save_foreignkey('tc_action', self.tc_action)
+        self.data['tc_data'] = _save_foreignkey('tc_data', self.tc_data)
 
         return self.data
 
-    def _save_m2m(self):
+    def _set_m2m(self):
         new_check_list = []
         if self.tc_check_list is None:
             return None
@@ -63,9 +84,9 @@ class TcTestCaseDBHelper(BaseDBHelper):
     @transaction.atomic
     def save_this(self):
         # 存1:1外键
-        self._save_foreignkey()
+        self._set_foreignkey()
         # 存m2m
-        m2m = self._save_m2m()
+        m2m = self._set_m2m()
         # 通过pk判断是否新增
         pk = self.data.get('id')
         if pk:
