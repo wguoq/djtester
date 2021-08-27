@@ -15,13 +15,18 @@ def _save_foreignkey(foreignkey_name, data):
     model = getattr(models, model_name)
     if data is None:
         return None
+    # 如果传入的是dict就保存
     elif isinstance(data, dict):
         return model(data).save_this()
+    # 如果不是dict就假设是pk去查询
     else:
         return model().get_by(dict(pk=data))
 
 
 class TcTestCaseDBHelper(BaseDBHelper):
+    """
+    data可以是有字段数据的dict也可也是已存在数据的id
+    """
     def __init__(self, data: dict = None):
         super().__init__(MODELS_PATH, Test_Case.__name__, None)
         if data:
