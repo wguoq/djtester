@@ -287,3 +287,13 @@ class Test1(TestCase):
         a = TestCaseServicer(case1_3).edit()
         print(a)
         print(TestCaseServicer().get_by_pk(1))
+        #########################################################
+        print(f'用test_case_id查询')
+        a = TestCaseServicer().filter_by_case_id('tc1628342459')
+        print(a)
+
+        print(f'用test_case_name查询')
+        a = TestCaseServicer().filter_by_case_name('tc_identity1_修改')
+        print(a)
+
+        print(Test_Case().__dict__)
