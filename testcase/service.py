@@ -89,9 +89,7 @@ class TestCaseIdentityServicer(BaseTcServicer):
 
     @staticmethod
     def new():
-        """
-        默认随机test_case_id
-        """
+        # 默认test_case_id是时间戳随机数
         test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
         return model_to_dict(Tc_Identity(test_case_id=test_case_id))
 
@@ -175,20 +173,19 @@ class TestCaseServicer(BaseTcServicer):
         return _query_set_to_case_dict(a)
 
     @staticmethod
-    def filter_by_case_id(test_case_id_list: list) -> list:
-        case_list = []
-        for test_case_id in test_case_id_list:
-            a = TcTestCaseDBHelper.filter_by_case_id(test_case_id)
-            case_list.append(_query_set_to_case_dict(a))
-        return case_list
+    def filter_by_case_id(test_case_id: str):
+        a = TcTestCaseDBHelper.filter_by_case_id(test_case_id)
+        return _query_set_to_case_dict(a)
 
     @staticmethod
-    def filter_by_case_name(test_case_name_list: list):
-        case_list = []
-        for test_case_name in test_case_name_list:
-            a = TcTestCaseDBHelper.filter_by_case_name(test_case_name)
-            case_list.append(_query_set_to_case_dict(a))
-        return case_list
+    def filter_by_case_name(test_case_name: str):
+        a = TcTestCaseDBHelper.filter_by_case_name(test_case_name)
+        return _query_set_to_case_dict(a)
+        # case_list = []
+        # for test_case_name in test_case_name_list:
+        #     a = TcTestCaseDBHelper.filter_by_case_name(test_case_name)
+        #     case_list.append(_query_set_to_case_dict(a))
+        # return case_list
 
 
 def _get_check_point_pk(tc_check_list: list):

@@ -121,6 +121,7 @@ def sele_frame(d: webdriver):
     d.get('https://www.runoob.com/try/try.php?filename=tryhtml5_draganddrop')
     # ID或者name
     d.switch_to.frame('iframeResult')
+    d.switch_to
     drag = d.find_element(By.ID, "drag1")
     drop = d.find_element(By.ID, "div1")
     actions = ActionChains(d)

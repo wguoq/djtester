@@ -21,11 +21,9 @@ class ApiTester:
             self._test_result = self._config()._send_request()._verify()
         return self
 
-    @property
     def get_response(self):
         return self._response
 
-    @property
     def get_test_result(self):
         return self._test_result
 
