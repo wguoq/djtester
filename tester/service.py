@@ -18,7 +18,7 @@ class TesterServicer:
 
     def run_testcase(self):
         if self.test_case is None:
-            return None
+            raise Exception(f'test_case is None')
         elif isinstance(self.test_case, dict):
             return self._run_testcase_by_dict(self.test_case)
         else:
