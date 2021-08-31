@@ -7,7 +7,7 @@ from django.db import models
 from django.forms import model_to_dict
 
 from testcase.domain.models.tc_api_model import *
-from testcase.domain.tc_model import TcTestCase
+# from testcase.domain.tc_model import TcTestCase
 from testcase.domain.tc_repositories import *
 from testcase.domain.tc_enums import *
 from testcase.repositories import *
