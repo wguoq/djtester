@@ -6,6 +6,7 @@ from django.core import serializers
 from django.db import models
 from django.forms import model_to_dict
 
+from testcase.domain.models.tc_api_model import *
 from testcase.domain.tc_model import TcTestCase
 from testcase.domain.tc_repositories import *
 from testcase.domain.tc_enums import *
@@ -112,7 +113,7 @@ class TestCaseActionServicer(BaseTcServicer):
 
 
 class TestCaseDataServicer(BaseTcServicer):
-    def __init__(self,  data: dict = None):
+    def __init__(self, data: dict = None):
         self.data = data
         self.DBHelper = TcDataDBHelper(self.data)
         super().__init__(self.DBHelper)
@@ -141,7 +142,30 @@ class TestCaseServicer(BaseTcServicer):
 
     @staticmethod
     def new_api_testcase():
-        return TcTestCase().new_api_testcase()
+        test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
+        test_case_type = CaseType.API.value
+        tc_identity = model_to_dict(Tc_Identity(test_case_id=test_case_id))
+        tc_action = model_to_dict(Tc_Action(action_type=ApiAction.__name__,
+                                            action_name="",
+                                            action=ApiAction().to_dict))
+        tc_data = model_to_dict(Tc_Data(data_type=ApiParams.__name__,
+                                        data_name="",
+                                        data=ApiParams().to_dict))
+        tc_check_list = [model_to_dict(Tc_Check_Point(check_point_type=ApiStrCheck.__name__,
+                                                      check_point_name="",
+                                                      check_point=ApiStrCheck().to_dict)),
+                         model_to_dict(Tc_Check_Point(check_point_type=ApiJsonSchemaCheck.__name__,
+                                                      check_point_name="",
+                                                      check_point=ApiJsonSchemaCheck().to_dict))]
+
+        a = dict(test_case_id=test_case_id,
+                 test_case_type=test_case_type,
+                 tc_identity=tc_identity,
+                 tc_action=tc_action,
+                 tc_data=tc_data,
+                 tc_check_list=tc_check_list)
+        # setattr(Test_Case(), **a)
+        return a
 
     def add(self):
         case_saved = self.DBHelper.save_this()
@@ -181,11 +205,6 @@ class TestCaseServicer(BaseTcServicer):
     def filter_by_case_name(test_case_name: str):
         a = TcTestCaseDBHelper.filter_by_case_name(test_case_name)
         return _query_set_to_case_dict(a)
-        # case_list = []
-        # for test_case_name in test_case_name_list:
-        #     a = TcTestCaseDBHelper.filter_by_case_name(test_case_name)
-        #     case_list.append(_query_set_to_case_dict(a))
-        # return case_list
 
 
 def _get_check_point_pk(tc_check_list: list):

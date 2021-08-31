@@ -296,4 +296,5 @@ class Test1(TestCase):
         a = TestCaseServicer().filter_by_case_name('tc_identity1_修改')
         print(a)
 
-        print(Test_Case().__dict__)
+
+

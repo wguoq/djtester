@@ -1,20 +1,6 @@
 from django.db import models
 
 
-# class ModelTools(object):
-#     def all_fields_dict(self):
-#         """
-#         把model的所有Fields和对应的值组成一个dict
-#         """
-#         all_fields = []
-#         for a in self._meta.fields:
-#             all_fields.append(a.name)
-#         fields_dict = {}
-#         for field in all_fields:
-#             fields_dict.update({field: self.__dict__.get(field)})
-#         return fields_dict
-
-
 class Tc_Identity(models.Model):
     id = models.AutoField(primary_key=True)
 
