@@ -8,10 +8,6 @@ class ApiAction(BaseModel):
     port: int = ""
     path: str = ""
 
-    @property
-    def to_dict(self):
-        return self.__dict__
-
 
 class ApiParams(BaseModel):
     timeout: float = 120
@@ -23,25 +19,16 @@ class ApiParams(BaseModel):
     json_data: dict = {}
     files: dict = {}
 
-    @property
-    def to_dict(self):
-        return self.__dict__
+
+class ApiCheckPoint(BaseModel):
+    response_property: str = None
+    rule: str = None
+    operator: str = None
+    expect: str = None
 
 
-class ApiStrCheck(BaseModel):
-    response_property: str = ""
-    property_key: str = ""
-    operator: str = ""
-    expect: str = ""
+class ApiJsonSchemaCheckPoint(BaseModel):
+    response_property: str = 'json'
+    rule: str = None
+    json_schema: str = None
 
-    @property
-    def to_dict(self):
-        return self.__dict__
-
-
-class ApiJsonSchemaCheck(BaseModel):
-    json_schema: str = ""
-
-    @property
-    def to_dict(self):
-        return self.__dict__
