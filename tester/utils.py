@@ -1,23 +1,6 @@
 import operator
 from operator import itemgetter
 import jsonschema
-import requests
-from tester.domain.tt_models import ApiTestCase
-
-
-
-# def str_check(check_target, check_operator, check_expect):
-#     print(f'check_target=={check_target}\n check_expect===={check_expect}')
-#     if check_operator == CheckOperator.EQ.value:
-#         return operator.eq(str(check_target), str(check_expect))
-#     elif check_operator == CheckOperator.NE.value:
-#         return operator.ne(str(check_target), str(check_expect))
-#     else:
-#         raise Exception(f'输入的是 {check_operator} 现在只支持 equals 和 not equals ')
-
-
-
-
 
 
 def json_schema_check(data, json_schema):
