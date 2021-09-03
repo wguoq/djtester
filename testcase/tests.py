@@ -48,93 +48,34 @@ case1 = {
     },
     "tc_check_list": [
         {
-            "check_point_type": "ApiStrCheck",
+            "check_point_type": "ApiCheckPoint",
             "check_point_name": "status_code == 200",
             "check_point": {
                 "response_property": "status_code",
-                "property_key": "",
+                "rule": "",
                 "operator": "equals",
                 "expect": "200"
             }
         },
         {
-            "check_point_type": "ApiJsonSchemaCheck",
+            "check_point_type": "ApiJsonSchemaCheckPoint",
             "check_point_name": "json_schema",
             "check_point": {
+                "response_property": "status_code",
+                "rule": "",
                 "json_schema": ""
             }
         }
     ],
 }
 
-case2 = {
-    "test_case_type": "api",
-    "tc_identity": {
-        "test_case_id": "tc1628342459",
-        "test_case_name": "test_case_name002"
-    },
-    "tc_action": {
-        "action_type": "ApiAction",
-        "action_name": "get index",
-        "action": {
-            "method": "get",
-            "protocol": "http",
-            "host": "127.0.0.1",
-            "port": "8000",
-            "path": ""
-        }
-    },
-    "tc_data": {
-        "data_type": "ApiParams",
-        "data_name": "defApiParams",
-        "data": {
-            "timeout": 120,
-            "allow_redirects": True,
-            "verify": False,
-            "headers": {
-
-            },
-            "cookies": {
-
-            },
-            "data": {
-
-            },
-            "json_data": {
-
-            },
-            "files": {
-
-            }
-        }
-    },
-    "tc_check_list": [
-        {
-            "check_point_type": "ApiStrCheck",
-            "check_point_name": "status_code == 200",
-            "check_point": {
-                "response_property": "status_code",
-                "property_key": "",
-                "operator": "equals",
-                "expect": "200"
-            }
-        },
-        {
-            "check_point_type": "ApiJsonSchemaCheck",
-            "check_point_name": "json_schema",
-            "check_point": {
-                "json_schema": ""
-            }
-        }
-    ],
-}
 
 
 class Test1(TestCase):
 
     def test(self):
         print(f'获取一个Enums:TcEnums.case_type()=====')
-        print(TestCaseEnums.case_type())
+        print(TestCaseEnums.test_case_type())
 
         print(f'初始化一个api_case=====')
         print(TestCaseServicer().new_api_testcase())
@@ -272,10 +213,8 @@ class Test1(TestCase):
                                         'cookies': {},
                                         'data': {}, 'json_data': {}, 'files': {}}}, 'version': 1,
                    'tc_check_list': [
-                       {'id': 3, 'check_point_type': 'ApiJsonSchemaCheck', 'check_point_name': 'json_schema-修改',
-                        'check_point': {'json_schema': ''}},
                        {'id': 2, 'check_point_type': 'ApiStrCheck', 'check_point_name': 'status_code == 200 修改',
-                        'check_point': {'response_property': 'status_code', 'property_key': '', 'operator': 'equals',
+                        'check_point': {'response_property': 'status_code', 'rule': '', 'operator': 'equals',
                                         'expect': '200'}}]}
         a = TestCaseServicer(case1_2).edit()
         print(a)

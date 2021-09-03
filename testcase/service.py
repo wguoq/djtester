@@ -6,10 +6,10 @@ from django.core import serializers
 from django.db import models
 from django.forms import model_to_dict
 
+from djtester.enums import TestCaseType
 from testcase.domain.models.tc_api_model import *
 # from testcase.domain.tc_model import TcTestCase
 from testcase.domain.tc_repositories import *
-from testcase.domain.tc_enums import *
 from testcase.repositories import *
 
 
@@ -20,35 +20,8 @@ class TestCaseEnums:
     """
 
     @staticmethod
-    def case_type() -> list[str]:
-        return list(e.value for e in CaseType)
-
-    @staticmethod
-    def check_operator() -> list[str]:
-        return list(e.value for e in CheckOperator)
-
-    # http
-    @staticmethod
-    def http_method() -> list[str]:
-        return list(e.value for e in HttpMethod)
-
-    @staticmethod
-    def http_protocol() -> list[str]:
-        return list(e.value for e in HttpProtocol)
-
-    @staticmethod
-    def response_property() -> list[str]:
-        return list(e.value for e in ResponseProperty)
-
-    # ui
-    @staticmethod
-    def ui_method() -> list[str]:
-        return list(e.vevalue for e in UiMethod)
-
-    # mobil
-    @staticmethod
-    def mobil_method() -> list[str]:
-        return list(e.value for e in MobileMethod)
+    def test_case_type() -> list[str]:
+        return list(e.value for e in TestCaseType)
 
 
 class BaseTcServicer:
@@ -143,20 +116,20 @@ class TestCaseServicer(BaseTcServicer):
     @staticmethod
     def new_api_testcase():
         test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
-        test_case_type = CaseType.API.value
+        test_case_type = TestCaseType.API.value
         tc_identity = model_to_dict(Tc_Identity(test_case_id=test_case_id))
         tc_action = model_to_dict(Tc_Action(action_type=ApiAction.__name__,
                                             action_name="",
-                                            action=ApiAction().to_dict))
+                                            action=ApiAction().__dict__))
         tc_data = model_to_dict(Tc_Data(data_type=ApiParams.__name__,
                                         data_name="",
-                                        data=ApiParams().to_dict))
-        tc_check_list = [model_to_dict(Tc_Check_Point(check_point_type=ApiStrCheck.__name__,
+                                        data=ApiParams().__dict__))
+        tc_check_list = [model_to_dict(Tc_Check_Point(check_point_type=ApiCheckPoint.__name__,
                                                       check_point_name="",
-                                                      check_point=ApiStrCheck().to_dict)),
-                         model_to_dict(Tc_Check_Point(check_point_type=ApiJsonSchemaCheck.__name__,
+                                                      check_point=ApiCheckPoint().__dict__)),
+                         model_to_dict(Tc_Check_Point(check_point_type=ApiJsonSchemaCheckPoint.__name__,
                                                       check_point_name="",
-                                                      check_point=ApiJsonSchemaCheck().to_dict))]
+                                                      check_point=ApiJsonSchemaCheckPoint().__dict__))]
 
         a = dict(test_case_id=test_case_id,
                  test_case_type=test_case_type,
