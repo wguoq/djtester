@@ -17,6 +17,9 @@ class ApiTester(BaseTester):
             self._config()
 
     def do_action(self):
+        """
+        发送api_request
+        """
         if self.test_case is None:
             raise Exception(f' api_test_case is None ')
         else:
@@ -24,10 +27,16 @@ class ApiTester(BaseTester):
         return self
 
     def verify_check_point(self):
+        """
+        逐一验证测试点
+        """
         self.check_point_result_list = self._verify_check_point_list()
         return self
 
     def set_test_case_result(self):
+        """
+        决定测试结果,所有check point都要pass才行
+        """
         # 如果check_point_result_list是None就默认pass
         if self.check_point_result_list is None:
             self.test_case_result.case_result = TestResult.PASS.value
@@ -68,6 +77,7 @@ class ApiTester(BaseTester):
         else:
             return None
 
+    # 验证check_point_list
     def _verify_check_point_list(self):
         check_list = self.test_case.check_list
         result_list = []
@@ -92,6 +102,7 @@ class ApiTester(BaseTester):
             result_list.append(result)
         return result_list
 
+    # 验证check_point
     def _verify_check_point(self, check_point):
         print(check_point)
         cp = ApiCheckPoint(**check_point)
@@ -109,11 +120,12 @@ class ApiTester(BaseTester):
         else:
             return False
 
-
+    # 验证check_point_json_schema
     def _verify_json_schema_check_point(self, check_point):
         # todo
         return True
 
+    # 根据配置的rule来获取josn里面的check_target
     def _get_check_target(self, response_property, rule):
         # 从response里面取出需要验证的属性
         if response_property is None or len(response_property) == 0:
@@ -125,12 +137,13 @@ class ApiTester(BaseTester):
         if rule is None or len(rule) == 0:
             return check_target
         else:
-            # 如果有__就判断是需要使用规则匹配json的值
+            # 如果rule里面有__就判断是需要使用规则获取
             if '__' in rule:
                 return get_json_value(check_target, rule)
             else:
                 return check_target.get(rule)
 
+    # 获取response里面的返回值
     def _get_response_property(self, response_property: str):
         if response_property == ResponseProperty.STATUS_CODE.value:
             return self.api_response.status_code
