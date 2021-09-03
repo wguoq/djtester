@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from djtester.enums import TestResult
+
 
 class ApiCaseConfig(BaseModel):
     config_name: str = None
@@ -8,22 +10,11 @@ class ApiCaseConfig(BaseModel):
     test_headers: dict = None
     test_cookies: dict = None
 
-    def to_dict(self):
-        return self.__dict__
-
-
-class ApiCaseResult(BaseModel):
-    test_case_id: str = None
-    test_case_name: str = None
-    test_result: str = None
-    test_message: list
-
-    def to_dict(self):
-        return self.__dict__
-
 
 class ApiTestCase(object):
     def __init__(self, api_test_case: dict):
+        self.id = api_test_case.get('id')
+        self.test_case_type = api_test_case.get('test_case_type')
         # identity
         self.tc_identity = api_test_case.get('tc_identity')
         self.test_case_id = self.tc_identity.get('test_case_id')
@@ -67,13 +58,36 @@ class ApiTestCase(object):
             pass
         return url
 
-    @property
-    def payload(self) -> dict:
-        return dict(timeout=self.timeout,
-                    allow_redirects=self.allow_redirects,
-                    verify=self.verify,
-                    headers=self.headers,
-                    cookies=self.cookies,
-                    data=self.data,
-                    json_data=self.json_data,
-                    files=self.files)
+
+class ApiCheckPoint(BaseModel):
+    response_property: str = None
+    rule: str = None
+    operator: str = None
+    expect: str = None
+
+
+class ApiJsonSchemaCheckPoint(BaseModel):
+    response_property: str = 'json'
+    rule: str = None
+    json_schema: str = None
+
+
+class TestCheckPointResult(BaseModel):
+    check_point_name: str = None
+    check_point_result: str = None
+
+
+class TestCaseResult(BaseModel):
+    test_case_id: str = None
+    test_case_name: str = None
+    case_result: str = None
+    case_message: list[TestCheckPointResult] = None
+
+    def to_dict(self):
+        a = self.__dict__
+        case_message = []
+        for msg in self.case_message:
+            case_message.append(msg.__dict__)
+        a['case_message'] = case_message
+        return a
+

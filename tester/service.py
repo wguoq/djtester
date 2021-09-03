@@ -1,5 +1,5 @@
 from tester.domain.api_tester import ApiTester
-from tester.domain.tt_models import ApiCaseConfig
+from tester.domain.tt_models import ApiCaseConfig, ApiTestCase
 from tester.adapter import *
 
 
@@ -14,9 +14,9 @@ class TesterServicer:
 
     @staticmethod
     def new_test_config():
-        return ApiCaseConfig().to_dict()
+        return ApiCaseConfig().__dict__
 
-    def run_testcase(self):
+    def run_testcase(self) -> ApiTester:
         if self.test_case is None:
             raise Exception(f'test_case is None')
         elif isinstance(self.test_case, dict):
@@ -26,12 +26,13 @@ class TesterServicer:
             return self._run_testcase_by_dict(case)
 
     def _run_testcase_by_dict(self, test_case):
-        if test_case.get('test_case_type') == "api":
-            a = ApiTester(api_test_case=test_case, api_test_config=self.test_config).run_test_case()
+        case = ApiTestCase(test_case)
+        if case.test_case_type == "api":
+            a = ApiTester(api_test_case=case, api_test_config=self.test_config).run()
             return a
         else:
-            print(f'test_case_type != api')
-            return None
+            raise Exception(f'现在只能跑api case')
+
 
 
 

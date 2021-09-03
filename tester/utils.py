@@ -1,30 +1,42 @@
 import operator
 from operator import itemgetter
 import jsonschema
-from tester.domain.tt_enums import CheckOperator
+import requests
+from tester.domain.tt_models import ApiTestCase
 
 
-def str_check(check_target, check_operator, check_expect):
-    print(f'check_target=={check_target}\n check_expect===={check_expect}')
-    if check_operator == CheckOperator.EQ.value:
-        return operator.eq(str(check_target), str(check_expect))
-    elif check_operator == CheckOperator.NE.value:
-        return operator.ne(str(check_target), str(check_expect))
-    else:
-        raise Exception(f'输入的是 {check_operator} 现在只支持 equals 和 not equals ')
+
+# def str_check(check_target, check_operator, check_expect):
+#     print(f'check_target=={check_target}\n check_expect===={check_expect}')
+#     if check_operator == CheckOperator.EQ.value:
+#         return operator.eq(str(check_target), str(check_expect))
+#     elif check_operator == CheckOperator.NE.value:
+#         return operator.ne(str(check_target), str(check_expect))
+#     else:
+#         raise Exception(f'输入的是 {check_operator} 现在只支持 equals 和 not equals ')
 
 
-def json_schema_check(target, json_schema):
-    if target is None or len(target) == 0:
-        raise Exception('target is None')
+
+
+
+
+def json_schema_check(data, json_schema):
+    if data is None or len(data) == 0:
+        raise Exception('data is None')
     elif json_schema is None or len(json_schema) == 0:
         raise Exception('json_schema is None')
     else:
-        return jsonschema.validate(target, json_schema)
+        return jsonschema.validate(data, json_schema)
+
 
 # j1 = 'data__rows__[2]'
 # j2 = 'data__rows__{customerName=非洲客户abc}__businessName'
-def jsom_value_getter(data, rule: str):
+def get_json_value_by_rule(data, rule: str):
+    """
+    1.取字典key里面对应的数组的值:data__rows__[3]
+    2.取字典key里面对应的数组里匹配值的那一条:data__rows__{customerName=abc}
+    3.取字典key对应的值
+    """
     # 是[1]模式,data需要是list
     if rule.startswith('[') and rule.endswith(']'):
         # 去掉头尾的[]
@@ -52,12 +64,10 @@ def jsom_value_getter(data, rule: str):
 def get_json_value(data, rules):
     _data = data
     for rule in rules.split('__'):
-        a = jsom_value_getter(_data, rule)
+        a = get_json_value_by_rule(_data, rule)
         if a is None:
             return None
         else:
             _data = a
             continue
     return _data
-
-

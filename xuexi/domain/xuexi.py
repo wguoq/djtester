@@ -1,7 +1,12 @@
 import importlib
+import operator
 import sys
 
 # 显示内存地址
+from operator import itemgetter
+
+import requests
+
 a = 1
 print(id(a))
 
@@ -133,3 +138,11 @@ def main():
     mtd_sub(2, 1)
 
 
+getter = itemgetter("status_code")
+
+a = requests.get('https://www.baidu.com/')
+
+print(a.status_code)
+a = '500'
+b = '200'
+print(operator.gt(a, b))
