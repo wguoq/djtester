@@ -1,7 +1,13 @@
 from django.db import models
 
+from djtester.decorators import show_class_name
+
 
 class Tc_Identity(models.Model):
+    @show_class_name('宾语')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     id = models.AutoField(primary_key=True)
 
     test_case_id = models.CharField(max_length=32,  # 32字符=64字节
@@ -22,6 +28,10 @@ class Tc_Identity(models.Model):
 
 
 class Tc_Action(models.Model):
+    @show_class_name('宾语')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     id = models.AutoField(primary_key=True)
 
     action_type = models.CharField(max_length=32,
@@ -46,6 +56,10 @@ class Tc_Action(models.Model):
 
 
 class Tc_Data(models.Model):
+    @show_class_name('宾语')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     id = models.AutoField(primary_key=True)
 
     data_type = models.CharField(max_length=32,
@@ -70,6 +84,10 @@ class Tc_Data(models.Model):
 
 
 class Tc_Check_Point(models.Model):
+    @show_class_name('宾语')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     id = models.AutoField(primary_key=True)
 
     check_point_type = models.CharField(max_length=32,
@@ -94,6 +112,10 @@ class Tc_Check_Point(models.Model):
 
 
 class Test_Case(models.Model):
+    @show_class_name('宾语')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     id = models.AutoField(primary_key=True)
 
     test_case_type = models.CharField(max_length=32,

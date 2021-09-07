@@ -25,6 +25,7 @@ class TestCaseEnums:
 
 
 class BaseTcServicer:
+    @show_class_name('主语')
     def __init__(self, db_helper: models):
         self.DBHelper = db_helper
 
@@ -56,6 +57,7 @@ class BaseTcServicer:
 
 
 class TestCaseIdentityServicer(BaseTcServicer):
+    @show_class_name('主语')
     def __init__(self, data: dict = None):
         self.data = data
         self.DBHelper = TcIdentityDBHelper(self.data)
@@ -75,6 +77,7 @@ class TestCaseIdentityServicer(BaseTcServicer):
 
 
 class TestCaseActionServicer(BaseTcServicer):
+    @show_class_name('主语')
     def __init__(self, data: dict = None):
         self.data = data
         self.DBHelper = TcActionDBHelper(self.data)
@@ -86,6 +89,7 @@ class TestCaseActionServicer(BaseTcServicer):
 
 
 class TestCaseDataServicer(BaseTcServicer):
+    @show_class_name('主语')
     def __init__(self, data: dict = None):
         self.data = data
         self.DBHelper = TcDataDBHelper(self.data)
@@ -97,6 +101,7 @@ class TestCaseDataServicer(BaseTcServicer):
 
 
 class TestCaseCheckPointServicer(BaseTcServicer):
+    @show_class_name('主语')
     def __init__(self, data: dict = None):
         self.data = data
         self.DBHelper = TcCheckPointDBHelper(self.data)
@@ -108,6 +113,7 @@ class TestCaseCheckPointServicer(BaseTcServicer):
 
 
 class TestCaseServicer(BaseTcServicer):
+    @show_class_name('主语')
     def __init__(self, data: dict = None):
         self.data = data
         self.DBHelper = TcTestCaseDBHelper(self.data)

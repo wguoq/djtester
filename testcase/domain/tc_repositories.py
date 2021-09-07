@@ -3,6 +3,7 @@ import importlib
 from django.db import transaction
 
 from djtester.base_repositories import BaseDBHelper
+from djtester.decorators import show_class_name
 from testcase.models import Test_Case
 from testcase.repositories import TcIdentityDBHelper
 
@@ -32,6 +33,7 @@ class TcTestCaseDBHelper(BaseDBHelper):
     """
     data里面的外键字段可以是dict也可以是id
     """
+    @show_class_name('主语')
     def __init__(self, data: dict = None):
         super().__init__(MODELS_PATH, Test_Case.__name__, None)
         if data:
