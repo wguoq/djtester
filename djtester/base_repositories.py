@@ -8,20 +8,9 @@ class BaseDBHelper:
         # 由于model.objects必须用本来的model来调用,所以import对应的model
         models = importlib.import_module(model_path)
         self.model = getattr(models, model_name)
-        self.entity = self.model()
-        if self.data:
-            self.entity = self.model(**self.data)
-
-    @transaction.atomic
-    def save_this(self):
-        pk = self.entity.pk
-        if pk:
-            self.model.objects.filter(pk=pk).update(**self.data)
-            return self.model.objects.get(pk=pk)
-        else:
-            # 没有pk判断为新增
-            self.entity.save()
-            return self.entity
+        # self.entity = self.model()
+        # if self.data:
+        #     self.entity = self.model(**self.data)
 
     def get_all(self, offset: int, limit: int):
         return self.model.objects.all()[offset: (offset + limit)]
@@ -31,3 +20,18 @@ class BaseDBHelper:
 
     def filter_by(self, kwargs):
         return self.model.objects.filter(**kwargs)
+
+    @transaction.atomic
+    def save_this(self):
+        entity = self.model(**self.data)
+        pk = entity.pk
+        if pk:
+            # todo 写入修改时间
+            self.model.objects.filter(pk=pk).update(**self.data)
+            return self.model.objects.get(pk=pk)
+        else:
+            # todo 写入创建时间
+            entity.save()
+            return entity
+
+
