@@ -3,7 +3,7 @@ from django.db import models
 from djtester.decorators import show_class_name
 
 
-class Tc_Identity(models.Model):
+class Identity(models.Model):
     @show_class_name('宾语')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -27,7 +27,7 @@ class Tc_Identity(models.Model):
         return self.test_case_name
 
 
-class Tc_Action(models.Model):
+class Action(models.Model):
     @show_class_name('宾语')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,7 +55,7 @@ class Tc_Action(models.Model):
         return self.action_name
 
 
-class Tc_Data(models.Model):
+class TestData(models.Model):
     @show_class_name('宾语')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,7 +83,7 @@ class Tc_Data(models.Model):
         return self.data_name
 
 
-class Tc_Check_Point(models.Model):
+class Check_Point(models.Model):
     @show_class_name('宾语')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -124,25 +124,25 @@ class Test_Case(models.Model):
                                       blank=True,
                                       verbose_name="测试用例类型")
 
-    tc_identity = models.ForeignKey(to=Tc_Identity,
+    tc_identity = models.ForeignKey(to=Identity,
                                     null=True,
                                     blank=True,
                                     on_delete=models.CASCADE,
                                     verbose_name="测试用例身份信息")
 
-    tc_action = models.ForeignKey(to=Tc_Action,
+    tc_action = models.ForeignKey(to=Action,
                                   null=True,
                                   on_delete=models.SET_NULL,
                                   blank=True,
                                   verbose_name="测试用例行为")
 
-    tc_data = models.ForeignKey(to=Tc_Data,
+    tc_data = models.ForeignKey(to=TestData,
                                 null=True,
                                 on_delete=models.SET_NULL,
                                 blank=True,
                                 verbose_name="测试用例数据")
 
-    tc_check_list = models.ManyToManyField(to=Tc_Check_Point,
+    tc_check_list = models.ManyToManyField(to=Check_Point,
                                            blank=True,
                                            verbose_name="测试用例验证")
 

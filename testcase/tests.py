@@ -77,26 +77,27 @@ class Test1(TestCase):
         print(f'获取一个Enums:TcEnums.case_type()=====')
         print(TestCaseEnums.test_case_type())
 
-        print(f'初始化一个api_case=====')
+        print(f'api_case new =====')
         print(TestCaseServicer().new_api_testcase())
         #############################################################
-        print(f'Tc_Identity 初始化 =====')
+        print(f'Tc_Identity new =====')
         print(TestCaseIdentityServicer.new())
 
         print(f'Tc_Identity 新增 =====')
         tc_identity1 = {"test_case_id": "tc1628342459",
                         "test_case_name": "tc_identity1"}
-        a = TestCaseIdentityServicer(tc_identity1).add()
+        a = TestCaseIdentityServicer().add(tc_identity1)
+        print(a)
         print(model_to_dict(a))
 
         print(f'Tc_Identity 修改 =====')
         tc_identity1_1 = {"id": 1,
                           "test_case_name": "tc_identity1_修改"}
-        a = TestCaseIdentityServicer(tc_identity1_1).edit()
+        a = TestCaseIdentityServicer().edit(tc_identity1_1)
         print(model_to_dict(a))
 
         #############################################################
-        print(f'tc_action 初始化 =====')
+        print(f'tc_action new =====')
         print(TestCaseActionServicer().new())
 
         print(f' tc_action 新增 =====')
@@ -109,7 +110,7 @@ class Test1(TestCase):
                           "port": "8000",
                           "path": ""}
                       }
-        a = TestCaseActionServicer(tc_action1).add()
+        a = TestCaseActionServicer().add(tc_action1)
         print(model_to_dict(a))
 
         print(f'tc_action 修改 =====')
@@ -117,11 +118,11 @@ class Test1(TestCase):
                         "action_type": "ApiAction",
                         "action_name": "get index_修改",
                         }
-        a = TestCaseActionServicer(tc_action1_1).edit()
+        a = TestCaseActionServicer().edit(tc_action1_1)
         print(model_to_dict(a))
 
         #############################################################
-        print(f'tc_data 初始化 =====')
+        print(f'tc_data new =====')
         print(TestCaseDataServicer().new())
 
         print(f' tc_data 新增 =====')
@@ -149,7 +150,7 @@ class Test1(TestCase):
                 }
             }
         }
-        a = TestCaseDataServicer(tc_data1).add()
+        a = TestCaseDataServicer().add(tc_data1)
         print(model_to_dict(a))
 
         print(f' tc_data 修改 =====')
@@ -157,11 +158,11 @@ class Test1(TestCase):
             "id": "1",
             "data_name": "defApiParams_修改",
         }
-        a = TestCaseDataServicer(tc_data1_1).edit()
+        a = TestCaseDataServicer().edit(tc_data1_1)
         print(model_to_dict(a))
 
         #############################################################
-        print(f'tc_check_point 初始化 =====')
+        print(f'tc_check_point new =====')
         print(TestCaseCheckPointServicer().new())
 
         print(f' tc_check_point 新增 =====')
@@ -175,7 +176,7 @@ class Test1(TestCase):
                 "expect": "200"
             }
         }
-        a = TestCaseCheckPointServicer(tc_check_point1).add()
+        a = TestCaseCheckPointServicer().add(tc_check_point1)
         print(model_to_dict(a))
 
         print(f' tc_check_point 修改 =====')
@@ -183,22 +184,22 @@ class Test1(TestCase):
             "id": "1",
             "check_point_name": "status_code == 200_修改",
         }
-        a = TestCaseCheckPointServicer(tc_check_point1_1).edit()
+        a = TestCaseCheckPointServicer().edit(tc_check_point1_1)
         print(model_to_dict(a))
 
         #############################################################
-        print(f'test_case 初始化 =====')
+        print(f'test_case new =====')
         print(TestCaseServicer().new_api_testcase())
 
         print(f' test_case 新增 =====')
-        a = TestCaseServicer(case1).add()
+        a = TestCaseServicer().add(case1)
         print(a)
 
         print(f' test_case 只修改 test_case_type =====')
         case1_1 = {"id": 1,
                    "test_case_type": "api_修改",
                    }
-        a = TestCaseServicer(case1_1).edit()
+        a = TestCaseServicer().edit(case1_1)
         print(a)
         print(TestCaseServicer().get_by_pk(1))
         ##########################################################################
@@ -216,14 +217,14 @@ class Test1(TestCase):
                        {'id': 2, 'check_point_type': 'ApiStrCheck', 'check_point_name': 'status_code == 200 修改',
                         'check_point': {'response_property': 'status_code', 'rule': '', 'operator': 'equals',
                                         'expect': '200'}}]}
-        a = TestCaseServicer(case1_2).edit()
+        a = TestCaseServicer().edit(case1_2)
         print(a)
         print(TestCaseServicer().get_by_pk(1))
         ##############################################################################
         print(f' test_case 修改 外键字段id =====')
         case1_3 = {'id': 1, 'test_case_type': 'api_修改', 'tc_identity': 1, 'tc_action': 1, 'tc_data': 1, 'version': 1,
                    'tc_check_list': [1, 2]}
-        a = TestCaseServicer(case1_3).edit()
+        a = TestCaseServicer().edit(case1_3)
         print(a)
         print(TestCaseServicer().get_by_pk(1))
         #########################################################

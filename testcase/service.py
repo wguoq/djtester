@@ -29,13 +29,13 @@ class BaseTcServicer:
     def __init__(self, db_helper: models):
         self.DBHelper = db_helper
 
-    def add(self):
-        return self.DBHelper.save_this()
+    def add(self, data):
+        return self.DBHelper.save_this(data)
 
-    def edit(self):
-        return self.DBHelper.save_this()
+    def edit(self, data):
+        return self.DBHelper.save_this(data)
 
-    def get_all(self, offset: int = 0, limit: int = 1000) -> list[dict]:
+    def get_all(self, offset: int = 0, limit: int = 100) -> list[dict]:
         aaa = self.DBHelper.get_all(offset, limit)
         all_aaa = []
         for a in aaa:
@@ -58,84 +58,79 @@ class BaseTcServicer:
 
 class TestCaseIdentityServicer(BaseTcServicer):
     @show_class_name('主语')
-    def __init__(self, data: dict = None):
-        self.data = data
-        self.DBHelper = TcIdentityDBHelper(self.data)
+    def __init__(self):
+        self.DBHelper = TcIdentityDBHelper()
         super().__init__(self.DBHelper)
 
     @staticmethod
     def new():
-        # 默认test_case_id是时间戳随机数
+        # 默认test_case_id是时间戳+随机数
         test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
-        return model_to_dict(Tc_Identity(test_case_id=test_case_id))
+        return model_to_dict(Identity(test_case_id=test_case_id))
 
-    def add(self):
-        if self.DBHelper.has_case_id() or self.DBHelper.has_case_name():
+    def add(self, data):
+        if self.DBHelper.has_case_id(data) or self.DBHelper.has_case_name(data):
             raise Exception(f'test_case_id 或 test_case_name 已经存在')
         else:
-            return self.DBHelper.save_this()
+            return super().add(data)
 
 
 class TestCaseActionServicer(BaseTcServicer):
     @show_class_name('主语')
-    def __init__(self, data: dict = None):
-        self.data = data
-        self.DBHelper = TcActionDBHelper(self.data)
+    def __init__(self):
+        self.DBHelper = TcActionDBHelper()
         super().__init__(self.DBHelper)
 
     @staticmethod
     def new():
-        return model_to_dict(Tc_Action())
+        return model_to_dict(Action())
 
 
 class TestCaseDataServicer(BaseTcServicer):
     @show_class_name('主语')
-    def __init__(self, data: dict = None):
-        self.data = data
-        self.DBHelper = TcDataDBHelper(self.data)
+    def __init__(self):
+        self.DBHelper = TcDataDBHelper()
         super().__init__(self.DBHelper)
 
     @staticmethod
     def new():
-        return model_to_dict(Tc_Data())
+        return model_to_dict(TestData())
 
 
 class TestCaseCheckPointServicer(BaseTcServicer):
     @show_class_name('主语')
-    def __init__(self, data: dict = None):
-        self.data = data
-        self.DBHelper = TcCheckPointDBHelper(self.data)
+    def __init__(self):
+        self.DBHelper = TcCheckPointDBHelper()
         super().__init__(self.DBHelper)
 
     @staticmethod
     def new():
-        return model_to_dict(Tc_Check_Point())
+        return model_to_dict(Check_Point())
 
 
 class TestCaseServicer(BaseTcServicer):
     @show_class_name('主语')
-    def __init__(self, data: dict = None):
-        self.data = data
-        self.DBHelper = TcTestCaseDBHelper(self.data)
+    def __init__(self):
+        self.DBHelper = TcTestCaseDBHelper()
         super().__init__(self.DBHelper)
 
     @staticmethod
     def new_api_testcase():
         test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
         test_case_type = TestCaseType.API.value
-        tc_identity = model_to_dict(Tc_Identity(test_case_id=test_case_id))
-        tc_action = model_to_dict(Tc_Action(action_type=ApiAction.__name__,
-                                            action_name="",
-                                            action=ApiAction().__dict__))
-        tc_data = model_to_dict(Tc_Data(data_type=ApiParams.__name__,
-                                        data_name="",
-                                        data=ApiParams().__dict__))
-        tc_check_list = [model_to_dict(Tc_Check_Point(check_point_type=ApiCheckPoint.__name__,
-                                                      check_point_name="",
-                                                      check_point=ApiCheckPoint().__dict__)),
-                         model_to_dict(Tc_Check_Point(check_point_type=ApiJsonSchemaCheckPoint.__name__,
-                                                      check_point_name="",
-                                                      check_point=ApiJsonSchemaCheckPoint().__dict__))]
+        tc_identity = model_to_dict(Identity(test_case_id=test_case_id))
+        tc_action = model_to_dict(Action(action_type=ApiAction.__name__,
+                                         action_name="",
+                                         action=ApiAction().__dict__))
+        tc_data = model_to_dict(TestData(data_type=ApiParams.__name__,
+                                         data_name="",
+                                         data=ApiParams().__dict__))
+        tc_check_list = [model_to_dict(Check_Point(check_point_type=ApiCheckPoint.__name__,
+                                                   check_point_name="",
+                                                   check_point=ApiCheckPoint().__dict__)),
+                         model_to_dict(Check_Point(check_point_type=ApiJsonSchemaCheckPoint.__name__,
+                                                   check_point_name="",
+                                                   check_point=ApiJsonSchemaCheckPoint().__dict__))]
 
         a = dict(test_case_id=test_case_id,
                  test_case_type=test_case_type,
@@ -146,14 +141,14 @@ class TestCaseServicer(BaseTcServicer):
         # setattr(Test_Case(), **a)
         return a
 
-    def add(self):
-        case_saved = self.DBHelper.save_this()
+    def add(self, data):
+        case_saved = self.DBHelper.save_this(data)
         case_dict = model_to_dict(case_saved)
         case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
         return case_dict
 
-    def edit(self):
-        case_saved = self.DBHelper.save_this()
+    def edit(self, data):
+        case_saved = self.DBHelper.save_this(data)
         case_dict = model_to_dict(case_saved)
         case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
         return case_dict
@@ -224,7 +219,7 @@ def _get_full_case(case_dict) -> dict:
     else:
         check_list = []
         for check in tc_check_list:
-            if isinstance(check, Tc_Check_Point):
+            if isinstance(check, Check_Point):
                 check_list.append(model_to_dict(check))
             elif isinstance(check, int):
                 c = TestCaseCheckPointServicer().get_by_pk(check)
