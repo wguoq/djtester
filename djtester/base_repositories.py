@@ -48,7 +48,6 @@ class BaseDBHelper:
         entity = self.model(**data)
         pk = entity.pk
         if pk:
-            # print('修改')
             # todo 写入修改时间
             self.model.objects.filter(pk=pk).update(**data)
             new = self.model.objects.get(pk=pk)
@@ -57,7 +56,6 @@ class BaseDBHelper:
             else:
                 return new
         else:
-            # print('新增')
             # todo 写入创建时间
             entity.save()
             if self.m2m:
