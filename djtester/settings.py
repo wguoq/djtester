@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'hello',
     'testcase',
     'tester',
-    'testflow',
+    'flow',
     'mock',
 ]
 
