@@ -3,7 +3,8 @@ import operator
 from django.forms import model_to_dict
 from pydantic import BaseModel
 
-from flow.models import Flow_Instance, Node_Design, Node_Instance, Node_Status_Rule
+from flow.models import Node_Instance, Node_Status_Rule
+from flow.repositories import NodeInstanceDBHelper
 
 
 class NodeResultAndStatus(BaseModel):
@@ -13,21 +14,24 @@ class NodeResultAndStatus(BaseModel):
 
 class NodeMgr:
     def run_node_instance(self, node_instance: Node_Instance, flow_data: dict):
-        if self._check_node_start_rule():
-            run_node_result = NodeRunner().run(node_instance, flow_data)
+        node_start_rule = node_instance.node_design.node_start_rule
+        if self._check_node_start_rule(node_start_rule):
+            run_node_result = NodeInstanceRunner().run(node_instance, flow_data)
             # 保存新的Node_Instance
+            node_instance = run_node_result.node_instance
+            NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
             # 返回 node_status 和 node_result
             return NodeResultAndStatus(node_status=run_node_result.node_instance.node_status,
                                        node_result=run_node_result.node_instance.node_result)
         else:
             return False
 
-    def _check_node_start_rule(self):
+    def _check_node_start_rule(self, node_start_rule):
         # todo
         return True
 
 
-class FuncResultObj(BaseModel):
+class FuncResultDTO(BaseModel):
     result: str = ''
     new_flow_data: dict = {}
 
@@ -48,16 +52,16 @@ def get_func_by_node_type(node_type: str):
 
 # todo
 def mock_func(node_data, flow_data, func_result_obj):
-    return FuncResultObj(result='pass', new_flow_data={'a': '123'})
+    return FuncResultDTO(result='pass', new_flow_data={'a': '123'})
 
 
-class NodeRunner:
+class NodeInstanceRunner:
     def run(self, node_instance: Node_Instance, flow_data: dict) -> RunNodeResult:
         node_data = node_instance.node_data
         # 根据node_type去载入对应方法
         func = get_func_by_node_type(node_instance.node_design.node_type)
         # 运行方法
-        run_node_result: FuncResultObj = func(node_data, flow_data, FuncResultObj())
+        run_node_result: FuncResultDTO = func(node_data, flow_data, FuncResultDTO())
 
         if run_node_result:
             # 写入node_result

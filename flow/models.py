@@ -2,12 +2,12 @@ from django.db import models
 
 
 class Public_Field(models.Model):
-    created_time = models.DateTimeField(blank=True,
-                                        null=True,
+    created_time = models.DateTimeField(null=True,
+                                        auto_now_add=True,
                                         verbose_name="创建时间")
 
-    modified_time = models.DateTimeField(blank=True,
-                                         null=True,
+    modified_time = models.DateTimeField(null=True,
+                                         auto_now=True,
                                          verbose_name="修改时间")
 
     del_flag = models.CharField(max_length=1,

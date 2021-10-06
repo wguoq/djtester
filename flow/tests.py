@@ -4,7 +4,7 @@ from django.forms import model_to_dict
 
 from django.test import TestCase
 
-from .domain.node_runner import NodeRunner, NodeMgr
+from .domain.node_runner import NodeInstanceRunner, NodeMgr
 from .repositories import *
 
 
@@ -80,7 +80,7 @@ class Test_Flow(TestCase):
         ni1 = NodeInstanceDBHelper().save_this(node_instance_1)
         print(model_to_dict(ni1))
         print(f'==== run ni1 ====')
-        aa = NodeRunner().run(ni1, {})
+        aa = NodeInstanceRunner().run(ni1, {})
         print('==== new node_instance ====')
         print(model_to_dict(aa.node_instance))
         print('==== new flow_data ====')
@@ -88,3 +88,6 @@ class Test_Flow(TestCase):
         print(f'==== NodeMgr run_node_instance ====')
         bb = NodeMgr().run_node_instance(ni1, {})
         print(bb.__dict__)
+        print(f'==== query new_ni1 ====')
+        new_ni1 = NodeInstanceDBHelper().get_by({'pk': 1})
+        print(model_to_dict(new_ni1))
