@@ -1,5 +1,7 @@
 import abc
 import importlib
+import time
+
 from django.db import transaction
 
 
@@ -48,7 +50,6 @@ class BaseDBHelper:
         entity = self.model(**data)
         pk = entity.pk
         if pk:
-            # todo 写入修改时间
             self.model.objects.filter(pk=pk).update(**data)
             new = self.model.objects.get(pk=pk)
             if self.m2m:
@@ -56,7 +57,6 @@ class BaseDBHelper:
             else:
                 return new
         else:
-            # todo 写入创建时间
             entity.save()
             if self.m2m:
                 return self._save_m2m_func(entity)
