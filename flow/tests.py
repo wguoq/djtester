@@ -72,7 +72,7 @@ class Test_Flow(TestCase):
         query_nd1 = NodeDesignDBHelper().get_by({'pk': 1})
         print(model_to_dict(query_nd1))
         print(f'==== query nd1 node_status_rule_set.all ==== ')
-        nd1_node_status_rule_set_all = query_nd1.node_status_rule_set.all()
+        nd1_node_status_rule_set_all = query_nd1.node_status_rule_set.all().order_by('-id')
         for a in nd1_node_status_rule_set_all:
             print(model_to_dict(a))
             print(a.node_status)
@@ -84,7 +84,7 @@ class Test_Flow(TestCase):
         print('==== new node_instance ====')
         print(model_to_dict(aa.node_instance))
         print('==== new flow_data ====')
-        print(aa.flow_data)
+        print(aa.new_flow_data)
         print(f'==== NodeMgr run_node_instance ====')
         bb = NodeMgr().run_node_instance(ni1, {})
         print(bb.__dict__)

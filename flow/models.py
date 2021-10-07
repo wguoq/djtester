@@ -20,6 +20,25 @@ class Public_Field(models.Model):
         abstract = True
 
 
+class Flow_Result_Rule(Public_Field):
+    id = models.AutoField(primary_key=True)
+
+    rule_type = models.CharField(max_length=32,
+                                 blank=True,
+                                 null=True,
+                                 verbose_name="规则类型")
+
+    rule_script = models.JSONField(null=True,
+                                   blank=True,
+                                   verbose_name="规则脚本")
+
+    objects = models.Manager()
+
+    class Meta:
+        # 自定义表名
+        db_table = "flow_result_rule"
+
+
 class Flow_Design(Public_Field):
     """
     流程设计表
@@ -39,26 +58,18 @@ class Flow_Design(Public_Field):
     flow_type = models.CharField(max_length=32,
                                  blank=True,
                                  null=True,
-                                 verbose_name="流程类型: 1=串行;2=并行")
-
-    # flow_node_list = models.JSONField(null=True,
-    #                                   blank=True,
-    #                                   verbose_name="流程节点列表")
+                                 verbose_name="流程类型: serial=串行;parallel=并行")
 
     flow_data_type = models.CharField(max_length=32,
                                       blank=True,
                                       null=True,
                                       verbose_name="流程数据类型")
 
-    # flow_status_rule = models.ForeignKey(to=Flow_Status_Rule,
-    #                                      on_delete=models.SET_NULL,
-    #                                      null=True,
-    #                                      blank=True,
-    #                                      verbose_name="状态判断id")
-
-    # flow_result_rule = models.JSONField(null=True,
-    #                                     blank=True,
-    #                                     verbose_name="结果判断规则")
+    flow_result_rule = models.ForeignKey(to=Flow_Result_Rule,
+                                         on_delete=models.SET_NULL,
+                                         blank=True,
+                                         null=True,
+                                         verbose_name="流程结果规则id")
 
     version = models.IntegerField(blank=True,
                                   null=True,
@@ -84,9 +95,14 @@ class Flow_Status_Rule(Public_Field):
                                    null=True,
                                    verbose_name="状态值")
 
-    flow_status_rule = models.JSONField(null=True,
-                                        blank=True,
-                                        verbose_name="规则")
+    rule_type = models.CharField(max_length=32,
+                                 blank=True,
+                                 null=True,
+                                 verbose_name="规则类型")
+
+    rule_script = models.JSONField(null=True,
+                                   blank=True,
+                                   verbose_name="规则脚本")
 
     flow_design = models.ForeignKey(to=Flow_Design,
                                     on_delete=models.SET_NULL,
@@ -99,31 +115,6 @@ class Flow_Status_Rule(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_status_rule"
-
-
-class Flow_Result_Rule(Public_Field):
-    id = models.AutoField(primary_key=True)
-
-    flow_result = models.CharField(max_length=32,
-                                   blank=True,
-                                   null=True,
-                                   verbose_name="状态值")
-
-    flow_result_rule = models.JSONField(null=True,
-                                        blank=True,
-                                        verbose_name="规则")
-
-    flow_design = models.ForeignKey(to=Flow_Design,
-                                    on_delete=models.SET_NULL,
-                                    blank=True,
-                                    null=True,
-                                    verbose_name="关联流程设计id")
-
-    objects = models.Manager()
-
-    class Meta:
-        # 自定义表名
-        db_table = "flow_result_rule"
 
 
 class Node_Design(Public_Field):
@@ -156,12 +147,6 @@ class Node_Design(Public_Field):
                                        blank=True,
                                        verbose_name="节点启动规则")
 
-    # node_status_rule = models.ForeignKey(to=Node_Status_Rule,
-    #                                      on_delete=models.SET_NULL,
-    #                                      null=True,
-    #                                      blank=True,
-    #                                      verbose_name="节点状态判断id")
-
     version = models.IntegerField(blank=True,
                                   null=True,
                                   verbose_name="版本")
@@ -185,6 +170,7 @@ class Node_Status_Rule(Public_Field):
                                    blank=True,
                                    null=True,
                                    verbose_name="状态值")
+
     operator = models.CharField(max_length=32,
                                 blank=True,
                                 null=True,
@@ -284,19 +270,23 @@ class Node_Instance(Public_Field):
         db_table = "flow_node_instance"
 
 
-class Flow_Design_Node(Public_Field):
+class Flow_Node_Design_Oder(Public_Field):
+    """
+    流程设计,节点顺序,节点设计关联表
+    """
     id = models.AutoField(primary_key=True)
+
+    flow_design = models.ForeignKey(to=Flow_Design,
+                                    on_delete=models.SET_NULL,
+                                    blank=True,
+                                    null=True,
+                                    verbose_name="关联流程设计id")
 
     node_order = models.IntegerField(blank=True,
                                      null=True,
                                      verbose_name="节点顺序")
 
-    node_instance = models.ForeignKey(to=Node_Instance,
-                                      on_delete=models.SET_NULL,
-                                      null=True,
-                                      verbose_name="关联节点实例id")
-
-    flow_design = models.ForeignKey(to=Flow_Design,
+    node_design = models.ForeignKey(to=Node_Design,
                                     on_delete=models.SET_NULL,
                                     blank=True,
                                     null=True,
@@ -304,4 +294,31 @@ class Flow_Design_Node(Public_Field):
 
     class Meta:
         # 自定义表名
-        db_table = "flow_design_node"
+        db_table = "flow_node_design_oder"
+
+
+class Flow_Node_Instance_Oder(Public_Field):
+    """
+    流程设计,节点顺序,节点设计关联表
+    """
+    id = models.AutoField(primary_key=True)
+
+    flow_instance = models.ForeignKey(to=Flow_Instance,
+                                      on_delete=models.SET_NULL,
+                                      blank=True,
+                                      null=True,
+                                      verbose_name="关联流程实例id")
+
+    node_order = models.IntegerField(blank=True,
+                                     null=True,
+                                     verbose_name="节点顺序")
+
+    node_instance = models.ForeignKey(to=Node_Instance,
+                                      on_delete=models.SET_NULL,
+                                      blank=True,
+                                      null=True,
+                                      verbose_name="关联节点实例id")
+
+    class Meta:
+        # 自定义表名
+        db_table = "flow_node_instance_oder"

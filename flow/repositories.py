@@ -14,6 +14,10 @@ class FlowDesignDBHelper(BaseDBHelper):
     def _save_m2m_func(self, new_model):
         return new_model
 
+    def save_this(self, data: dict):
+        data['flow_result_rule'] = save_foreignkey(REPOSITORIES_PATH, FlowResultRuleDBHelper.__name__,
+                                                   data.get('flow_result_rule'))
+
 
 class FlowStatusRuleDBHelper(BaseDBHelper):
     def __init__(self):
@@ -83,15 +87,30 @@ class NodeInstanceDBHelper(BaseDBHelper):
         return super().save_this(data)
 
 
-class FlowDesignNodeDBHelper(BaseDBHelper):
+class FlowNodeDesignOderDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Flow_Design_Node.__name__)
+        super().__init__(MODELS_PATH, Flow_Node_Design_Oder.__name__)
 
     def _save_m2m_func(self, new_model):
         return new_model
 
     def save_this(self, data: dict):
-        data['node_instance'] = save_foreignkey(REPOSITORIES_PATH,
-                                                NodeInstanceDBHelper.__name__, data.get('node_instance'))
+        data['node_design'] = save_foreignkey(REPOSITORIES_PATH,
+                                              NodeDesignDBHelper.__name__, data.get('node_design'))
         data['flow_design'] = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))
+        return super().save_this(data)
+
+
+class FlowNodeInstanceOderDBHelper(BaseDBHelper):
+    def __init__(self):
+        super().__init__(MODELS_PATH, Flow_Node_Design_Oder.__name__)
+
+    def _save_m2m_func(self, new_model):
+        return new_model
+
+    def save_this(self, data: dict):
+        data['flow_instance'] = save_foreignkey(REPOSITORIES_PATH,
+                                                FlowInstanceDBHelper.__name__, data.get('flow_instance'))
+        data['node_instance'] = save_foreignkey(REPOSITORIES_PATH, NodeInstanceDBHelper.__name__,
+                                                data.get('node_instance'))
         return super().save_this(data)
