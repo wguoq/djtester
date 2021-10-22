@@ -1,7 +1,5 @@
 import abc
 import importlib
-import time
-
 from django.db import transaction
 
 
@@ -9,15 +7,16 @@ def save_foreignkey(repositories_path, repositories_name, foreignkey_data):
     models_ = importlib.import_module(repositories_path)
     model = getattr(models_, repositories_name)
     if foreignkey_data is None:
-        raise Exception('foreignkey data is None')
+        raise Exception(f'{foreignkey_data} foreignkey_data is None')
     # 如果传入的是dict就保存
     elif isinstance(foreignkey_data, dict):
         return model().save_this(foreignkey_data)
-    # 如果不是dict就假设是pk去查询
+    # 如果是int或者str就认为是pk,去查询出来
     elif isinstance(foreignkey_data, int) or isinstance(foreignkey_data, str):
         return model().get_by(dict(pk=foreignkey_data))
+    # 其他情况认为是obj不处理
     else:
-        raise Exception('foreignkey data 必须是 dict 或者表的 pk')
+        return foreignkey_data
 
 
 class BaseDBHelper:
