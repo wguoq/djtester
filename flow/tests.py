@@ -4,7 +4,8 @@ from django.forms import model_to_dict
 
 from django.test import TestCase
 
-from .domain.node_runner import NodeInstanceRunner, NodeMgr
+from .domain.node_mgr import NodeMgr
+from .domain.node_runner import NodeInstanceRunner
 from .repositories import *
 
 
@@ -12,50 +13,65 @@ class Test_Flow(TestCase):
     def test_flow_design(self):
         node_design_1 = {
             'id': None,
-            'code': 'nd07675770',
+            'node_code': 'nd07675770',
             'node_name': '节点设计1',
             'node_type': 'test123',
-            'node_data_type': 'test_config',
+            'node_data': {},
             'node_start_rule': {},
             'version': 1,
             'version_status': 0,
-            'created_time': None,
-            'modified_time': None,
-            'del_flag': None,
         }
 
         node_status_rule_1 = {
             'id': None,
+            'status_rule_type': 'def',
+            'status_operator': 'eq',
+            'status_target': 'wait',
             'node_status': 'wait',
-            'operator': 'eq',
-            'return_result': 'wait',
             'node_design': 1,
         }
 
         node_status_rule_2 = {
             'id': None,
+            'status_rule_type': 'def',
+            'status_operator': 'eq',
+            'status_target': 'pass',
             'node_status': 'finish',
-            'operator': 'eq',
-            'return_result': 'pass',
             'node_design': 1,
         }
         node_status_rule_3 = {
             'id': None,
+            'status_rule_type': 'def',
+            'status_operator': 'eq',
+            'status_target': 'fail',
             'node_status': 'stop',
-            'operator': 'eq',
-            'return_result': 'fail',
             'node_design': 1,
         }
 
+        flow_design_1 = {
+            'id': None,
+            'flow_code': 'fw432453212',
+            'flow_name': 'flow_design_1',
+            'flow_type': 'serial',
+        }
+        flow_instance_1 = {
+            'id': None,
+            'flow_design': 1,
+            'flow_data': {},
+            'flow_status':None,
+            'flow_result':None,
+        }
         node_instance_1 = {
             'id': None,
-            'code': '31242535',
             'node_design': 1,
             'node_data': {},
+            'node_order': 1,
             'node_status': None,
             'node_result': None,
+            'flow_instance': 1
         }
-
+        FlowDesignDBHelper().save_this(flow_design_1)
+        FlowInstanceDBHelper().save_this(flow_instance_1)
         print(f'==== add node_design_1 ==== ')
         nd1 = NodeDesignDBHelper().save_this(node_design_1)
         print(model_to_dict(nd1))
@@ -82,9 +98,9 @@ class Test_Flow(TestCase):
         print(f'==== run ni1 ====')
         aa = NodeInstanceRunner().run(ni1, {})
         print('==== new node_instance ====')
-        print(model_to_dict(aa.node_instance))
+        print(model_to_dict(aa.new_node_instance))
         print('==== new flow_data ====')
-        print(aa.new_flow_data)
+        print(aa.return_data)
         print(f'==== NodeMgr run_node_instance ====')
         bb = NodeMgr().run_node_instance(ni1, {})
         print(bb.__dict__)
