@@ -1,4 +1,3 @@
-from django.db import transaction
 from djtester.base_repositories import BaseDBHelper
 from testcase.models import Identity, Action, TestData, Check_Point
 

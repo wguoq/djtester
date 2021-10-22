@@ -1,6 +1,4 @@
 import abc
-import operator
-import jsonschema
 import requests
 
 from djtester.enums import TestResult

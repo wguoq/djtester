@@ -1,7 +1,4 @@
-import importlib
-
 from django.db import transaction
-
 from djtester.base_repositories import save_foreignkey
 from djtester.decorators import show_class_name
 from testcase.models import Test_Case
