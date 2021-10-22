@@ -48,7 +48,7 @@ from operator import itemgetter
 from django.forms import model_to_dict
 
 from testcase.repositories import TcIdentityDBHelper
-from testflow.repositories import TestFlowSDBHelper
+# from flow.repositories import TestFlowSDBHelper
 
 test_flow1 = {
     "id": None,
@@ -73,7 +73,6 @@ test_flow1 = {
 }
 
 
-# 先不考虑存数据库
 class TestFlow:
     def __init__(self, test_flow: dict, tf_data: dict = None, n=0):
         self._n = n
