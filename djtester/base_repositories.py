@@ -26,7 +26,7 @@ class BaseDBHelper:
         self.model = getattr(models, model_name)
         self.m2m = None
 
-    def get_all(self, offset: int, limit: int):
+    def get_all(self, offset: int = 0, limit: int = 1000):
         return self.model.objects.all()[offset: (offset + limit)]
 
     def get_by(self, kwargs):

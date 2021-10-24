@@ -11,6 +11,9 @@ class FlowMgr:
         self.new_flow_status = None
         self.new_flow_result = None
 
+    def save_flow_all(self, Flow_Result_Rule,Flow_Status_Rule,):
+        pass
+
     def run_flow(self, flow_instance: Flow_Instance):
         # 先判断流程状态是不是已完成或者终止
         if flow_instance.flow_status in ['finish', 'stop']:
@@ -24,7 +27,7 @@ class FlowMgr:
             return new_flow_instance
 
     @transaction.atomic
-    def instance_flow_design(self, flow_design: Flow_Design, flow_data: dict):
+    def instance_flow_design(self, flow_design: Flow_Design, flow_data: dict = None):
         # 保存 flow_instance
         fi = {'flow_design': flow_design,
               'flow_data': flow_data}

@@ -1,6 +1,6 @@
 from flow.domain.node_mgr import NodeMgr
 from flow.models import Flow_Instance, Flow_Result_Rule, Node_Instance, Flow_Status_Rule
-from flow.repositories import FlowNodeInstanceOderDBHelper, FlowStatusRuleDBHelper, FlowResultRuleDBHelper
+from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper
 
 
 class FlowInstanceRunner:
