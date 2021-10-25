@@ -159,6 +159,11 @@ class Test_Flow(TestCase):
         fd1 = FlowDesignDBHelper().get_by({'pk': 1})
         FlowMgr().instance_flow_design(fd1)
 
+        print(f'==== get node_instance all not run ====')
+        ni_all = NodeInstanceDBHelper().get_all()
+        for ni in ni_all:
+            print(model_to_dict(ni))
+
         print(f'==== get flow_instance all ====')
         fi_all = FlowInstanceDBHelper().get_all()
         for fi in fi_all:
