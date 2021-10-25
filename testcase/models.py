@@ -4,11 +4,11 @@ from djtester.decorators import show_class_name
 
 
 class Identity(models.Model):
-    @show_class_name('宾语')
+    @show_class_name('Model')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    id = models.AutoField(primary_key=True)
+    # id = models.AutoField(primary_key=True)
 
     test_case_id = models.CharField(max_length=32,  # 32字符=64字节
                                     unique=True,
@@ -28,11 +28,11 @@ class Identity(models.Model):
 
 
 class Action(models.Model):
-    @show_class_name('宾语')
+    @show_class_name('Model')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    id = models.AutoField(primary_key=True)
+    # id = models.AutoField(primary_key=True)
 
     action_type = models.CharField(max_length=32,
                                    blank=True,
@@ -56,11 +56,11 @@ class Action(models.Model):
 
 
 class TestData(models.Model):
-    @show_class_name('宾语')
+    @show_class_name('Model')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    id = models.AutoField(primary_key=True)
+    # id = models.AutoField(primary_key=True)
 
     data_type = models.CharField(max_length=32,
                                  blank=True,
@@ -84,11 +84,11 @@ class TestData(models.Model):
 
 
 class Check_Point(models.Model):
-    @show_class_name('宾语')
+    @show_class_name('Model')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    id = models.AutoField(primary_key=True)
+    # id = models.AutoField(primary_key=True)
 
     check_point_type = models.CharField(max_length=32,
                                         blank=True,
@@ -112,11 +112,11 @@ class Check_Point(models.Model):
 
 
 class Test_Case(models.Model):
-    @show_class_name('宾语')
+    @show_class_name('Model')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    id = models.AutoField(primary_key=True)
+    # id = models.AutoField(primary_key=True)
 
     test_case_type = models.CharField(max_length=32,
                                       null=True,

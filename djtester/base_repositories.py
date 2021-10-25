@@ -36,7 +36,7 @@ class BaseDBHelper:
         return self.model.objects.filter(**kwargs)
 
     @abc.abstractmethod
-    def _save_m2m_func(self, new_model):
+    def _save_m2m(self, new_model):
         return new_model
 
     @transaction.atomic
@@ -46,20 +46,21 @@ class BaseDBHelper:
         如果有m2m的外键,要把data里对应字段移出去,单独保存后set进来
         否则self.model(**data)就会报错
         """
-        entity = self.model(**data)
-        pk = entity.pk
+        new_model = self.model(**data)
+        pk = new_model.pk
         if pk:
+            # 有pk判断为修改
             self.model.objects.filter(pk=pk).update(**data)
-            new = self.model.objects.get(pk=pk)
+            new_model = self.model.objects.get(pk=pk)
             if self.m2m:
-                return self._save_m2m_func(new)
+                return self._save_m2m(new_model)
             else:
-                return new
+                return new_model
         else:
-            entity.save()
+            new_model.save()
             if self.m2m:
-                return self._save_m2m_func(entity)
+                return self._save_m2m(new_model)
             else:
-                return entity
+                return new_model
 
 

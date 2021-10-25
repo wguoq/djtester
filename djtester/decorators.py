@@ -1,22 +1,61 @@
 import inspect
+import os
 from functools import wraps
+from ruamel.yaml import YAML
 
 
 class show_class_name(object):
-    def __init__(self, msg='msg'):
+    def __init__(self, msg=''):
         self.msg = msg
 
     def __call__(self, func):
+        stack = inspect.stack()
+        print(self.msg)
+        # print(stack[1][0])
+        file_path = stack[1][1]
+        # print(file_path)
+        # print(stack[1][2])
+        print(f'class_name = {stack[1][3]}')
+
+        # print(f'func_name = {stack[1][4]}')
+        # print(stack[1][5])
+
         @wraps(func)
         def wrapped_function(*args, **kwargs):
             return func(*args, **kwargs)
-        ss = inspect.stack()
-        print(self.msg)
-        # print(ss[1][0])
-        # print(ss[1][1])
-        # print(ss[1][2])
-        print(f'class_name = {ss[1][3]}')
-        # print(f'func_name = {ss[1][4]}')
-        # print(ss[1][5])
+
         return wrapped_function
 
+
+cur_path = os.path.dirname(os.path.realpath(__file__))
+yaml_path = os.path.join(cur_path, "node_func_list.yaml")
+
+
+class reg_node_func(object):
+    def __init__(self, node_type, class_path):
+        self.node_type = node_type
+        self.class_path = class_path
+
+    def __call__(self, func):
+        stack = inspect.stack()
+        class_name = stack[1][3]
+        # 先把所有内容dict读出来,把新的update进去
+        file = open(yaml_path, 'r', encoding="utf-8")
+        read = file.read()
+        file.close()
+        yaml = YAML(typ='unsafe', pure=True)
+        data: dict = yaml.load(read)
+        if data is None:
+            data = {}
+
+        data.update({self.node_type: {'class_path': self.class_path,
+                                      'class_name': class_name}})
+
+        with open(yaml_path, "w", encoding="utf-8") as f:
+            yaml.dump(data, f)
+
+        @wraps(func)
+        def wrapped_function(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        return wrapped_function

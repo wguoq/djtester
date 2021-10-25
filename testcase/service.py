@@ -5,18 +5,15 @@ import time
 from django.core import serializers
 from django.db import models
 from django.forms import model_to_dict
-
 from djtester.enums import TestCaseType
 from testcase.domain.models.tc_api_model import *
-# from testcase.domain.tc_model import TcTestCase
-from testcase.domain.tc_repositories import *
+from testcase.domain.test_case_mgr import *
 from testcase.repositories import *
 
 
 class TestCaseEnums:
     """
     获取testcase每个enums类里面所有的值
-    应该换成yml文件更方便
     """
 
     @staticmethod
@@ -25,7 +22,6 @@ class TestCaseEnums:
 
 
 class BaseTcServicer:
-    @show_class_name('主语')
     def __init__(self, db_helper: models):
         self.DBHelper = db_helper
 
@@ -57,7 +53,6 @@ class BaseTcServicer:
 
 
 class TestCaseIdentityServicer(BaseTcServicer):
-    @show_class_name('主语')
     def __init__(self):
         self.DBHelper = TcIdentityDBHelper()
         super().__init__(self.DBHelper)
@@ -76,7 +71,6 @@ class TestCaseIdentityServicer(BaseTcServicer):
 
 
 class TestCaseActionServicer(BaseTcServicer):
-    @show_class_name('主语')
     def __init__(self):
         self.DBHelper = TcActionDBHelper()
         super().__init__(self.DBHelper)
@@ -87,7 +81,6 @@ class TestCaseActionServicer(BaseTcServicer):
 
 
 class TestCaseDataServicer(BaseTcServicer):
-    @show_class_name('主语')
     def __init__(self):
         self.DBHelper = TcDataDBHelper()
         super().__init__(self.DBHelper)
@@ -98,7 +91,6 @@ class TestCaseDataServicer(BaseTcServicer):
 
 
 class TestCaseCheckPointServicer(BaseTcServicer):
-    @show_class_name('主语')
     def __init__(self):
         self.DBHelper = TcCheckPointDBHelper()
         super().__init__(self.DBHelper)
@@ -109,9 +101,8 @@ class TestCaseCheckPointServicer(BaseTcServicer):
 
 
 class TestCaseServicer(BaseTcServicer):
-    @show_class_name('主语')
     def __init__(self):
-        self.DBHelper = TcTestCaseDBHelper()
+        self.DBHelper = TestCaseDBHelper()
         super().__init__(self.DBHelper)
 
     @staticmethod
@@ -154,7 +145,7 @@ class TestCaseServicer(BaseTcServicer):
         return case_dict
 
     def get_all(self, offset=0, limit=1000):
-        get_all = TcTestCaseDBHelper().get_all(offset=offset, limit=limit)
+        get_all = TestCaseDBHelper().get_all(offset=offset, limit=limit)
         all_case = []
         for a in get_all:
             case_dict = model_to_dict(a)
@@ -162,22 +153,22 @@ class TestCaseServicer(BaseTcServicer):
         return all_case
 
     def get_by_pk(self, pk) -> dict:
-        case = TcTestCaseDBHelper().get_by({'pk': pk})
+        case = TestCaseDBHelper().get_by({'pk': pk})
         case_dict = model_to_dict(case)
         return _get_full_case(case_dict)
 
     def filter_by(self, kwargs: dict):
-        a = TcTestCaseDBHelper().filter_by(kwargs)
+        a = TestCaseDBHelper().filter_by(kwargs)
         return _query_set_to_case_dict(a)
 
     @staticmethod
     def filter_by_case_id(test_case_id: str):
-        a = TcTestCaseDBHelper.filter_by_case_id(test_case_id)
+        a = TestCaseDBHelper.filter_by_case_id(test_case_id)
         return _query_set_to_case_dict(a)
 
     @staticmethod
     def filter_by_case_name(test_case_name: str):
-        a = TcTestCaseDBHelper.filter_by_case_name(test_case_name)
+        a = TestCaseDBHelper.filter_by_case_name(test_case_name)
         return _query_set_to_case_dict(a)
 
 

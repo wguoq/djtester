@@ -70,9 +70,7 @@ case1 = {
 }
 
 
-
-class Test1(TestCase):
-
+class TestTestCase(TestCase):
     def test(self):
         print(f'获取一个Enums:TcEnums.case_type()=====')
         print(TestCaseEnums.test_case_type())
@@ -235,6 +233,3 @@ class Test1(TestCase):
         print(f'用test_case_name查询')
         a = TestCaseServicer().filter_by_case_name('tc_identity1_修改')
         print(a)
-
-
-

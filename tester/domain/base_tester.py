@@ -6,39 +6,36 @@ from tester.domain.tt_models import TestCaseResult, ApiTestCase, TestCheckPointR
 
 
 class BaseTester:
-    def __init__(self, test_case):
-        self.test_case = test_case if test_case else None
-        self.check_point_result_list: list[TestCheckPointResult] = []
-        self.test_case_result = TestCaseResult()
+    def __init__(self):
+        self.test_case_result: TestCaseResult = TestCaseResult()
 
-    def run(self):
-        self.do_action()
-        self.verify_check_point()
-        self.set_test_case_result()
-        return self
+    # @abc.abstractmethod
+    # def run(self, test_case, test_case_config):
+    #     return self
+    # @abc.abstractmethod
+    # def _do_action(self, test_case):
+    #     pass
+    #
+    # @abc.abstractmethod
+    # def _verify_check_point(self, test_case):
+    #     pass
+    #
+    # @abc.abstractmethod
+    # def _set_test_result(self, test_case):
+    #     pass
 
-    @abc.abstractmethod
-    def do_action(self):
-        pass
-
-    @abc.abstractmethod
-    def verify_check_point(self):
-        pass
-
-    @abc.abstractmethod
-    def set_test_case_result(self):
-        pass
-
-    def check_point_is_all_pass(self):
-        for result in self.check_point_result_list:
+    @staticmethod
+    def _check_point_is_all_pass(check_point_result_list: list[TestCheckPointResult]):
+        for result in check_point_result_list:
             if result.check_point_result == TestResult.PASS.value:
                 continue
             else:
                 return False
         return True
 
-    def check_point_is_anyone_pass(self):
-        for result in self.check_point_result_list:
+    @staticmethod
+    def _check_point_is_anyone_pass(check_point_result_list: list[TestCheckPointResult]):
+        for result in check_point_result_list:
             if result.check_point_result == TestResult.PASS.value:
                 return True
             else:
@@ -74,8 +71,6 @@ class ApiRequestSender(object):
             return a
         except Exception as e:
             raise Exception(f'requests.post error:\n {e}')
-
-
 
 
 class ApiJsonSchemaChecker(object):

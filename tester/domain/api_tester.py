@@ -9,77 +9,68 @@ from tester.utils import *
 
 class ApiTester(BaseTester):
 
-    def __init__(self, api_test_case: ApiTestCase, api_test_config: ApiCaseConfig = None):
-        super().__init__(api_test_case)
-        self.test_config = api_test_config if api_test_config else None
-        self.api_response: requests.models.Response = None
-        if self.test_config:
-            self._config()
+    def __init__(self):
+        super().__init__()
+        self._api_response: requests.models.Response = None
 
-    def do_action(self):
-        """
-        发送api_request
-        """
-        if self.test_case is None:
-            raise Exception(f' api_test_case is None ')
-        else:
-            self.api_response = self._send_request()
+    def run(self, test_case: ApiTestCase, test_case_config: ApiCaseConfig):
+        if test_case is None:
+            raise Exception(f' test_case is None ')
+        test_case = self._config(test_case, test_case_config)
+        self._api_response = self._send_request(test_case)
+        check_point_result_list = self._verify_check_point_list(test_case)
+        self._set_test_result(test_case, check_point_result_list)
         return self
 
-    def verify_check_point(self):
+    def _set_test_result(self, test_case, check_point_result_list):
         """
-        逐一验证测试点
-        """
-        self.check_point_result_list = self._verify_check_point_list()
-        return self
-
-    def set_test_case_result(self):
-        """
-        决定测试结果,所有check point都要pass才行
+        决定测试结果,默认所有check point都要pass才行
         """
         # 如果check_point_result_list是None就默认pass
-        if self.check_point_result_list is None:
+        if check_point_result_list is None:
             self.test_case_result.case_result = TestResult.PASS.value
         else:
             # 默认所有check point 都要pass才行
-            if self.check_point_is_all_pass():
+            if self._check_point_is_all_pass(check_point_result_list):
                 self.test_case_result.case_result = TestResult.PASS.value
             else:
                 self.test_case_result.case_result = TestResult.FAIL.value
-        self.test_case_result.test_case_id = self.test_case.test_case_id
-        self.test_case_result.test_case_name = self.test_case.test_case_name
-        self.test_case_result.case_message = self.check_point_result_list
+        self.test_case_result.test_case_id = test_case.test_case_id
+        self.test_case_result.test_case_name = test_case.test_case_name
+        self.test_case_result.case_message = check_point_result_list
         return self
 
-    # 如果有test_config,把里面的字段替换到testcase里
-    def _config(self):
-        if self.test_config is None:
-            pass
+    # 如果有 test_case_config,把里面的字段替换到 testcase 里
+    @staticmethod
+    def _config(test_case, test_case_config):
+        if test_case_config is None:
+            return test_case
+        if test_case_config.test_host:
+            test_case.test_case.host = test_case_config.test_host
 
-        if self.test_config.test_host:
-            self.test_case.host = self.test_config.test_host
+        if test_case_config.test_port:
+            test_case.test_case.port = test_case_config.test_port
 
-        if self.test_config.test_port:
-            self.test_case.port = self.test_config.test_port
+        if test_case_config.test_headers:
+            test_case.test_case.headers = test_case_config.test_headers
 
-        if self.test_config.test_headers:
-            self.test_case.headers = self.test_config.test_headers
-
-        if self.test_config.test_cookies:
-            self.test_case.cookies = self.test_config.test_cookies
+        if test_case_config.test_cookies:
+            test_case.test_case.cookies = test_case_config.test_cookies
+        return test_case
 
     # 用requests发包
-    def _send_request(self):
-        if self.test_case.method in ['GET', 'get', 'Get']:
-            return ApiRequestSender(self.test_case).send_get()
-        elif self.test_case.method in ['POST', 'post', 'Post']:
-            return ApiRequestSender(self.test_case).send_post()
+    @staticmethod
+    def _send_request(test_case):
+        if test_case.method in ['GET', 'get', 'Get']:
+            return ApiRequestSender(test_case).send_get()
+        elif test_case.method in ['POST', 'post', 'Post']:
+            return ApiRequestSender(test_case).send_post()
         else:
             return None
 
     # 验证check_point_list
-    def _verify_check_point_list(self):
-        check_list = self.test_case.check_list
+    def _verify_check_point_list(self, test_case):
+        check_list = test_case.check_list
         result_list = []
         # 如果没有check_list就返回None用来判断
         if check_list is None or len(check_list) == 0:
@@ -90,7 +81,6 @@ class ApiTester(BaseTester):
             a = False
             if check_point_type == 'ApiCheckPoint':
                 a = self._verify_check_point(check.get('check_point'))
-                print(a)
             elif check_point_type == 'ApiJsonSchemaCheckPoint':
                 a = self._verify_json_schema_check_point(check.get('check_point'))
             if a:
@@ -104,14 +94,12 @@ class ApiTester(BaseTester):
 
     # 验证check_point
     def _verify_check_point(self, check_point):
-        print(check_point)
         cp = ApiCheckPoint(**check_point)
         response_property = cp.response_property
         rule = cp.rule
         operator_ = cp.operator
         expect = cp.expect
         check_target = self._get_check_target(response_property, rule)
-        print(check_target)
         if check_target:
             if operator_ == 'eq':
                 return operator.eq(str(check_target), str(expect))
@@ -146,14 +134,14 @@ class ApiTester(BaseTester):
     # 获取response里面的返回值
     def _get_response_property(self, response_property: str):
         if response_property == ResponseProperty.STATUS_CODE.value:
-            return self.api_response.status_code
+            return self._api_response.status_code
         elif response_property == ResponseProperty.HEADERS.value:
-            return self.api_response.headers
+            return self._api_response.headers
         elif response_property == ResponseProperty.COOKIES.value:
-            return self.api_response.cookies
+            return self._api_response.cookies
         elif response_property == ResponseProperty.JSON.value:
             try:
-                return self.api_response.json()
+                return self._api_response.json()
             except Exception as e:
                 print(f'使用response.json() error \n{e}')
                 return {}

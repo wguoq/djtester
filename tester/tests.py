@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from tester.adapter import TestCaseServiceAdapterLocal
+from tester.domain.api_tester import ApiTester
+from tester.domain.tt_models import ApiTestCase
 from tester.service import TesterServicer
 
 case1 = {
@@ -68,19 +69,13 @@ case1 = {
 }
 
 
-class TestTT(TestCase):
-    def test_service(self):
-        config = TesterServicer.new_test_config()
-        print(f'init_test_config ===============\n{config}')
-        aaa = TesterServicer(case1).run_testcase()
-        print(f'test_result ==========\n{aaa.test_case_result.__dict__}')
-        # bbb = TesterServicer(case2).run_testcase()
-        # print(f'test_result ==========\n{bbb.get_test_result}')
-        # ccc = TesterServicer(case3).run_testcase()
-        # print(f'test_result ==========\n{ccc.get_test_result}')
-        #
-        # TestCaseServiceAdapterLocal.testcase_service().TestCaseServicer(case1).add()
-        #
-        #
-        # ddd = TesterServicer(case4).run_testcase()
-        # print(f'test_result ==========\n{ddd.get_test_result}')
+class TestTester(TestCase):
+    def test(self):
+        # print(f'===== new_test_config ======')
+        # config = TesterServicer.new_test_config()
+        # print(config)
+        print(f'===== run_testcase ======')
+        aaa = TesterServicer().run_testcase(case1)
+        print(aaa.test_case_result)
+        #print(f'test_result ==========\n{aaa.test_case_result.__dict__}')
+

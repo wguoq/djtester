@@ -1,6 +1,5 @@
 from django.db import transaction
 from djtester.base_repositories import save_foreignkey
-from djtester.decorators import show_class_name
 from testcase.models import Test_Case
 from testcase.repositories import *
 
@@ -8,12 +7,7 @@ MODELS_PATH = 'testcase.models'
 REPOSITORIES_PATH = 'testcase.repositories'
 
 
-class TcTestCaseDBHelper(BaseDBHelper):
-    """
-    data里面的外键字段可以是dict也可以是id
-    """
-
-    @show_class_name('主语')
+class TestCaseDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, Test_Case.__name__)
 
@@ -30,9 +24,9 @@ class TcTestCaseDBHelper(BaseDBHelper):
                 new_check_list.append(a)
             return new_check_list
         else:
-            raise Exception(f'tc_check_list 需要是None或者list类型')
+            raise Exception(f'tc_check_list 需要是list或者None')
 
-    def _save_m2m_func(self, new_model):
+    def _save_m2m(self, new_model):
         if self.m2m:
             new_model.tc_check_list.set(self.m2m)
             return new_model
@@ -40,7 +34,7 @@ class TcTestCaseDBHelper(BaseDBHelper):
             return new_model
 
     @transaction.atomic
-    def save_this(self, data):
+    def save_this(self, data: dict):
         tc_identity = data.get('tc_identity')
         tc_action = data.get('tc_action')
         tc_data = data.get('tc_data')

@@ -40,11 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hello',
-    'testcase',
-    'tester',
-    'flow',
-    'mock',
+    'hello.apps.HelloConfig',
+    'flow.apps.FlowConfig',
+    'testcase.apps.TestcaseConfig',
+    'tester.apps.TesterConfig',
+    'mock.apps.MockConfig'
+
 ]
 
 MIDDLEWARE = [

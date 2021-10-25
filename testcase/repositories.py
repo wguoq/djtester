@@ -8,7 +8,7 @@ class TcIdentityDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, Identity.__name__)
 
-    def _save_m2m_func(self, new_model):
+    def _save_m2m(self, new_model):
         return new_model
 
     def has_case_id(self, data):
@@ -30,7 +30,7 @@ class TcActionDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, Action.__name__)
 
-    def _save_m2m_func(self, new_model):
+    def _save_m2m(self, new_model):
         return new_model
 
 
@@ -38,7 +38,7 @@ class TcDataDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, TestData.__name__)
 
-    def _save_m2m_func(self, new_model):
+    def _save_m2m(self, new_model):
         return new_model
 
 
@@ -46,5 +46,5 @@ class TcCheckPointDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, Check_Point.__name__)
 
-    def _save_m2m_func(self, new_model):
+    def _save_m2m(self, new_model):
         return new_model
