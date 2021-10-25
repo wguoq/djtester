@@ -12,9 +12,12 @@ def get_class_by_node_type(node_type: str):
 
 class MockFunc(NodeFuncBase):
 
+    def node_data_model(self):
+        return {}
+
     def do_func(self, node_data, flow_data):
         self.result = 'pass'
-        self.return_data = {}
+        self.return_data = {'data': 'new_data'}
         return self
 
 
@@ -24,6 +27,8 @@ class NodeInstanceRunner:
         self.return_data: dict = {}
 
     def run(self, node_instance: Node_Instance, flow_data: dict = None):
+        if flow_data is None:
+            flow_data = {}
         node_data: dict = node_instance.node_data
         # 运行对应的func
         func_result: NodeFuncBase = self._run(node_instance, node_data, flow_data)
@@ -43,7 +48,7 @@ class NodeInstanceRunner:
             raise Exception(f'根据node_type去载入对应的执行类 {func_class.__name__} ,但是运行时报错 {e}')
 
     def _update_result_status(self, func_result, node_instance):
-        node_instance.result_target = func_result.result
+        node_instance.node_result = func_result.result
         node_instance.node_status = self._check_status(func_result, node_instance)
         return node_instance
 

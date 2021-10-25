@@ -1,6 +1,6 @@
 from flow.domain.node_mgr import NodeMgr
 from flow.models import Flow_Instance, Flow_Result_Rule, Node_Instance, Flow_Status_Rule
-from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper
+from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper, NodeInstanceDBHelper
 
 
 class FlowInstanceRunner:
@@ -25,7 +25,7 @@ class FlowInstanceRunner:
     def _run_serial(flow_instance: Flow_Instance):
         flow_data = flow_instance.flow_data
         # 查询node_instance,并排序
-        node_instance_list = FlowNodeInstanceOderDBHelper().filter_by({'flow_instance_id': flow_instance.id}).order_by(
+        node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.id}).order_by(
             'node_order')
         # 按顺序执行node
         for node_instance in node_instance_list:
@@ -33,7 +33,7 @@ class FlowInstanceRunner:
             # 只有node的状态是finish或者skip时才继续执行后面的
             if node_result.new_node_status in ['finish', 'skip']:
                 # 把return_data添加到flow_data里
-                flow_data = flow_data.update(node_result.return_data)
+                flow_data.update(node_result.return_data)
             else:
                 return 0
         return 1
@@ -76,7 +76,7 @@ class FlowInstanceRunner:
         rule: Flow_Result_Rule = result_rule
         if rule.result_rule_type == 'last_node_result':
             # last_node_result为默认使用最后一个节点的结果
-            node_instance_list = FlowNodeInstanceOderDBHelper().filter_by(
+            node_instance_list = NodeInstanceDBHelper().filter_by(
                 {'flow_instance_id': flow_instance.id}).order_by('-node_order')
             last: Node_Instance = node_instance_list[0]
             return last.node_result
@@ -101,7 +101,7 @@ class FlowInstanceRunner:
         rule: Flow_Status_Rule = status_rule
         if rule.status_rule_type == 'last_node_status':
             # last_node_status 为默认使用最后一个节点的状态
-            node_instance_list = FlowNodeInstanceOderDBHelper().filter_by(
+            node_instance_list = NodeInstanceDBHelper().filter_by(
                 {'flow_instance_id': flow_instance.id}).order_by('-node_order')
             last: Node_Instance = node_instance_list[0]
             return last.node_status

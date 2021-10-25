@@ -73,7 +73,7 @@ class Test_Flow(TestCase):
         }
         flow_result_rule_1 = {
             'id': None,
-            'result_rule_type': 'def',
+            'result_rule_type': 'last_node_result',
             'result_rule_name': 'result_rule_name 1',
             'flow_result': 'ok',
             'result_rule_script': {},
@@ -81,28 +81,11 @@ class Test_Flow(TestCase):
         }
         flow_status_rule_1 = {
             'id': None,
-            'status_rule_type': 'def',
+            'status_rule_type': 'last_node_status',
             'status_rule_name': 'status_rule_name 1',
             'flow_status': 'finish',
             'status_rule_script': {},
             'flow_design': 1
-        }
-
-        flow_instance_1 = {
-            'id': None,
-            'flow_design': 1,
-            'flow_data': {},
-            'flow_status': None,
-            'flow_result': None,
-        }
-        node_instance_1 = {
-            'id': None,
-            'node_design': 1,
-            'node_data': {},
-            'node_order': 1,
-            'node_status': None,
-            'node_result': None,
-            'flow_instance': 1
         }
 
         print(f'==== add flow_design_1 ==== ')
@@ -180,8 +163,12 @@ class Test_Flow(TestCase):
         fi_all = FlowInstanceDBHelper().get_all()
         for fi in fi_all:
             print(model_to_dict(fi))
+            print(f'==== run flow_instance {fi.flow_design.flow_name} ====')
+            run_flow = FlowMgr().run_flow(fi)
+            print(model_to_dict(run_flow.new_flow_instance))
 
         print(f'==== get node_instance all ====')
         ni_all = NodeInstanceDBHelper().get_all()
         for ni in ni_all:
             print(model_to_dict(ni))
+

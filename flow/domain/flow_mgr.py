@@ -8,26 +8,15 @@ from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNo
 
 class FlowMgr:
     def __init__(self):
-        self.new_flow_status = None
-        self.new_flow_result = None
+        self.new_flow_instance = None
 
-    def save_flow_all(self, Flow_Result_Rule,Flow_Status_Rule,):
+    def save_flow_design_all(self, Flow_Result_Rule,Flow_Status_Rule,):
         pass
-
-    def run_flow(self, flow_instance: Flow_Instance):
-        # 先判断流程状态是不是已完成或者终止
-        if flow_instance.flow_status in ['finish', 'stop']:
-            self.new_flow_status = flow_instance.flow_status
-            self.new_flow_result = flow_instance.flow_result
-            return self
-        else:
-            new = FlowInstanceRunner().run(flow_instance)
-            # 保存
-            new_flow_instance = FlowInstanceDBHelper().save_this(model_to_dict(new))
-            return new_flow_instance
 
     @transaction.atomic
     def instance_flow_design(self, flow_design: Flow_Design, flow_data: dict = None):
+        if flow_data is None:
+            flow_data = {}
         # 保存 flow_instance
         fi = {'flow_design': flow_design,
               'flow_data': flow_data}
@@ -43,4 +32,17 @@ class FlowMgr:
                   'node_order': node_order,
                   'flow_instance': flow_instance}
             NodeInstanceDBHelper().save_this(ni)
+
+    def run_flow(self, flow_instance: Flow_Instance):
+        # 先判断流程状态是不是已完成或者终止
+        if flow_instance.flow_status in ['finish', 'stop']:
+            self.new_flow_instance = flow_instance
+            return self
+        else:
+            new_flow_instance = FlowInstanceRunner().run(flow_instance).new_flow_instance
+            self.new_flow_instance = new_flow_instance
+            # 保存
+            FlowInstanceDBHelper().save_this(model_to_dict(new_flow_instance))
+            return self
+
 
