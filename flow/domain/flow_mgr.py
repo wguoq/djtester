@@ -25,13 +25,16 @@ class FlowMgr:
         node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design.id})
         for node in node_list:
             node_design = node.node_design
-            node_data = node_design.node_data
+            node_func_name = node_design.node_func_name
+            node_func_data = node_design.node_func_data
             node_order = node.node_order
             ni = {'node_design': node_design,
-                  'node_data': node_data,
+                  'node_func_name': node_func_name,
+                  'node_func_data': node_func_data,
                   'node_order': node_order,
                   'flow_instance': flow_instance}
             NodeInstanceDBHelper().save_this(ni)
+        return flow_instance
 
     def run_flow(self, flow_instance: Flow_Instance):
         # 先判断流程状态是不是已完成或者终止

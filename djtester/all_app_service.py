@@ -1,14 +1,15 @@
 import importlib
 
 
-class TestCase:
+class TestCaseService:
     @staticmethod
-    def service():
-        return importlib.import_module('testcase.service')
+    def test_case_servicer():
+        module = importlib.import_module('testcase.service')
+        return getattr(module, 'TestCaseServicer')
 
 
-class Tester:
+class TesterService:
     @staticmethod
-    def service():
-        return importlib.import_module('tester.service')
-
+    def tester_servicer():
+        module = importlib.import_module('tester.service')
+        return getattr(module, 'TesterServicer')

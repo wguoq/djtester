@@ -1,7 +1,4 @@
 from django.test import TestCase
-
-from tester.domain.api_tester import ApiTester
-from tester.domain.tt_models import ApiTestCase
 from tester.service import TesterServicer
 
 case1 = {
@@ -56,15 +53,6 @@ case1 = {
                 "expect": "200"
             }
         },
-        {
-            "check_point_type": "ApiJsonSchemaCheckPoint",
-            "check_point_name": "json_schema",
-            "check_point": {
-                "response_property": "status_code",
-                "rule": "",
-                "json_schema": ""
-            }
-        }
     ],
 }
 
@@ -74,8 +62,9 @@ class TestTester(TestCase):
         # print(f'===== new_test_config ======')
         # config = TesterServicer.new_test_config()
         # print(config)
-        print(f'===== run_testcase ======')
+        print(f'===== run_testcase case1 ======')
         aaa = TesterServicer().run_testcase(case1)
+        print(aaa)
         print(aaa.test_case_result)
         #print(f'test_result ==========\n{aaa.test_case_result.__dict__}')
 

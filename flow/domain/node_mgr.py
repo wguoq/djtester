@@ -11,7 +11,7 @@ class NodeMgr:
     def __init__(self):
         self.new_node_status = None
         self.new_node_result = None
-        self.return_data = None
+        self.return_data = {}
 
     def run_node_instance(self, node_instance: Node_Instance, flow_data: dict):
         # 判断是否满足节点运行条件

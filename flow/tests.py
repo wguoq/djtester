@@ -1,23 +1,129 @@
 from django.forms import model_to_dict
-
-# Create your tests here.
-
 from django.test import TestCase
 
+from djtester.all_app_service import TestCaseService
 from .domain.flow_mgr import FlowMgr
-from .domain.node_mgr import NodeMgr
-from .domain.node_runner import NodeInstanceRunner
 from .repositories import *
 
 
 class Test_Flow(TestCase):
     def test_flow_design(self):
+
+        case1 = {
+            "test_case_type": "api",
+            "tc_identity": {
+                "test_case_id": "tc1622690409",
+                "test_case_name": "test_case_name001"
+            },
+            "tc_action": {
+                "action_type": "ApiAction",
+                "action_name": "get index",
+                "action": {
+                    "method": "get",
+                    "protocol": "http",
+                    "host": "127.0.0.1",
+                    "port": "8000",
+                    "path": ""
+                }
+            },
+            "tc_data": {
+                "data_type": "ApiParams",
+                "data_name": "defApiParams",
+                "data": {
+                    "timeout": 120,
+                    "allow_redirects": True,
+                    "verify": False,
+                    "headers": {
+
+                    },
+                    "cookies": {
+
+                    },
+                    "data": {
+
+                    },
+                    "json_data": {
+
+                    },
+                    "files": {
+
+                    }
+                }
+            },
+            "tc_check_list": [
+                {
+                    "check_point_type": "ApiCheckPoint",
+                    "check_point_name": "status_code == 200",
+                    "check_point": {
+                        "response_property": "status_code",
+                        "rule": "",
+                        "operator": "eq",
+                        "expect": "200"
+                    }
+                },
+            ],
+        }
+        case2 = {
+            "test_case_type": "api",
+            "tc_identity": {
+                "test_case_id": "tc18765690409",
+                "test_case_name": "test_case_name002"
+            },
+            "tc_action": {
+                "action_type": "ApiAction",
+                "action_name": "get index",
+                "action": {
+                    "method": "get",
+                    "protocol": "http",
+                    "host": "127.0.0.1",
+                    "port": "8000",
+                    "path": ""
+                }
+            },
+            "tc_data": {
+                "data_type": "ApiParams",
+                "data_name": "defApiParams",
+                "data": {
+                    "timeout": 120,
+                    "allow_redirects": True,
+                    "verify": False,
+                    "headers": {
+
+                    },
+                    "cookies": {
+
+                    },
+                    "data": {
+
+                    },
+                    "json_data": {
+
+                    },
+                    "files": {
+
+                    }
+                }
+            },
+            "tc_check_list": [
+                {
+                    "check_point_type": "ApiCheckPoint",
+                    "check_point_name": "status_code == 200",
+                    "check_point": {
+                        "response_property": "status_code",
+                        "rule": "",
+                        "operator": "nq",
+                        "expect": "200"
+                    }
+                },
+            ],
+        }
+
         node_design_1 = {
             'id': None,
             'node_code': 'nd07675770',
             'node_name': '节点设计1',
-            'node_type': 'test123',
-            'node_data': {},
+            'node_func_name': 'api_tester',
+            'node_func_data': {'test_case_id': 1},
             'node_start_rule': {},
             'version': 1,
             'version_status': 0,
@@ -47,6 +153,41 @@ class Test_Flow(TestCase):
             'node_design': 1,
         }
 
+        node_design_2 = {
+            'id': None,
+            'node_code': 'nd076545770',
+            'node_name': '节点设计2',
+            'node_func_name': 'api_tester',
+            'node_func_data': {'test_case_id': 2},
+            'node_start_rule': {},
+            'version': 1,
+            'version_status': 0,
+        }
+        node_status_rule_4 = {
+            'id': None,
+            'status_rule_type': 'def',
+            'status_operator': 'eq',
+            'status_target': 'wait',
+            'node_status': 'wait',
+            'node_design': 2,
+        }
+        node_status_rule_5 = {
+            'id': None,
+            'status_rule_type': 'def',
+            'status_operator': 'eq',
+            'status_target': 'pass',
+            'node_status': 'finish',
+            'node_design': 2,
+        }
+        node_status_rule_6 = {
+            'id': None,
+            'status_rule_type': 'def',
+            'status_operator': 'eq',
+            'status_target': 'fail',
+            'node_status': 'stop',
+            'node_design': 2,
+        }
+
         flow_design_1 = {
             'id': None,
             'flow_code': 'fw432453212',
@@ -69,7 +210,7 @@ class Test_Flow(TestCase):
             'id': None,
             'flow_design': 1,
             'node_order': 3,
-            'node_design': 1,
+            'node_design': 2,
         }
         flow_result_rule_1 = {
             'id': None,
@@ -98,9 +239,11 @@ class Test_Flow(TestCase):
         # fi1 = FlowInstanceDBHelper().get_by({'pk': 1})
         # print(model_to_dict(fi1))
 
-        print(f'==== add node_design_1 ==== ')
+        print(f'==== add node_design_1,2 ==== ')
         nd1 = NodeDesignDBHelper().save_this(node_design_1)
+        nd2 = NodeDesignDBHelper().save_this(node_design_2)
         print(model_to_dict(nd1))
+        print(model_to_dict(nd2))
         print(f'==== add node_status_rule_1 ==== ')
         nsr1 = NodeStatusRuleDBHelper().save_this(node_status_rule_1)
         print(model_to_dict(nsr1))
@@ -110,6 +253,15 @@ class Test_Flow(TestCase):
         print(f'==== add node_status_rule_3 ==== ')
         nsr3 = NodeStatusRuleDBHelper().save_this(node_status_rule_3)
         print(model_to_dict(nsr3))
+        print(f'==== add node_status_rule_4 ==== ')
+        nsr4 = NodeStatusRuleDBHelper().save_this(node_status_rule_4)
+        print(model_to_dict(nsr4))
+        print(f'==== add node_status_rule_5 ==== ')
+        nsr5 = NodeStatusRuleDBHelper().save_this(node_status_rule_5)
+        print(model_to_dict(nsr5))
+        print(f'==== add node_status_rule_6 ==== ')
+        nsr6 = NodeStatusRuleDBHelper().save_this(node_status_rule_6)
+        print(model_to_dict(nsr6))
         print(f'==== query nd1 by pk ==== ')
         query_nd1 = NodeDesignDBHelper().get_by({'pk': 1})
         print(model_to_dict(query_nd1))
@@ -118,22 +270,9 @@ class Test_Flow(TestCase):
         for a in nd1_node_status_rule_set_all:
             print(model_to_dict(a))
 
-        # print(f'==== add node_instance_1 ====')
-        # ni1 = NodeInstanceDBHelper().save_this(node_instance_1)
-        # print(model_to_dict(ni1))
-
-        # print(f'==== run ni1 ====')
-        # aa = NodeInstanceRunner().run(ni1, {})
-        # print('==== new node_instance ====')
-        # print(model_to_dict(aa.new_node_instance))
-        # print('==== new flow_data ====')
-        # print(aa.return_data)
-        # print(f'==== NodeMgr run_node_instance ====')
-        # bb = NodeMgr().run_node_instance(ni1, {})
-        # print(bb.__dict__)
-        # print(f'==== query new_ni1 ====')
-        # new_ni1 = NodeInstanceDBHelper().get_by({'pk': 1})
-        # print(model_to_dict(new_ni1))
+        test_case_servicer = TestCaseService().test_case_servicer()
+        test_case_servicer().add(case1)
+        test_case_servicer().add(case2)
 
         print(f'==== add flow_node_design_oder_1 ====')
         flow_node_design_oder1 = FlowNodeDesignOderDBHelper().save_this(flow_node_design_oder_1)

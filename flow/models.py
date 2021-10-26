@@ -143,14 +143,14 @@ class Node_Design(Public_Field):
                                  null=True,
                                  verbose_name="节点名称")
 
-    node_type = models.CharField(max_length=32,
-                                 blank=True,
-                                 null=True,
-                                 verbose_name="节点类型")
+    node_func_name = models.CharField(max_length=32,
+                                      blank=True,
+                                      null=True,
+                                      verbose_name="节点业务方法名称")
 
-    node_data = models.JSONField(null=True,
-                                 blank=True,
-                                 verbose_name="节点数据")
+    node_func_data = models.JSONField(null=True,
+                                      blank=True,
+                                      verbose_name="节点业务数据")
 
     node_start_rule = models.JSONField(null=True,
                                        blank=True,
@@ -280,9 +280,14 @@ class Node_Instance(Public_Field):
                                     null=True,
                                     verbose_name="节点设计id")
 
-    node_data = models.JSONField(null=True,
-                                 blank=True,
-                                 verbose_name="节点数据")
+    node_func_name = models.CharField(max_length=32,
+                                      blank=True,
+                                      null=True,
+                                      verbose_name="节点业务方法名称")
+
+    node_func_data = models.JSONField(null=True,
+                                      blank=True,
+                                      verbose_name="节点业务数据")
 
     node_order = models.IntegerField(blank=True,
                                      null=True,

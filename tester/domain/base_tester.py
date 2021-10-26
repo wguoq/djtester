@@ -9,21 +9,6 @@ class BaseTester:
     def __init__(self):
         self.test_case_result: TestCaseResult = TestCaseResult()
 
-    # @abc.abstractmethod
-    # def run(self, test_case, test_case_config):
-    #     return self
-    # @abc.abstractmethod
-    # def _do_action(self, test_case):
-    #     pass
-    #
-    # @abc.abstractmethod
-    # def _verify_check_point(self, test_case):
-    #     pass
-    #
-    # @abc.abstractmethod
-    # def _set_test_result(self, test_case):
-    #     pass
-
     @staticmethod
     def _check_point_is_all_pass(check_point_result_list: list[TestCheckPointResult]):
         for result in check_point_result_list:

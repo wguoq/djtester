@@ -53,8 +53,72 @@ case1 = {
             "check_point": {
                 "response_property": "status_code",
                 "rule": "",
-                "operator": "equals",
+                "operator": "eq",
                 "expect": "200"
+            }
+        },
+        {
+            "check_point_type": "ApiJsonSchemaCheckPoint",
+            "check_point_name": "json_schema",
+            "check_point": {
+                "response_property": "status_code",
+                "rule": "",
+                "json_schema": ""
+            }
+        }
+    ],
+}
+
+case2 = {
+    "test_case_type": "api",
+    "tc_identity": {
+        "test_case_id": "tc2622693409",
+        "test_case_name": "test_case_name002"
+    },
+    "tc_action": {
+        "action_type": "ApiAction",
+        "action_name": "get index",
+        "action": {
+            "method": "get",
+            "protocol": "http",
+            "host": "127.0.0.1",
+            "port": "8000",
+            "path": ""
+        }
+    },
+    "tc_data": {
+        "data_type": "ApiParams",
+        "data_name": "defApiParams",
+        "data": {
+            "timeout": 120,
+            "allow_redirects": True,
+            "verify": False,
+            "headers": {
+
+            },
+            "cookies": {
+
+            },
+            "data": {
+
+            },
+            "json_data": {
+
+            },
+            "files": {
+
+            }
+        }
+    },
+    "tc_check_list": [
+        {
+            "check_point_type": "ApiCheckPoint",
+            "check_point_name": "status_code == 500",
+            "check_point": {
+                "response_property": "status_code",
+                "rule": "",
+                "operator": "eq",
+                "expect": "500"
             }
         },
         {
@@ -170,7 +234,7 @@ class TestTestCase(TestCase):
             "check_point": {
                 "response_property": "status_code",
                 "property_key": "",
-                "operator": "equals",
+                "operator": "eq",
                 "expect": "200"
             }
         }
@@ -192,6 +256,8 @@ class TestTestCase(TestCase):
         print(f' test_case 新增 =====')
         a = TestCaseServicer().add(case1)
         print(a)
+        b = TestCaseServicer().add(case2)
+        print(b)
 
         print(f' test_case 只修改 test_case_type =====')
         case1_1 = {"id": 1,
@@ -213,7 +279,7 @@ class TestTestCase(TestCase):
                                         'data': {}, 'json_data': {}, 'files': {}}}, 'version': 1,
                    'tc_check_list': [
                        {'id': 2, 'check_point_type': 'ApiStrCheck', 'check_point_name': 'status_code == 200 修改',
-                        'check_point': {'response_property': 'status_code', 'rule': '', 'operator': 'equals',
+                        'check_point': {'response_property': 'status_code', 'rule': '', 'operator': 'eq',
                                         'expect': '200'}}]}
         a = TestCaseServicer().edit(case1_2)
         print(a)

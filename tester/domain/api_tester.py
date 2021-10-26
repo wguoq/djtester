@@ -1,7 +1,5 @@
-from typing import Union
 import requests
-
-from djtester.enums import ResponseProperty, TestResult
+from djtester.enums import ResponseProperty
 from tester.domain.base_tester import BaseTester, ApiRequestSender
 from tester.domain.tt_models import *
 from tester.utils import *
@@ -100,13 +98,11 @@ class ApiTester(BaseTester):
         operator_ = cp.operator
         expect = cp.expect
         check_target = self._get_check_target(response_property, rule)
-        if check_target:
-            if operator_ == 'eq':
-                return operator.eq(str(check_target), str(expect))
-            elif operator_ == 'ne':
-                return operator.ne(str(check_target), str(expect))
-        else:
-            return False
+        if operator_ == 'eq':
+            return operator.eq(str(check_target), str(expect))
+        elif operator_ == 'ne':
+            return operator.ne(str(check_target), str(expect))
+
 
     # 验证check_point_json_schema
     def _verify_json_schema_check_point(self, check_point):

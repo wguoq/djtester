@@ -24,6 +24,8 @@ class FlowInstanceRunner:
     @staticmethod
     def _run_serial(flow_instance: Flow_Instance):
         flow_data = flow_instance.flow_data
+        if flow_data is None:
+            flow_data = {}
         # 查询node_instance,并排序
         node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.id}).order_by(
             'node_order')
