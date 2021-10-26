@@ -1,0 +1,6 @@
+api_tester:
+  class_path: tester.service
+  class_name: NodeFuncRunApiTestCase
+api_list_tester:
+  class_path: tester.service
+  class_name: NodeFuncRunApiTestCaseList
