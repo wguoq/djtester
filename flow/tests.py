@@ -4,6 +4,7 @@ from django.test import TestCase
 from djtester.all_app_service import TestCaseService
 from .domain.flow_mgr import FlowMgr
 from .repositories import *
+from .service import NodeFuncRunFLow
 
 
 class Test_Flow(TestCase):
@@ -310,3 +311,5 @@ class Test_Flow(TestCase):
         for ni in ni_all:
             print(model_to_dict(ni))
 
+        a = NodeFuncRunFLow().node_func_data_model()
+        print(a)

@@ -1,11 +1,18 @@
-from djtester.decorators import reg_node_func
+from djtester.decorators import reg_node_func, show_class_name
+from djtester.service import BaseServicer
 from flow.domain.flow_mgr import FlowMgr
 from flow.domain.node_func import NodeFuncBase
 from flow.repositories import *
 
 
+class FLowServicer(BaseServicer):
+    @show_class_name('service')
+    def __init__(self, db_helper):
+        super().__init__(db_helper)
+
+
 class NodeFuncRunFLow(NodeFuncBase):
-    @reg_node_func(node_type='run_flow', class_path='tester.service')
+    @reg_node_func(node_type='flow_runner', class_path='tester.service')
     def __init__(self):
         super().__init__()
 
