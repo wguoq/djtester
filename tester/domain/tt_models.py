@@ -59,35 +59,35 @@ class ApiTestCase(object):
         return url
 
 
-class ApiCheckPoint(BaseModel):
-    response_property: str = None
-    rule: str = None
-    operator: str = None
-    expect: str = None
+# class ApiCheckPoint(BaseModel):
+#     response_property: str = None
+#     rule: str = None
+#     operator: str = None
+#     expect: str = None
+#
+#
+# class ApiJsonSchemaCheckPoint(BaseModel):
+#     response_property: str = 'json'
+#     rule: str = None
+#     json_schema: str = None
 
 
-class ApiJsonSchemaCheckPoint(BaseModel):
-    response_property: str = 'json'
-    rule: str = None
-    json_schema: str = None
+# class TestCheckPointResult(BaseModel):
+#     check_point_name: str = None
+#     check_point_result: str = None
 
 
-class TestCheckPointResult(BaseModel):
-    check_point_name: str = None
-    check_point_result: str = None
-
-
-class TestCaseResult(BaseModel):
-    test_case_id: str = None
-    test_case_name: str = None
-    case_result: str = None
-    case_message: list[TestCheckPointResult] = None
-
-    def to_dict(self):
-        a = self.__dict__
-        case_message = []
-        for msg in self.case_message:
-            case_message.append(msg.__dict__)
-        a['case_message'] = case_message
-        return a
+# class TestCaseResult(BaseModel):
+#     test_case_id: str = None
+#     test_case_name: str = None
+#     case_result: str = None
+#     case_message: list[TestCheckPointResult] = None
+#
+#     def to_dict(self):
+#         a = self.__dict__
+#         case_message = []
+#         for msg in self.case_message:
+#             case_message.append(msg.__dict__)
+#         a['case_message'] = case_message
+#         return a
 

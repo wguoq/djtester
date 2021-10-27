@@ -45,12 +45,12 @@ def get_json_value_by_rule(data, rule: str):
 
 
 def get_json_value(data, rules):
-    _data = data
+    l_data = data
     for rule in rules.split('__'):
-        a = get_json_value_by_rule(_data, rule)
+        a = get_json_value_by_rule(l_data, rule)
         if a is None:
             return None
         else:
-            _data = a
+            l_data = a
             continue
-    return _data
+    return l_data

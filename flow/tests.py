@@ -111,7 +111,7 @@ class Test_Flow(TestCase):
                     "check_point": {
                         "response_property": "status_code",
                         "rule": "",
-                        "operator": "nq",
+                        "operator": "ne",
                         "expect": "200"
                     }
                 },

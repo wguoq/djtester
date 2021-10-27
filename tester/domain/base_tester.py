@@ -2,30 +2,16 @@ import abc
 import requests
 
 from djtester.enums import TestResult
-from tester.domain.tt_models import TestCaseResult, ApiTestCase, TestCheckPointResult
+from tester.domain.tt_models import ApiTestCase
 
 
 class BaseTester:
     def __init__(self):
-        self.test_case_result: TestCaseResult = TestCaseResult()
-
-    @staticmethod
-    def _check_point_is_all_pass(check_point_result_list: list[TestCheckPointResult]):
-        for result in check_point_result_list:
-            if result.check_point_result == TestResult.PASS.value:
-                continue
-            else:
-                return False
-        return True
-
-    @staticmethod
-    def _check_point_is_anyone_pass(check_point_result_list: list[TestCheckPointResult]):
-        for result in check_point_result_list:
-            if result.check_point_result == TestResult.PASS.value:
-                return True
-            else:
-                continue
-        return False
+        self.test_case_id = None
+        self.test_case_name = None
+        self.test_case_result = None
+        self.check_point_result_list = []
+        self.message = None
 
 
 class ApiRequestSender(object):
