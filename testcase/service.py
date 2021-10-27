@@ -1,13 +1,13 @@
 import json
 import random
 import time
-
 from django.core import serializers
-from django.db import models
 from django.forms import model_to_dict
+from djtester.decorators import show_class_name
 from djtester.enums import TestCaseType
+from djtester.service import query_set_dict_to_model_dict, BaseServicer
 from testcase.domain.models.tc_api_model import *
-from testcase.domain.test_case_mgr import *
+from testcase.domain.test_case_mgr import TestCaseDBHelper
 from testcase.repositories import *
 
 
@@ -21,38 +21,7 @@ class TestCaseEnums:
         return list(e.value for e in TestCaseType)
 
 
-class BaseTcServicer:
-    def __init__(self, db_helper: models):
-        self.DBHelper = db_helper
-
-    def add(self, data):
-        return self.DBHelper.save_this(data)
-
-    def edit(self, data):
-        return self.DBHelper.save_this(data)
-
-    def get_all(self, offset: int = 0, limit: int = 100) -> list[dict]:
-        aaa = self.DBHelper.get_all(offset, limit)
-        all_aaa = []
-        for a in aaa:
-            all_aaa.append(model_to_dict(a))
-        return all_aaa
-
-    def get_by_pk(self, pk: int):
-        a = self.DBHelper.get_by({'pk': pk})
-        return model_to_dict(a)
-
-    def filter_by(self, kwargs: dict):
-        a = self.DBHelper.filter_by(kwargs)
-        s = serializers.serialize('json', a)
-        dd = json.loads(s)
-        dict_list = []
-        for d in dd:
-            dict_list.append(_query_set_dict_to_model_dict(d))
-        return dict_list
-
-
-class TestCaseIdentityServicer(BaseTcServicer):
+class TestCaseIdentityServicer(BaseServicer):
     def __init__(self):
         self.DBHelper = TcIdentityDBHelper()
         super().__init__(self.DBHelper)
@@ -70,7 +39,7 @@ class TestCaseIdentityServicer(BaseTcServicer):
             return super().add(data)
 
 
-class TestCaseActionServicer(BaseTcServicer):
+class TestCaseActionServicer(BaseServicer):
     def __init__(self):
         self.DBHelper = TcActionDBHelper()
         super().__init__(self.DBHelper)
@@ -80,7 +49,7 @@ class TestCaseActionServicer(BaseTcServicer):
         return model_to_dict(Action())
 
 
-class TestCaseDataServicer(BaseTcServicer):
+class TestCaseDataServicer(BaseServicer):
     def __init__(self):
         self.DBHelper = TcDataDBHelper()
         super().__init__(self.DBHelper)
@@ -90,7 +59,7 @@ class TestCaseDataServicer(BaseTcServicer):
         return model_to_dict(TestData())
 
 
-class TestCaseCheckPointServicer(BaseTcServicer):
+class TestCaseCheckPointServicer(BaseServicer):
     def __init__(self):
         self.DBHelper = TcCheckPointDBHelper()
         super().__init__(self.DBHelper)
@@ -100,7 +69,8 @@ class TestCaseCheckPointServicer(BaseTcServicer):
         return model_to_dict(Check_Point())
 
 
-class TestCaseServicer(BaseTcServicer):
+class TestCaseServicer(BaseServicer):
+    @show_class_name('service')
     def __init__(self):
         self.DBHelper = TestCaseDBHelper()
         super().__init__(self.DBHelper)
@@ -219,22 +189,13 @@ def _get_full_case(case_dict) -> dict:
     return case_dict
 
 
-def _query_set_dict_to_model_dict(query_set_dict: dict):
-    pk = query_set_dict.get('pk')
-    fields = query_set_dict.get('fields')
-    model_dict = {}
-    model_dict.update({'id': pk})
-    model_dict.update(fields)
-    return model_dict
-
-
 def _query_set_to_case_dict(query_set):
     # 用serializers.serialize把QuerySet序列化成json,
     s = serializers.serialize('json', query_set)
     dd = json.loads(s)
     case_dict_list = []
     for d in dd:
-        model_dict = _query_set_dict_to_model_dict(d)
+        model_dict = query_set_dict_to_model_dict(d)
         case_dict = _get_full_case(model_dict)
         case_dict_list.append(case_dict)
     return case_dict_list

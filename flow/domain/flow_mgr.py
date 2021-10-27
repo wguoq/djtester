@@ -1,17 +1,13 @@
 from django.db import transaction
 from django.forms import model_to_dict
-
 from flow.domain.flow_runner import FlowInstanceRunner
-from flow.models import Flow_Instance, Flow_Design, Node_Instance
+from flow.models import Flow_Instance, Flow_Design
 from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNodeDesignOderDBHelper
 
 
 class FlowMgr:
     def __init__(self):
         self.new_flow_instance = None
-
-    def save_flow_design_all(self, Flow_Result_Rule,Flow_Status_Rule,):
-        pass
 
     @transaction.atomic
     def instance_flow_design(self, flow_design: Flow_Design, flow_data: dict = None):

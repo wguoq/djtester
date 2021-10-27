@@ -24,7 +24,6 @@ class Flow_Design(Public_Field):
     """
     流程设计表
     """
-    id = models.AutoField(primary_key=True)
 
     flow_code = models.CharField(max_length=32,
                                  blank=True,
@@ -58,7 +57,9 @@ class Flow_Design(Public_Field):
 
 
 class Flow_Result_Rule(Public_Field):
-    id = models.AutoField(primary_key=True)
+    """
+    流程结果规则表
+    """
 
     result_rule_type = models.CharField(max_length=32,
                                         blank=True,
@@ -93,7 +94,9 @@ class Flow_Result_Rule(Public_Field):
 
 
 class Flow_Status_Rule(Public_Field):
-    id = models.AutoField(primary_key=True)
+    """
+    流程状态规则表
+    """
 
     status_rule_type = models.CharField(max_length=32,
                                         blank=True,
@@ -131,7 +134,6 @@ class Node_Design(Public_Field):
     """
     流程节点设计表
     """
-    id = models.AutoField(primary_key=True)
 
     node_code = models.CharField(max_length=32,
                                  blank=True,
@@ -173,7 +175,9 @@ class Node_Design(Public_Field):
 
 
 class Node_Status_Rule(Public_Field):
-    id = models.AutoField(primary_key=True)
+    """
+    流程节点状态规则表
+    """
 
     status_operator = models.CharField(max_length=32,
                                        blank=True,
@@ -207,7 +211,6 @@ class Flow_Node_Design_Oder(Public_Field):
     """
     流程设计,节点顺序,节点设计关联表
     """
-    id = models.AutoField(primary_key=True)
 
     flow_design = models.ForeignKey(to=Flow_Design,
                                     on_delete=models.SET_NULL,
@@ -234,7 +237,6 @@ class Flow_Instance(Public_Field):
     """
     流程实例表
     """
-    id = models.AutoField(primary_key=True)
 
     flow_design = models.ForeignKey(to=Flow_Design,
                                     on_delete=models.SET_NULL,
@@ -267,7 +269,6 @@ class Node_Instance(Public_Field):
     """
     流程节点实例表
     """
-    id = models.AutoField(primary_key=True)
 
     node_design = models.ForeignKey(to=Node_Design,
                                     on_delete=models.SET_NULL,

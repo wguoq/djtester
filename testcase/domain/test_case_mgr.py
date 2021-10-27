@@ -1,5 +1,5 @@
 from django.db import transaction
-from djtester.base_repositories import save_foreignkey
+from djtester.repositories import save_foreignkey
 from testcase.models import Test_Case
 from testcase.repositories import *
 

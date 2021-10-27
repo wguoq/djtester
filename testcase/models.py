@@ -8,8 +8,6 @@ class Identity(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    # id = models.AutoField(primary_key=True)
-
     test_case_id = models.CharField(max_length=32,  # 32字符=64字节
                                     unique=True,
                                     null=True,
@@ -31,8 +29,6 @@ class Action(models.Model):
     @show_class_name('Model')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    # id = models.AutoField(primary_key=True)
 
     action_type = models.CharField(max_length=32,
                                    blank=True,
@@ -60,8 +56,6 @@ class TestData(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    # id = models.AutoField(primary_key=True)
-
     data_type = models.CharField(max_length=32,
                                  blank=True,
                                  null=True,
@@ -88,8 +82,6 @@ class Check_Point(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    # id = models.AutoField(primary_key=True)
-
     check_point_type = models.CharField(max_length=32,
                                         blank=True,
                                         null=True,
@@ -115,8 +107,6 @@ class Test_Case(models.Model):
     @show_class_name('Model')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    # id = models.AutoField(primary_key=True)
 
     test_case_type = models.CharField(max_length=32,
                                       null=True,

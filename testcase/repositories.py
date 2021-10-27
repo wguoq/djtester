@@ -1,4 +1,4 @@
-from djtester.base_repositories import BaseDBHelper
+from djtester.repositories import BaseDBHelper
 from testcase.models import Identity, Action, TestData, Check_Point
 
 MODELS_PATH = 'testcase.models'

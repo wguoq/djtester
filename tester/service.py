@@ -1,4 +1,4 @@
-from djtester.decorators import reg_node_func
+from djtester.decorators import reg_node_func, show_class_name
 from djtester.enums import TestCaseType
 from flow.domain.node_func import NodeFuncBase
 from tester.domain.api_tester import ApiTester
@@ -12,6 +12,10 @@ def _get_test_case_by_pk(pk):
 
 
 class TesterServicer:
+    @show_class_name('service')
+    def __init__(self):
+        pass
+
     @staticmethod
     def new_test_config():
         return ApiCaseConfig().__dict__

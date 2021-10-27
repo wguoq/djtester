@@ -1,6 +1,6 @@
 import importlib
 
-from djtester.base_repositories import BaseDBHelper, save_foreignkey
+from djtester.repositories import BaseDBHelper, save_foreignkey
 from flow.models import *
 
 MODELS_PATH = 'flow.models'
