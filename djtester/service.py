@@ -1,7 +1,6 @@
 import json
 from django.forms import model_to_dict
 from django.core import serializers
-
 from djtester.decorators import show_class_name
 
 

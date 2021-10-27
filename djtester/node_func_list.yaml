@@ -5,5 +5,5 @@ api_list_tester:
   class_path: tester.service
   class_name: NodeFuncRunApiTestCaseList
 flow_runner:
-  class_path: tester.service
+  class_path: flow.service
   class_name: NodeFuncRunFLow

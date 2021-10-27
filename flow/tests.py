@@ -1,6 +1,5 @@
 from django.forms import model_to_dict
 from django.test import TestCase
-
 from djtester.all_app_service import TestCaseService
 from .domain.flow_mgr import FlowMgr
 from .repositories import *
@@ -122,7 +121,7 @@ class Test_Flow(TestCase):
         node_design_1 = {
             'id': None,
             'node_code': 'nd07675770',
-            'node_name': '节点设计1',
+            'node_name': '节点设计1 api_tester',
             'node_func_name': 'api_tester',
             'node_func_data': {'test_case_id': 1},
             'node_start_rule': {},
@@ -154,7 +153,7 @@ class Test_Flow(TestCase):
         node_design_2 = {
             'id': None,
             'node_code': 'nd076545770',
-            'node_name': '节点设计2',
+            'node_name': '节点设计2 api_tester',
             'node_func_name': 'api_tester',
             'node_func_data': {'test_case_id': 2},
             'node_start_rule': {},
@@ -179,8 +178,40 @@ class Test_Flow(TestCase):
             'id': None,
             'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'stop',
+            'node_status': 'finish',
             'node_design': 2,
+        }
+
+        node_design_3 = {
+            'id': None,
+            'node_code': 'nd076545770',
+            'node_name': '节点设计3 flow_runner',
+            'node_func_name': 'flow_runner',
+            'node_func_data': {'flow_design_id': 2},
+            'node_start_rule': {},
+            'version': 1,
+            'version_status': 0,
+        }
+        node_status_rule_7 = {
+            'id': None,
+            'status_operator': 'eq',
+            'status_target': 'finish',
+            'node_status': 'finish',
+            'node_design': 3,
+        }
+        node_status_rule_8 = {
+            'id': None,
+            'status_operator': 'eq',
+            'status_target': 'running',
+            'node_status': 'wait',
+            'node_design': 3,
+        }
+        node_status_rule_9 = {
+            'id': None,
+            'status_operator': 'eq',
+            'status_target': 'unknown',
+            'node_status': 'wait',
+            'node_design': 3,
         }
 
         flow_design_1 = {
@@ -199,13 +230,13 @@ class Test_Flow(TestCase):
             'id': None,
             'flow_design': 1,
             'node_order': 2,
-            'node_design': 1,
+            'node_design': 2,
         }
         flow_node_design_oder_3 = {
             'id': None,
             'flow_design': 1,
             'node_order': 3,
-            'node_design': 2,
+            'node_design': 3,
         }
         flow_result_rule_1 = {
             'id': None,
@@ -224,42 +255,66 @@ class Test_Flow(TestCase):
             'flow_design': 1
         }
 
-        print(f'==== add flow_design_1 ==== ')
-        FlowDesignDBHelper().save_this(flow_design_1)
+        flow_design_2 = {
+            'id': None,
+            'flow_code': 'fw4324535512',
+            'flow_name': 'flow_design_2',
+            'flow_type': 'serial',
+        }
+        flow_node_design_oder_4 = {
+            'id': None,
+            'flow_design': 2,
+            'node_order': 1,
+            'node_design': 1,
+        }
+        flow_node_design_oder_5 = {
+            'id': None,
+            'flow_design': 2,
+            'node_order': 2,
+            'node_design': 2,
+        }
+        flow_result_rule_2 = {
+            'id': None,
+            'result_rule_type': 'last_node_result',
+            'result_rule_name': 'result_rule_name 1',
+            'flow_result': 'ok',
+            'result_rule_script': {},
+            'flow_design': 2
+        }
+        flow_status_rule_2 = {
+            'id': None,
+            'status_rule_type': 'last_node_status',
+            'status_rule_name': 'status_rule_name 1',
+            'flow_status': 'finish',
+            'status_rule_script': {},
+            'flow_design': 2
+        }
+
+        print(f'==== add flow_design_1,2 ==== ')
+        flow_design_list = [flow_design_1, flow_design_2]
+        for flow_design in flow_design_list:
+            FlowDesignDBHelper().save_this(flow_design)
         fd1 = FlowDesignDBHelper().get_by({'pk': 1})
         print(model_to_dict(fd1))
 
-        # print(f'==== add flow_instance_1 ==== ')
-        # FlowInstanceDBHelper().save_this(flow_instance_1)
-        # fi1 = FlowInstanceDBHelper().get_by({'pk': 1})
-        # print(model_to_dict(fi1))
+        print(f'==== add node_design_1,2,3 ==== ')
+        node_design_list = [node_design_1, node_design_2, node_design_3]
+        for node_design in node_design_list:
+            a = NodeDesignDBHelper().save_this(node_design)
+            print(model_to_dict(a))
 
-        print(f'==== add node_design_1,2 ==== ')
-        nd1 = NodeDesignDBHelper().save_this(node_design_1)
-        nd2 = NodeDesignDBHelper().save_this(node_design_2)
-        print(model_to_dict(nd1))
-        print(model_to_dict(nd2))
-        print(f'==== add node_status_rule_1 ==== ')
-        nsr1 = NodeStatusRuleDBHelper().save_this(node_status_rule_1)
-        print(model_to_dict(nsr1))
-        print(f'==== add node_status_rule_2 ==== ')
-        nsr2 = NodeStatusRuleDBHelper().save_this(node_status_rule_2)
-        print(model_to_dict(nsr2))
-        print(f'==== add node_status_rule_3 ==== ')
-        nsr3 = NodeStatusRuleDBHelper().save_this(node_status_rule_3)
-        print(model_to_dict(nsr3))
-        print(f'==== add node_status_rule_4 ==== ')
-        nsr4 = NodeStatusRuleDBHelper().save_this(node_status_rule_4)
-        print(model_to_dict(nsr4))
-        print(f'==== add node_status_rule_5 ==== ')
-        nsr5 = NodeStatusRuleDBHelper().save_this(node_status_rule_5)
-        print(model_to_dict(nsr5))
-        print(f'==== add node_status_rule_6 ==== ')
-        nsr6 = NodeStatusRuleDBHelper().save_this(node_status_rule_6)
-        print(model_to_dict(nsr6))
+        print(f'==== add node_status_rule_123456789 ==== ')
+        node_status_rule_list = [node_status_rule_1, node_status_rule_2, node_status_rule_3, node_status_rule_4,
+                                 node_status_rule_5, node_status_rule_6, node_status_rule_7, node_status_rule_8,
+                                 node_status_rule_9]
+        for node_status_rule in node_status_rule_list:
+            a = NodeStatusRuleDBHelper().save_this(node_status_rule)
+            print(model_to_dict(a))
+
         print(f'==== query nd1 by pk ==== ')
         query_nd1 = NodeDesignDBHelper().get_by({'pk': 1})
         print(model_to_dict(query_nd1))
+
         print(f'==== query nd1 node_status_rule_set.all ==== ')
         nd1_node_status_rule_set_all = query_nd1.node_status_rule_set.all().order_by('-id')
         for a in nd1_node_status_rule_set_all:
@@ -269,25 +324,24 @@ class Test_Flow(TestCase):
         test_case_servicer().add(case1)
         test_case_servicer().add(case2)
 
-        print(f'==== add flow_node_design_oder_1 ====')
-        flow_node_design_oder1 = FlowNodeDesignOderDBHelper().save_this(flow_node_design_oder_1)
-        print(model_to_dict(flow_node_design_oder1))
+        print(f'==== add flow_node_design_oder_12345 ====')
+        flow_node_design_oder_list = [flow_node_design_oder_1, flow_node_design_oder_2, flow_node_design_oder_3,
+                                      flow_node_design_oder_4, flow_node_design_oder_5]
+        for flow_node_design_oder in flow_node_design_oder_list:
+            a = FlowNodeDesignOderDBHelper().save_this(flow_node_design_oder)
+            print(model_to_dict(a))
 
-        print(f'==== add flow_node_design_oder_2 ====')
-        flow_node_design_oder2 = FlowNodeDesignOderDBHelper().save_this(flow_node_design_oder_2)
-        print(model_to_dict(flow_node_design_oder2))
+        print(f'==== add flow_result_rule_12 ====')
+        flow_result_rule_list = [flow_result_rule_1, flow_result_rule_2,]
+        for flow_result_rule in flow_result_rule_list:
+            a = FlowResultRuleDBHelper().save_this(flow_result_rule)
+            print(model_to_dict(a))
 
-        print(f'==== add flow_node_design_oder_3 ====')
-        flow_node_design_oder3 = FlowNodeDesignOderDBHelper().save_this(flow_node_design_oder_3)
-        print(model_to_dict(flow_node_design_oder3))
-
-        print(f'==== add flow_result_rule_1 ====')
-        flow_result_rule1 = FlowResultRuleDBHelper().save_this(flow_result_rule_1)
-        print(model_to_dict(flow_result_rule1))
-
-        print(f'==== add flow_status_rule_1 ====')
-        flow_status_rule1 = FlowStatusRuleDBHelper().save_this(flow_status_rule_1)
-        print(model_to_dict(flow_status_rule1))
+        print(f'==== add flow_status_rule_12 ====')
+        flow_status_rule_list = [flow_status_rule_1, flow_status_rule_2]
+        for flow_status_rule in flow_status_rule_list:
+            a = FlowStatusRuleDBHelper().save_this(flow_status_rule)
+            print(model_to_dict(a))
 
         print(f'==== instance_flow_design fd1 ====')
         fd1 = FlowDesignDBHelper().get_by({'pk': 1})

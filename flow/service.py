@@ -12,7 +12,7 @@ class FLowServicer(BaseServicer):
 
 
 class NodeFuncRunFLow(NodeFuncBase):
-    @reg_node_func(node_type='flow_runner', class_path='tester.service')
+    @reg_node_func(node_type='flow_runner', class_path='flow.service')
     def __init__(self):
         super().__init__()
 
