@@ -8,7 +8,7 @@ pip install ruamel.yaml
 import os
 from ruamel import yaml
 
-# 作者：上海-悠悠 QQ交流群：330467341
+
 
 # 将字典写入到yaml
 desired_caps = {

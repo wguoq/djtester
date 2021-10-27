@@ -130,7 +130,6 @@ class Test_Flow(TestCase):
         }
         node_status_rule_1 = {
             'id': None,
-            'status_rule_type': 'def',
             'status_operator': 'eq',
             'status_target': 'wait',
             'node_status': 'wait',
@@ -138,7 +137,6 @@ class Test_Flow(TestCase):
         }
         node_status_rule_2 = {
             'id': None,
-            'status_rule_type': 'def',
             'status_operator': 'eq',
             'status_target': 'pass',
             'node_status': 'finish',
@@ -146,7 +144,6 @@ class Test_Flow(TestCase):
         }
         node_status_rule_3 = {
             'id': None,
-            'status_rule_type': 'def',
             'status_operator': 'eq',
             'status_target': 'fail',
             'node_status': 'stop',
@@ -165,7 +162,6 @@ class Test_Flow(TestCase):
         }
         node_status_rule_4 = {
             'id': None,
-            'status_rule_type': 'def',
             'status_operator': 'eq',
             'status_target': 'wait',
             'node_status': 'wait',
@@ -173,7 +169,6 @@ class Test_Flow(TestCase):
         }
         node_status_rule_5 = {
             'id': None,
-            'status_rule_type': 'def',
             'status_operator': 'eq',
             'status_target': 'pass',
             'node_status': 'finish',
@@ -181,7 +176,6 @@ class Test_Flow(TestCase):
         }
         node_status_rule_6 = {
             'id': None,
-            'status_rule_type': 'def',
             'status_operator': 'eq',
             'status_target': 'fail',
             'node_status': 'stop',

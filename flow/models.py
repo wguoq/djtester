@@ -175,11 +175,6 @@ class Node_Design(Public_Field):
 class Node_Status_Rule(Public_Field):
     id = models.AutoField(primary_key=True)
 
-    status_rule_type = models.CharField(max_length=32,
-                                        blank=True,
-                                        null=True,
-                                        verbose_name="规则类型")
-
     status_operator = models.CharField(max_length=32,
                                        blank=True,
                                        null=True,

@@ -53,10 +53,7 @@ class FlowInstanceRunner:
             return flow_instance
         # 1表示串行流程的节点都运行完了,需要根据规则来确定结果
         elif result == 1:
-            # 把所有ode_instance查出来
-
             flow_instance.flow_result = self._check_result(flow_instance)
-
             flow_instance.flow_status = self._check_status(flow_instance)
             return flow_instance
 
