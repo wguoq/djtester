@@ -163,22 +163,15 @@ class Test_Flow(TestCase):
         node_status_rule_4 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'wait',
-            'node_status': 'wait',
+            'status_target': 'pass',
+            'node_status': 'finish',
             'node_design': 2,
         }
         node_status_rule_5 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'pass',
-            'node_status': 'finish',
-            'node_design': 2,
-        }
-        node_status_rule_6 = {
-            'id': None,
-            'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'finish',
+            'node_status': 'skip',
             'node_design': 2,
         }
 
@@ -192,25 +185,18 @@ class Test_Flow(TestCase):
             'version': 1,
             'version_status': 0,
         }
-        node_status_rule_7 = {
+        node_status_rule_6 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'finish',
+            'status_target': 'pass',
             'node_status': 'finish',
             'node_design': 3,
         }
-        node_status_rule_8 = {
+        node_status_rule_7 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'running',
-            'node_status': 'wait',
-            'node_design': 3,
-        }
-        node_status_rule_9 = {
-            'id': None,
-            'status_operator': 'eq',
-            'status_target': 'unknown',
-            'node_status': 'wait',
+            'status_target': 'fail',
+            'node_status': 'stop',
             'node_design': 3,
         }
 
@@ -267,16 +253,10 @@ class Test_Flow(TestCase):
             'node_order': 1,
             'node_design': 1,
         }
-        flow_node_design_oder_5 = {
-            'id': None,
-            'flow_design': 2,
-            'node_order': 2,
-            'node_design': 2,
-        }
         flow_result_rule_2 = {
             'id': None,
             'result_rule_type': 'last_node_result',
-            'result_rule_name': 'result_rule_name 1',
+            'result_rule_name': 'result_rule_name 2',
             'flow_result': 'ok',
             'result_rule_script': {},
             'flow_design': 2
@@ -284,7 +264,7 @@ class Test_Flow(TestCase):
         flow_status_rule_2 = {
             'id': None,
             'status_rule_type': 'last_node_status',
-            'status_rule_name': 'status_rule_name 1',
+            'status_rule_name': 'status_rule_name 2',
             'flow_status': 'finish',
             'status_rule_script': {},
             'flow_design': 2
@@ -305,8 +285,8 @@ class Test_Flow(TestCase):
 
         print(f'==== add node_status_rule_123456789 ==== ')
         node_status_rule_list = [node_status_rule_1, node_status_rule_2, node_status_rule_3, node_status_rule_4,
-                                 node_status_rule_5, node_status_rule_6, node_status_rule_7, node_status_rule_8,
-                                 node_status_rule_9]
+                                 node_status_rule_5, node_status_rule_6, node_status_rule_7,]
+
         for node_status_rule in node_status_rule_list:
             a = NodeStatusRuleDBHelper().save_this(node_status_rule)
             print(model_to_dict(a))
@@ -326,7 +306,7 @@ class Test_Flow(TestCase):
 
         print(f'==== add flow_node_design_oder_12345 ====')
         flow_node_design_oder_list = [flow_node_design_oder_1, flow_node_design_oder_2, flow_node_design_oder_3,
-                                      flow_node_design_oder_4, flow_node_design_oder_5]
+                                      flow_node_design_oder_4]
         for flow_node_design_oder in flow_node_design_oder_list:
             a = FlowNodeDesignOderDBHelper().save_this(flow_node_design_oder)
             print(model_to_dict(a))
@@ -364,6 +344,11 @@ class Test_Flow(TestCase):
         ni_all = NodeInstanceDBHelper().get_all()
         for ni in ni_all:
             print(model_to_dict(ni))
+
+        print(f'==== get flow_instance all ====')
+        aaa = FlowInstanceDBHelper().get_all()
+        for a in aaa:
+            print(model_to_dict(a))
 
         a = NodeFuncRunFLow().node_func_data_model()
         print(a)
