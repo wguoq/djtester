@@ -207,11 +207,53 @@ class Node_Status_Rule(Public_Field):
         db_table = "flow_node_status_rule"
 
 
-# class Node_Start_Rule(Public_Field):
-#     """
-#     流程启动条件表
-#     """
-#     pass
+class Node_Start_Rule_Design(Public_Field):
+    """
+    流程启动条件表
+    """
+    rule_type = models.CharField(max_length=32,
+                                 blank=True,
+                                 null=True,
+                                 default='and',
+                                 verbose_name="and | or")
+
+    rule_order = models.IntegerField(blank=True,
+                                     null=True,
+                                     verbose_name="顺序")
+
+    node_design = models.ForeignKey(to=Node_Design,
+                                    on_delete=models.SET_NULL,
+                                    blank=True,
+                                    null=True,
+                                    verbose_name="节点设计id")
+
+
+class Node_Start_Rule(Public_Field):
+    rule_target = models.CharField(max_length=32,
+                                   blank=True,
+                                   null=True,
+                                   verbose_name="目标: flow_data | node_result")
+
+    rule_where = models.CharField(max_length=32,
+                                  blank=True,
+                                  null=True,
+                                  verbose_name="关键字")
+
+    rule_operator = models.CharField(max_length=32,
+                                     blank=True,
+                                     null=True,
+                                     verbose_name="eq | nq | lt | le | gt | ge")
+
+    rule_value = models.CharField(max_length=32,
+                                  blank=True,
+                                  null=True,
+                                  verbose_name="匹配值")
+
+    rule_design = models.ForeignKey(to=Node_Start_Rule_Design,
+                                    on_delete=models.SET_NULL,
+                                    blank=True,
+                                    null=True,
+                                    verbose_name="顺序id")
 
 
 class Flow_Node_Design_Oder(Public_Field):

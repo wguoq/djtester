@@ -23,7 +23,7 @@ class NodeInstanceRunner:
             flow_data = {}
         func_result: NodeFuncBase = self._run(node_instance, flow_data)
         # 运行完了就更新数据
-        self.new_node_instance = self._update_result_status(func_result, node_instance)
+        self.new_node_instance = self.update_result_status(func_result.result, node_instance)
         self.return_data = func_result.return_data
         return self
 
@@ -41,15 +41,15 @@ class NodeInstanceRunner:
         else:
             raise Exception(f'根据 node_func_name = {node_func_name} import 对应的class,结果为 None')
 
-    def _update_result_status(self, func_result, node_instance):
-        node_instance.node_result = func_result.result
-        node_instance.node_status = self._check_status(func_result, node_instance)
+    def update_result_status(self, result: str, node_instance):
+        node_instance.node_result = result
+        node_instance.node_status = self._check_status(result, node_instance)
         return node_instance
 
-    def _check_status(self, func_result, node_instance):
+    def _check_status(self, result: str, node_instance):
         rule_list = node_instance.node_design.node_status_rule_set.all()
         for rule in rule_list:
-            node_status = self._get_node_status_by_rule(rule, func_result)
+            node_status = self._get_node_status_by_rule(rule, result)
             if node_status:
                 return node_status
             else:
@@ -57,16 +57,16 @@ class NodeInstanceRunner:
         return NodeStatus.Unknown.value
 
     @staticmethod
-    def _get_node_status_by_rule(rule: Node_Status_Rule, func_result):
+    def _get_node_status_by_rule(rule: Node_Status_Rule, result):
         status_operator = rule.status_operator
         status_target = rule.status_target
         if status_operator == 'eq':
-            if operator.eq(str(func_result.result), str(status_target)):
+            if operator.eq(str(result), str(status_target)):
                 return rule.node_status
             else:
                 return None
         elif status_operator == 'ne':
-            if operator.ne(str(func_result.result), str(status_target)):
+            if operator.ne(str(result), str(status_target)):
                 return rule.node_status
             else:
                 return None

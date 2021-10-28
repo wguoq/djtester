@@ -12,6 +12,11 @@ class FlowMgr:
         self.new_flow_instance = None
 
     @transaction.atomic
+    def save_flow_node_design(self):
+        # todo
+        pass
+
+    @transaction.atomic
     def instance_flow_design(self, flow_design: Flow_Design, flow_data: dict = None):
         if flow_data is None:
             flow_data = {}
@@ -34,7 +39,8 @@ class FlowMgr:
             NodeInstanceDBHelper().save_this(ni)
         return flow_instance
 
-    def run_flow(self, flow_instance: Flow_Instance):
+    def run_flow(self, flow_instance_id):
+        flow_instance = FlowInstanceDBHelper().get_by({'pk': flow_instance_id})
         # 先判断流程状态是不是已完成或者终止
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value]:
             self.new_flow_instance = flow_instance

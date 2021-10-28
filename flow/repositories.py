@@ -103,3 +103,29 @@ class FlowNodeDesignOderDBHelper(BaseDBHelper):
             data['node_design'] = node_design
             data['flow_design'] = flow_design
             return super().save_this(data)
+
+
+class NodeStartRuleDesignDBHelper(BaseDBHelper):
+    def __init__(self):
+        super().__init__(MODELS_PATH, Node_Start_Rule_Design.__name__)
+
+    def _save_m2m(self, new_model):
+        return new_model
+
+    def save_this(self, data: dict):
+        data['node_design'] = save_foreignkey(REPOSITORIES_PATH,
+                                              NodeDesignDBHelper.__name__, data.get('node_design'))
+        return super().save_this(data)
+
+
+class NodeStartRuleDBHelper(BaseDBHelper):
+    def __init__(self):
+        super().__init__(MODELS_PATH, Node_Start_Rule.__name__)
+
+    def _save_m2m(self, new_model):
+        return new_model
+
+    def save_this(self, data: dict):
+        data['rule_design'] = save_foreignkey(REPOSITORIES_PATH,
+                                              NodeStartRuleDesignDBHelper.__name__, data.get('rule_design'))
+        return super().save_this(data)

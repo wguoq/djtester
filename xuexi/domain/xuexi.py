@@ -32,21 +32,20 @@ for i in range(2, 101, 2):
 l = ['1', '2', '3']
 x = '5'
 l.append(x)
-l.insert(1,x)
-l.remove(x) # 删除值=x的
-l.pop(1) # 删除第i个else最后一个
-l.sort() # 排序
-l.reverse() # 反转
+l.insert(1, x)
+l.remove(x)  # 删除值=x的
+l.pop(1)  # 删除第i个else最后一个
+l.sort()  # 排序
+l.reverse()  # 反转
 l.clear()
 # 元组()
 # 元组内有list时,是可以改变这个list的内容
-(1,2,3,l)
-
+(1, 2, 3, l)
 
 # 集合
 set()
-a = {1,2,3}
-b = {3,4,5}
+a = {1, 2, 3}
+b = {3, 4, 5}
 
 a.union(b)
 a.intersection(b)
@@ -54,17 +53,17 @@ a.difference(b)
 
 # 字典
 a = {}
-b = a.fromkeys(('a','b','c'),'1')
+b = a.fromkeys(('a', 'b', 'c'), '1')
 print(b)
 # 字典推导式
-x = {i: i+1 for i in range(4)}
+x = {i: i + 1 for i in range(4)}
 print(x)
 # dir()列出当前导入的所有方法和变量
 print(dir())
 print(dir(sys))
 
 # *list 解包 **dict 解包
-ll = ['1','2','3']
+ll = ['1', '2', '3']
 print('ll is {}+{}+{}'.format(*ll))
 dd = {'a': 1,
       'b': 2,
@@ -75,16 +74,19 @@ print('dd is {a}+{b}+{c}'.format(**dd))
 name1 = 'abcd'
 name2 = f'1234+{name1}'
 name3 = f'1234+{name1[0]}'
-name4 = f'1234+{(lambda x: x+1)(1)}'
+name4 = f'1234+{(lambda x: x + 1)(1)}'
+
 
 def fff(x):
-    return x+1
+    return x + 1
+
 
 name5 = f'1234+{fff(3)}'
 print(name2)
 print(name3)
 print(name4)
 print(name5)
+
 
 # python中动态加载模块和类方法实现测试代码
 #
@@ -147,6 +149,19 @@ a = '500'
 b = '200'
 print(operator.gt(a, b))
 
-
-
-
+# python 3.10
+# Result = Ok | Err
+#
+#
+# def abcd(value: str) -> Result:
+#     if value.isnumeric():
+#         return Ok(int(value))
+#     else:
+#         return Err(f'{value} is not numeric')
+#
+#
+# match abcd('1234'):
+#     case Ok(value):
+#         print(f'Result is Ok value is {value}')
+#     case Err(message):
+#         print(f'Result is Err value is {message}')
