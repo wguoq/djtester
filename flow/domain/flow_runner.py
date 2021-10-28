@@ -1,3 +1,4 @@
+from flow.domain.enums import NodeStatus, FlowType, FlowStatus
 from flow.domain.node_mgr import NodeMgr
 from flow.models import Flow_Instance, Flow_Result_Rule, Node_Instance, Flow_Status_Rule
 from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper, NodeInstanceDBHelper
@@ -14,9 +15,9 @@ class FlowInstanceRunner:
 
     def _run(self, flow_instance: Flow_Instance):
         flow_type = flow_instance.flow_design.flow_type
-        if flow_type == 'serial':
+        if flow_type == FlowType.Serial.value:
             return self._run_serial(flow_instance)
-        elif flow_type == 'parallel':
+        elif flow_type == FlowType.Parallel.value:
             return self._run_parallel(flow_instance)
         else:
             raise Exception(f'无法识别的 flow_type = {flow_type},serial=串行;parallel=并行')
@@ -33,7 +34,7 @@ class FlowInstanceRunner:
         for node_instance in node_instance_list:
             node_result: NodeMgr = NodeMgr().run_node_instance(node_instance=node_instance, flow_data=flow_data)
             # 只有node的状态是finish或者skip时才继续执行后面的
-            if node_result.new_node_status in ['finish', 'skip']:
+            if node_result.new_node_status in [NodeStatus.Finish.value, NodeStatus.Skip.value]:
                 # 把return_data添加到flow_data里
                 flow_data.update(node_result.return_data)
             else:
@@ -48,8 +49,7 @@ class FlowInstanceRunner:
     def _update_result_status(self, result, flow_instance):
         # 0就表示串行的节点没有运行完,使用默认结果
         if result == 0:
-            flow_instance.flow_result = 'unknown'
-            flow_instance.flow_status = 'running'
+            flow_instance.flow_status = FlowStatus.Running.value
             return flow_instance
         # 1表示串行流程的节点都运行完了,需要根据规则来确定结果
         elif result == 1:
@@ -68,7 +68,7 @@ class FlowInstanceRunner:
             else:
                 continue
         if result is None:
-            return 'unknown'
+            return None
 
     @staticmethod
     def _get_flow_result_by_rule(result_rule, flow_instance):
@@ -93,7 +93,7 @@ class FlowInstanceRunner:
             else:
                 continue
         if status is None:
-            return 'unknown'
+            return FlowStatus.Unknown.value
 
     @staticmethod
     def _get_flow_status_by_rule(status_rule, flow_instance):

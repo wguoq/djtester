@@ -207,6 +207,13 @@ class Node_Status_Rule(Public_Field):
         db_table = "flow_node_status_rule"
 
 
+# class Node_Start_Rule(Public_Field):
+#     """
+#     流程启动条件表
+#     """
+#     pass
+
+
 class Flow_Node_Design_Oder(Public_Field):
     """
     流程设计,节点顺序,节点设计关联表

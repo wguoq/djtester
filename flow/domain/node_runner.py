@@ -1,6 +1,7 @@
 import importlib
 import operator
 from djtester.tools_man import get_node_func_list
+from flow.domain.enums import NodeStatus
 from flow.domain.node_func import NodeFuncBase
 from flow.models import Node_Instance, Node_Status_Rule
 
@@ -53,7 +54,7 @@ class NodeInstanceRunner:
                 return node_status
             else:
                 continue
-        return 'unknown'
+        return NodeStatus.Unknown.value
 
     @staticmethod
     def _get_node_status_by_rule(rule: Node_Status_Rule, func_result):

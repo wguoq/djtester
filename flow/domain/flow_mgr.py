@@ -1,5 +1,7 @@
 from django.db import transaction
 from django.forms import model_to_dict
+
+from flow.domain.enums import FlowStatus
 from flow.domain.flow_runner import FlowInstanceRunner
 from flow.models import Flow_Instance, Flow_Design
 from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNodeDesignOderDBHelper
@@ -34,7 +36,7 @@ class FlowMgr:
 
     def run_flow(self, flow_instance: Flow_Instance):
         # 先判断流程状态是不是已完成或者终止
-        if flow_instance.flow_status in ['finish', 'stop']:
+        if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value]:
             self.new_flow_instance = flow_instance
             return self
         else:

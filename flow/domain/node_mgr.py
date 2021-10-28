@@ -1,4 +1,5 @@
 import abc
+from enum import Enum
 
 from django.forms import model_to_dict
 
