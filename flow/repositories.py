@@ -80,7 +80,8 @@ class NodeInstanceDBHelper(BaseDBHelper):
 
     def save_this(self, data: dict):
         data['node_design'] = save_foreignkey(REPOSITORIES_PATH, NodeDesignDBHelper.__name__, data.get('node_design'))
-        data['flow_instance'] = save_foreignkey(REPOSITORIES_PATH, FlowInstanceDBHelper.__name__, data.get('flow_instance'))
+        data['flow_instance'] = save_foreignkey(REPOSITORIES_PATH, FlowInstanceDBHelper.__name__,
+                                                data.get('flow_instance'))
         return super().save_this(data)
 
 
@@ -92,8 +93,13 @@ class FlowNodeDesignOderDBHelper(BaseDBHelper):
         return new_model
 
     def save_this(self, data: dict):
-        data['node_design'] = save_foreignkey(REPOSITORIES_PATH,
-                                              NodeDesignDBHelper.__name__, data.get('node_design'))
-        data['flow_design'] = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))
-        return super().save_this(data)
-
+        node_design = save_foreignkey(REPOSITORIES_PATH,
+                                      NodeDesignDBHelper.__name__, data.get('node_design'))
+        flow_design = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))
+        # 检查一下 node_data 里面是否有 flow_design_id 不能和自己关联的 flow_design_id 一样,避免死循环
+        if node_design.node_func_data.get('flow_design_id') == flow_design.id:
+            raise Exception(f' node_name = {node_design.node_name} 嵌套了自己的 flow_design,会死循环')
+        else:
+            data['node_design'] = node_design
+            data['flow_design'] = flow_design
+            return super().save_this(data)
