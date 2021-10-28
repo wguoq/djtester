@@ -3,7 +3,7 @@ from operator import itemgetter
 import jsonschema
 
 
-def json_schema_check(data, json_schema):
+def check_json_schema(data, json_schema):
     if data is None or len(data) == 0:
         raise Exception('data is None')
     elif json_schema is None or len(json_schema) == 0:

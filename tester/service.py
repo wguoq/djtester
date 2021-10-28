@@ -2,7 +2,7 @@ from djtester.decorators import reg_node_func, show_class_name
 from djtester.enums import TestCaseType
 from flow.domain.node_func import NodeFuncBase
 from tester.domain.api_tester import ApiTester
-from tester.domain.tt_models import ApiCaseConfig, ApiTestCase
+from tester.domain.api_tester import ApiTestConfig, ApiTestCase
 from djtester.all_app_service import TestCaseService
 
 
@@ -18,7 +18,7 @@ class TesterServicer:
 
     @staticmethod
     def new_test_config():
-        return ApiCaseConfig().__dict__
+        return ApiTestConfig().__dict__
 
     def run_testcase(self, test_case, test_config: dict = None) -> ApiTester:
         """
@@ -42,9 +42,9 @@ class TesterServicer:
     def _run_testcase_by_dict(test_case: dict, test_case_config: dict):
         testcase = ApiTestCase(test_case)
         if test_case_config:
-            testcase_config = ApiCaseConfig(**test_case_config)
+            testcase_config = ApiTestConfig(**test_case_config)
         else:
-            testcase_config = ApiCaseConfig()
+            testcase_config = ApiTestConfig()
         if testcase.test_case_type == TestCaseType.API.value:
             a = ApiTester().run(testcase, testcase_config)
             return a
