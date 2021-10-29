@@ -1,5 +1,6 @@
 import requests
 from djtester.enums import ResponseProperty, Operators, TestResult
+from djtester.tools_man import verify_str
 from tester.domain.base_tester import BaseTester
 from tester.utils import *
 from pydantic import BaseModel
@@ -179,7 +180,7 @@ class ApiCheckPointVerifier:
         target = self._get_target_by_rule(data, rule)
 
         if self.check_point_type == 'ApiCheckPoint':
-            r = self._verify_str(operator_, target, expect)
+            r = verify_str(target, operator_, expect)
             self.check_point_result = r
             return self
         elif self.check_point_type == 'ApiJsonSchemaCheckPoint':
@@ -188,15 +189,6 @@ class ApiCheckPointVerifier:
             return self
         else:
             raise Exception(f'无法识别的 check_point_type = {self.check_point_type}')
-
-    @staticmethod
-    def _verify_str(operator_, target, expect):
-        if operator_ == Operators.EQ.value:
-            return operator.eq(str(target), str(expect))
-        elif operator_ == Operators.NE.value:
-            return operator.ne(str(target), str(expect))
-        else:
-            raise Exception(f'无法识别的 check_point.operator = {operator_}')
 
     @staticmethod
     def _verify_schema(data, json_schema):

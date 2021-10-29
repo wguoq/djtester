@@ -1,7 +1,8 @@
 from django.forms import model_to_dict
+from djtester.tools_man import verify_str
 from flow.domain.enums import NodeStatus
 from flow.domain.node_runner import NodeInstanceRunner
-from flow.models import Node_Instance, Node_Start_Rule_Design
+from flow.models import Node_Instance, Node_Start_Rule
 from flow.repositories import NodeInstanceDBHelper, NodeStartRuleDesignDBHelper, NodeStartRuleDBHelper
 
 
@@ -36,31 +37,74 @@ class NodeMgr:
         return {'node_status': node_status,
                 'flow_instance_id': flow_instance_id}
 
-    @staticmethod
-    def _check_node_start_rule(node_instance, flow_data):
+    def _check_node_start_rule(self, node_instance, flow_data):
         # 1.node 状态不为finish,stop,skip才执行
         if node_instance.node_status in [NodeStatus.Finish.value, NodeStatus.Stop.value, NodeStatus.Skip.value]:
             return False
         else:
-            # todo
             # 查询出 start_rule_design_list
-            # node_design_id = node_instance.node_design.id
-            # start_rule_design_list = NodeStartRuleDesignDBHelper().filter_by({'node_design_id': node_design_id}).order_by('rule_order')
-            # for start_rule_design in start_rule_design_list:
-            #     # 查询出 start_rule_list
-            #     start_rule_design: Node_Start_Rule_Design
-            #     if start_rule_design.rule_type == 'and':
-            #
-            #         start_rule_list = NodeStartRuleDBHelper().filter_by({'rule_design_id': start_rule_design.id})
-            #     elif start_rule_design.rule_type == 'or':
-            #         pass
-            #     else:
-            #         raise Exception(f'')
-
+            node_design_id = node_instance.node_design.id
+            start_rule_design_list = NodeStartRuleDesignDBHelper().filter_by(
+                {'node_design_id': node_design_id}).order_by('rule_order')
+            # start_rule_design_list 里面所有都 True 才算通过
+            for start_rule_design in start_rule_design_list:
+                if self._check_start_rule_design(start_rule_design, flow_data, node_instance):
+                    continue
+                else:
+                    return False
             return True
 
+    def _check_start_rule_design(self, start_rule_design, flow_data, node_instance):
+        start_rule_list = NodeStartRuleDBHelper().filter_by({'pk': start_rule_design.id})
+        if start_rule_design.rule_type == 'and':
+            if self._check_rule_type_and(start_rule_list, flow_data, node_instance):
+                return True
+            else:
+                return False
+        elif start_rule_design.rule_type == 'or':
+            if self._check_rule_type_or(start_rule_list, flow_data, node_instance):
+                return True
+            else:
+                return False
+        else:
+            raise Exception(f'无法识别的 rule_type={start_rule_design.rule_type} 应该是 and 或者 or ')
 
+    def _check_rule_type_and(self, start_rule_list, flow_data, node_instance):
+        for start_rule in start_rule_list:
+            if self._check_start_rule(start_rule, flow_data, node_instance):
+                continue
+            else:
+                return False
+        return True
 
+    def _check_rule_type_or(self, start_rule_list, flow_data, node_instance):
+        for start_rule in start_rule_list:
+            if self._check_start_rule(start_rule, flow_data, node_instance):
+                return True
+            else:
+                continue
+        return False
 
+    @staticmethod
+    def _check_start_rule(start_rule: Node_Start_Rule, flow_data: dict, node_instance: Node_Instance):
+        rule_target = start_rule.rule_target
+        rule_where = start_rule.rule_where
+        rule_operator = start_rule.rule_operator
+        rule_value = start_rule.rule_value
 
-
+        if rule_target == 'flow_data':
+            data = flow_data.get(rule_where)
+            return verify_str(data, rule_operator, rule_value)
+        elif rule_target == 'node_result':
+            # 先查询出对应 flow_instance 里所有 node_instance
+            flow_instance_id = node_instance.flow_instance.id
+            node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance_id})
+            # 找到对应 rule_where 里面 node_design_id 的那一条取node_result
+            for node_instance_ in node_instance_list:
+                if node_instance_.node_design.id == rule_where:
+                    return verify_str(node_instance_.node_result, rule_operator, rule_value)
+                else:
+                    continue
+            return False
+        else:
+            raise Exception(f' 无法识别的 rule_target = {rule_target} 只能是 flow_data | node_result')
