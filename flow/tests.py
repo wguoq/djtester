@@ -111,7 +111,7 @@ class Test_Flow(TestCase):
                     "check_point": {
                         "response_property": "status_code",
                         "rule": "",
-                        "operator": "ne",
+                        "operator": "eq",
                         "expect": "200"
                     }
                 },
@@ -124,29 +124,21 @@ class Test_Flow(TestCase):
             'node_name': '节点设计1 api_tester',
             'node_func_name': 'api_tester',
             'node_func_data': {'test_case_id': 1},
-            'node_start_rule': {},
             'version': 1,
             'version_status': 0,
         }
         node_status_rule_1 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'wait',
-            'node_status': 'wait',
+            'status_target': 'pass',
+            'node_status': 'finish',
             'node_design': 1,
         }
         node_status_rule_2 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'pass',
-            'node_status': 'finish',
-            'node_design': 1,
-        }
-        node_status_rule_3 = {
-            'id': None,
-            'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'stop',
+            'node_status': 'skip',
             'node_design': 1,
         }
 
@@ -156,22 +148,21 @@ class Test_Flow(TestCase):
             'node_name': '节点设计2 api_tester',
             'node_func_name': 'api_tester',
             'node_func_data': {'test_case_id': 2},
-            'node_start_rule': {},
             'version': 1,
             'version_status': 0,
         }
-        node_status_rule_4 = {
+        node_status_rule_3 = {
             'id': None,
             'status_operator': 'eq',
             'status_target': 'pass',
             'node_status': 'finish',
             'node_design': 2,
         }
-        node_status_rule_5 = {
+        node_status_rule_4 = {
             'id': None,
             'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'stop',
+            'node_status': 'skip',
             'node_design': 2,
         }
 
@@ -181,23 +172,89 @@ class Test_Flow(TestCase):
             'node_name': '节点设计3 flow_runner',
             'node_func_name': 'flow_runner',
             'node_func_data': {'flow_design_id': 2},
-            'node_start_rule': {},
             'version': 1,
             'version_status': 0,
         }
-        node_status_rule_6 = {
+        node_status_rule_5 = {
             'id': None,
             'status_operator': 'eq',
             'status_target': 'pass',
             'node_status': 'finish',
             'node_design': 3,
         }
-        node_status_rule_7 = {
+        node_status_rule_6 = {
             'id': None,
             'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'stop',
+            'node_status': 'skip',
             'node_design': 3,
+        }
+
+        node_design_4 = {
+            'id': None,
+            'node_code': 'nd076545770',
+            'node_name': '节点设计4 api_tester',
+            'node_func_name': 'api_tester',
+            'node_func_data': {'test_case_id': 1},
+            'version': 1,
+            'version_status': 0,
+        }
+        node_status_rule_7 = {
+            'id': None,
+            'status_operator': 'eq',
+            'status_target': 'pass',
+            'node_status': 'finish',
+            'node_design': 4,
+        }
+        node_status_rule_8 = {
+            'id': None,
+            'status_operator': 'eq',
+            'status_target': 'fail',
+            'node_status': 'skip',
+            'node_design': 4,
+        }
+        node_start_rule_design_1 = {
+            'rule_type': 'or',
+            'rule_order': '1',
+            'node_design': 4
+        }
+
+        node_start_rule_design_2 = {
+            'rule_type': 'and',
+            'rule_order': '1',
+            'node_design': 4
+        }
+
+        node_start_rule_1 = {
+            'rule_target': 'flow_data',
+            'rule_where': 'flag',
+            'rule_operator': 'eq',
+            'rule_value': 'ok',
+            'rule_design': 1
+        }
+
+        node_start_rule_2 = {
+            'rule_target': 'flow_data',
+            'rule_where': 'flag',
+            'rule_operator': 'eq',
+            'rule_value': 'pass',
+            'rule_design': 1
+        }
+
+        node_start_rule_3 = {
+            'rule_target': 'node_result',
+            'rule_where': 1,
+            'rule_operator': 'eq',
+            'rule_value': 'pass',
+            'rule_design': 2
+        }
+
+        node_start_rule_4 = {
+            'rule_target': 'node_result',
+            'rule_where': 2,
+            'rule_operator': 'eq',
+            'rule_value': 'pass',
+            'rule_design': 2
         }
 
         flow_design_1 = {
@@ -224,6 +281,13 @@ class Test_Flow(TestCase):
             'node_order': 3,
             'node_design': 3,
         }
+        flow_node_design_oder_4 = {
+            'id': None,
+            'flow_design': 1,
+            'node_order': 4,
+            'node_design': 4,
+        }
+
         flow_result_rule_1 = {
             'id': None,
             'result_rule_type': 'last_node_result',
@@ -247,7 +311,7 @@ class Test_Flow(TestCase):
             'flow_name': 'flow_design_2',
             'flow_type': 'serial',
         }
-        flow_node_design_oder_4 = {
+        flow_node_design_oder_5 = {
             'id': None,
             'flow_design': 2,
             'node_order': 1,
@@ -278,17 +342,32 @@ class Test_Flow(TestCase):
         print(model_to_dict(fd1))
 
         print(f'==== add node_design_1,2,3 ==== ')
-        node_design_list = [node_design_1, node_design_2, node_design_3]
+        node_design_list = [node_design_1, node_design_2, node_design_3, node_design_4, ]
         for node_design in node_design_list:
             a = NodeDesignDBHelper().save_this(node_design)
             print(model_to_dict(a))
 
         print(f'==== add node_status_rule_123456789 ==== ')
         node_status_rule_list = [node_status_rule_1, node_status_rule_2, node_status_rule_3, node_status_rule_4,
-                                 node_status_rule_5, node_status_rule_6, node_status_rule_7,]
+                                 node_status_rule_5, node_status_rule_6, node_status_rule_7, node_status_rule_8,
+                                 ]
 
         for node_status_rule in node_status_rule_list:
             a = NodeStatusRuleDBHelper().save_this(node_status_rule)
+            print(model_to_dict(a))
+
+        print(f'==== add node_start_rule_design ==== ')
+        node_start_rule_design_list = [node_start_rule_design_1, node_start_rule_design_2, ]
+
+        for node_start_rule_design in node_start_rule_design_list:
+            a = NodeStartRuleDesignDBHelper().save_this(node_start_rule_design)
+            print(model_to_dict(a))
+
+        print(f'==== add node_start_rule ==== ')
+        node_start_rule_list = [node_start_rule_1, node_start_rule_2, node_start_rule_3, node_start_rule_4, ]
+
+        for node_start_rule in node_start_rule_list:
+            a = NodeStartRuleDBHelper().save_this(node_start_rule)
             print(model_to_dict(a))
 
         print(f'==== query nd1 by pk ==== ')
@@ -306,13 +385,13 @@ class Test_Flow(TestCase):
 
         print(f'==== add flow_node_design_oder_12345 ====')
         flow_node_design_oder_list = [flow_node_design_oder_1, flow_node_design_oder_2, flow_node_design_oder_3,
-                                      flow_node_design_oder_4]
+                                      flow_node_design_oder_4, flow_node_design_oder_5, ]
         for flow_node_design_oder in flow_node_design_oder_list:
             a = FlowNodeDesignOderDBHelper().save_this(flow_node_design_oder)
             print(model_to_dict(a))
 
         print(f'==== add flow_result_rule_12 ====')
-        flow_result_rule_list = [flow_result_rule_1, flow_result_rule_2,]
+        flow_result_rule_list = [flow_result_rule_1, flow_result_rule_2, ]
         for flow_result_rule in flow_result_rule_list:
             a = FlowResultRuleDBHelper().save_this(flow_result_rule)
             print(model_to_dict(a))
@@ -325,7 +404,8 @@ class Test_Flow(TestCase):
 
         print(f'==== instance_flow_design fd1 ====')
         fd1 = FlowDesignDBHelper().get_by({'pk': 1})
-        FlowMgr().instance_flow_design(fd1)
+        flow_data = {'flag': 'ok'}
+        FlowMgr().instance_flow_design(fd1, flow_data)
 
         print(f'==== get node_instance all not run ====')
         ni_all = NodeInstanceDBHelper().get_all()

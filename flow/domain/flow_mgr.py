@@ -39,8 +39,7 @@ class FlowMgr:
             NodeInstanceDBHelper().save_this(ni)
         return flow_instance
 
-    def run_flow(self, flow_instance_id):
-        flow_instance = FlowInstanceDBHelper().get_by({'pk': flow_instance_id})
+    def run_flow(self, flow_instance: Flow_Instance):
         # 先判断流程状态是不是已完成或者终止
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value]:
             self.new_flow_instance = flow_instance

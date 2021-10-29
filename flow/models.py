@@ -154,10 +154,6 @@ class Node_Design(Public_Field):
                                       blank=True,
                                       verbose_name="节点业务数据")
 
-    node_start_rule = models.JSONField(null=True,
-                                       blank=True,
-                                       verbose_name="节点启动规则")
-
     version = models.IntegerField(blank=True,
                                   null=True,
                                   verbose_name="版本")

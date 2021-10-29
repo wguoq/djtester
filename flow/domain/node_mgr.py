@@ -1,3 +1,5 @@
+import operator
+
 from django.forms import model_to_dict
 from djtester.tools_man import verify_str
 from flow.domain.enums import NodeStatus
@@ -14,7 +16,8 @@ class NodeMgr:
 
     def run_node_instance(self, node_instance: Node_Instance, flow_data: dict):
         # 判断是否满足节点运行条件
-        if self._check_node_start_rule(node_instance, flow_data):
+        a = self._check_node_start_rule(node_instance, flow_data)
+        if a:
             # run 并且返回新的 Node_Instance
             run_node_result = NodeInstanceRunner().run(node_instance, flow_data)
             # 保存新的 Node_Instance
@@ -55,13 +58,15 @@ class NodeMgr:
             return True
 
     def _check_start_rule_design(self, start_rule_design, flow_data, node_instance):
-        start_rule_list = NodeStartRuleDBHelper().filter_by({'pk': start_rule_design.id})
+        start_rule_list = NodeStartRuleDBHelper().filter_by({'rule_design': start_rule_design.id})
         if start_rule_design.rule_type == 'and':
+
             if self._check_rule_type_and(start_rule_list, flow_data, node_instance):
                 return True
             else:
                 return False
         elif start_rule_design.rule_type == 'or':
+
             if self._check_rule_type_or(start_rule_list, flow_data, node_instance):
                 return True
             else:
@@ -91,9 +96,8 @@ class NodeMgr:
         rule_where = start_rule.rule_where
         rule_operator = start_rule.rule_operator
         rule_value = start_rule.rule_value
-
         if rule_target == 'flow_data':
-            data = flow_data.get(rule_where)
+            data = flow_data.get(str(rule_where))
             return verify_str(data, rule_operator, rule_value)
         elif rule_target == 'node_result':
             # 先查询出对应 flow_instance 里所有 node_instance
@@ -101,7 +105,7 @@ class NodeMgr:
             node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance_id})
             # 找到对应 rule_where 里面 node_design_id 的那一条取node_result
             for node_instance_ in node_instance_list:
-                if node_instance_.node_design.id == rule_where:
+                if str(node_instance_.node_design.id) == str(rule_where):
                     return verify_str(node_instance_.node_result, rule_operator, rule_value)
                 else:
                     continue
