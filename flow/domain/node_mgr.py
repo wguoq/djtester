@@ -33,7 +33,7 @@ class NodeMgr:
     @staticmethod
     def re_check_node_status(result: str, node_instance_id):
         node_instance = NodeInstanceDBHelper().get_by({'pk': node_instance_id})
-        new_node_instance = NodeInstanceRunner().re_check_node_status(result, node_instance)
+        new_node_instance = NodeInstanceRunner().re_check_status(result, node_instance)
         NodeInstanceDBHelper().save_this(model_to_dict(new_node_instance))
         return {'node_status': new_node_instance.node_status,
                 'flow_instance_id': new_node_instance.flow_instance.id}

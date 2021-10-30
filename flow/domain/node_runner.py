@@ -30,7 +30,7 @@ class NodeInstanceRunner:
         self.return_data = func_result.return_data
         return self
 
-    def re_check_node_status(self, result, node_instance):
+    def re_check_status(self, result, node_instance):
         self.node_instance = node_instance
         self.node_instance.node_result = result
         self.node_instance.node_status = self._check_status(result)

@@ -2,6 +2,7 @@ from django.forms import model_to_dict
 from django.test import TestCase
 from djtester.all_app_service import TestCaseService
 from .domain.flow_mgr import FlowMgr
+from .domain.node_mgr import NodeMgr
 from .repositories import *
 from .service import NodeFuncRunFLow
 
@@ -430,5 +431,6 @@ class Test_Flow(TestCase):
         for a in aaa:
             print(model_to_dict(a))
 
-        a = NodeFuncRunFLow().node_func_data_model()
+        print(f'==== re_check_node_status ====')
+        a = NodeMgr().re_check_node_status('fail', 2)
         print(a)
