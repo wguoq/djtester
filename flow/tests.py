@@ -162,7 +162,7 @@ class Test_Flow(TestCase):
             'id': None,
             'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'skip',
+            'node_status': 'stop',
             'node_design': 2,
         }
 

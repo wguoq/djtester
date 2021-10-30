@@ -45,7 +45,7 @@ class FlowMgr:
             self.new_flow_instance = flow_instance
             return self
         else:
-            new_flow_instance = FlowInstanceRunner().run(flow_instance).new_flow_instance
+            new_flow_instance = FlowInstanceRunner().run(flow_instance).flow_instance
             self.new_flow_instance = new_flow_instance
             # 保存
             FlowInstanceDBHelper().save_this(model_to_dict(new_flow_instance))

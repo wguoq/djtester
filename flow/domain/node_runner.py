@@ -6,7 +6,7 @@ from flow.domain.node_func import NodeFuncBase
 from flow.models import Node_Instance, Node_Status_Rule
 
 
-def get_node_func(node_func_name: str):
+def get_node_func_class(node_func_name: str):
     node_func_list = get_node_func_list()
     node_func = node_func_list.get(node_func_name)
     module = importlib.import_module(node_func.get('class_path'))
@@ -15,39 +15,47 @@ def get_node_func(node_func_name: str):
 
 class NodeInstanceRunner:
     def __init__(self):
-        self.new_node_instance = None
+        self.node_instance = None
+        self._flow_data = {}
         self.return_data: dict = {}
 
     def run(self, node_instance: Node_Instance, flow_data: dict = None):
         if flow_data is None:
             flow_data = {}
-        func_result: NodeFuncBase = self._run(node_instance, flow_data)
+        self.node_instance = node_instance
+        self._flow_data = flow_data
+        func_result: NodeFuncBase = self._run()
         # 运行完了就更新数据
-        self.new_node_instance = self.update_result_status(func_result.result, node_instance)
+        self._update_result_and_status(func_result.result)
         self.return_data = func_result.return_data
         return self
 
-    @staticmethod
-    def _run(node_instance: Node_Instance, flow_data):
+    def re_check_node_status(self, result, node_instance):
+        self.node_instance = node_instance
+        self.node_instance.node_result = result
+        self.node_instance.node_status = self._check_status(result)
+        return self.node_instance
+
+    def _run(self):
         # 根据 node_func_name 去载入对应执行类
-        node_func_name = node_instance.node_func_name
-        node_func_data = node_instance.node_func_data
-        func_class = get_node_func(node_func_name)
+        node_func_name = self.node_instance.node_func_name
+        node_func_data = self.node_instance.node_func_data
+        func_class = get_node_func_class(node_func_name)
         if func_class:
             try:
-                return func_class().do_func(node_func_data, flow_data)
+                return func_class().do_func(node_func_data, self._flow_data)
             except Exception as e:
                 raise Exception(f'运行 {func_class.__name__} 时报错 {e}')
         else:
             raise Exception(f'根据 node_func_name = {node_func_name} import 对应的class,结果为 None')
 
-    def update_result_status(self, result: str, node_instance):
-        node_instance.node_result = result
-        node_instance.node_status = self._check_status(result, node_instance)
-        return node_instance
+    def _update_result_and_status(self, result):
+        # 节点结果就等于返回的结果
+        self.node_instance.node_result = result
+        self.node_instance.node_status = self._check_status(result)
 
-    def _check_status(self, result: str, node_instance):
-        rule_list = node_instance.node_design.node_status_rule_set.all()
+    def _check_status(self, result):
+        rule_list = self.node_instance.node_design.node_status_rule_set.all()
         for rule in rule_list:
             node_status = self._get_node_status_by_rule(rule, result)
             if node_status:

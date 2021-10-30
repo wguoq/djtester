@@ -21,7 +21,7 @@ class NodeMgr:
             # run 并且返回新的 Node_Instance
             run_node_result = NodeInstanceRunner().run(node_instance, flow_data)
             # 保存新的 Node_Instance
-            new_node_instance = NodeInstanceDBHelper().save_this(model_to_dict(run_node_result.new_node_instance))
+            new_node_instance = NodeInstanceDBHelper().save_this(model_to_dict(run_node_result.node_instance))
             # 返回 node_status 和 node_result
             self.new_node_status = new_node_instance.node_status
             self.new_node_result = new_node_instance.node_result
@@ -33,12 +33,10 @@ class NodeMgr:
     @staticmethod
     def re_check_node_status(result: str, node_instance_id):
         node_instance = NodeInstanceDBHelper().get_by({'pk': node_instance_id})
-        new_node_instance = NodeInstanceRunner().update_result_status(result, node_instance)
-        new_node_instance = NodeInstanceDBHelper().save_this(model_to_dict(new_node_instance))
-        node_status = new_node_instance.node_status
-        flow_instance_id = new_node_instance.flow_instance.id
-        return {'node_status': node_status,
-                'flow_instance_id': flow_instance_id}
+        new_node_instance = NodeInstanceRunner().re_check_node_status(result, node_instance)
+        NodeInstanceDBHelper().save_this(model_to_dict(new_node_instance))
+        return {'node_status': new_node_instance.node_status,
+                'flow_instance_id': new_node_instance.flow_instance.id}
 
     def _check_node_start_rule(self, node_instance, flow_data):
         # 1.node 状态不为finish,stop,skip才执行
