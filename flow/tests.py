@@ -418,8 +418,8 @@ class Test_Flow(TestCase):
         for fi in fi_all:
             print(model_to_dict(fi))
             print(f'==== run flow_instance {fi.flow_design.flow_name} ====')
-            run_flow = FlowMgr().run_flow(fi)
-            print(model_to_dict(run_flow.new_flow_instance))
+            run_flow = FlowMgr().run_flow_instance(fi)
+            print(model_to_dict(run_flow.flow_instance))
 
         print(f'==== get node_instance all ====')
         ni_all = NodeInstanceDBHelper().get_all()
@@ -431,6 +431,6 @@ class Test_Flow(TestCase):
         for a in aaa:
             print(model_to_dict(a))
 
-        print(f'==== re_check_node_status ====')
+        print(f'==== re_check_node_status to fail ====')
         a = NodeMgr().re_check_node_status('fail', 2)
         print(a)

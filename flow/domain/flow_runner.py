@@ -34,13 +34,13 @@ class FlowInstanceRunner:
         for node_instance in node_instance_list:
             nodeMgr_result: NodeMgr = NodeMgr().run_node_instance(node_instance=node_instance, flow_data=flow_data)
             # node的状态是finish或者skip时继续执行后面的
-            if nodeMgr_result.new_node_status in [NodeStatus.Finish.value, NodeStatus.Skip.value]:
+            if nodeMgr_result.node_instance.node_status in [NodeStatus.Finish.value, NodeStatus.Skip.value]:
                 # 把return_data添加到flow_data里
                 flow_data.update(nodeMgr_result.return_data)
             # node的状态是stop时停止执行
-            elif nodeMgr_result.new_node_status == NodeStatus.Stop.value:
+            elif nodeMgr_result.node_instance.node_status == NodeStatus.Stop.value:
                 self.flow_instance.flow_status = FlowStatus.Stop.value
-                self.flow_instance.flow_result = nodeMgr_result.new_node_result
+                self.flow_instance.flow_result = nodeMgr_result.node_instance.node_result
                 return -1
             else:
                 return 0

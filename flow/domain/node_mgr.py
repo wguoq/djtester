@@ -10,8 +10,7 @@ from flow.repositories import NodeInstanceDBHelper, NodeStartRuleDesignDBHelper,
 
 class NodeMgr:
     def __init__(self):
-        self.new_node_status = None
-        self.new_node_result = None
+        self.node_instance = None
         self.return_data = {}
 
     def run_node_instance(self, node_instance: Node_Instance, flow_data: dict):
@@ -20,12 +19,10 @@ class NodeMgr:
         if a:
             # run 并且返回新的 Node_Instance
             run_node_result = NodeInstanceRunner().run(node_instance, flow_data)
-            # 保存新的 Node_Instance
-            new_node_instance = NodeInstanceDBHelper().save_this(model_to_dict(run_node_result.node_instance))
-            # 返回 node_status 和 node_result
-            self.new_node_status = new_node_instance.node_status
-            self.new_node_result = new_node_instance.node_result
+            self.node_instance = run_node_result.node_instance
             self.return_data = run_node_result.return_data
+            # 保存新的 Node_Instance
+            NodeInstanceDBHelper().save_this(model_to_dict(self.node_instance))
             return self
         else:
             return self
@@ -58,13 +55,11 @@ class NodeMgr:
     def _check_start_rule_design(self, start_rule_design, flow_data, node_instance):
         start_rule_list = NodeStartRuleDBHelper().filter_by({'rule_design': start_rule_design.id})
         if start_rule_design.rule_type == 'and':
-
             if self._check_rule_type_and(start_rule_list, flow_data, node_instance):
                 return True
             else:
                 return False
         elif start_rule_design.rule_type == 'or':
-
             if self._check_rule_type_or(start_rule_list, flow_data, node_instance):
                 return True
             else:
