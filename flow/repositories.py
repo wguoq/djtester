@@ -1,5 +1,7 @@
 import importlib
 
+from django.db import transaction
+
 from djtester.repositories import BaseDBHelper, save_foreignkey
 from flow.models import *
 
@@ -22,6 +24,7 @@ class FlowStatusRuleDBHelper(BaseDBHelper):
     def _save_m2m(self, new_model):
         return new_model
 
+    @transaction.atomic
     def save_this(self, data: dict):
         data['flow_design'] = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))
         return super().save_this(data)
@@ -34,6 +37,7 @@ class FlowResultRuleDBHelper(BaseDBHelper):
     def _save_m2m(self, new_model):
         return new_model
 
+    @transaction.atomic
     def save_this(self, data: dict):
         data['flow_design'] = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))
         return super().save_this(data)
@@ -54,6 +58,7 @@ class NodeStatusRuleDBHelper(BaseDBHelper):
     def _save_m2m(self, new_model):
         return new_model
 
+    @transaction.atomic
     def save_this(self, data: dict):
         data['node_design'] = save_foreignkey(REPOSITORIES_PATH, NodeDesignDBHelper.__name__, data.get('node_design'))
         return super().save_this(data)
@@ -66,6 +71,7 @@ class FlowInstanceDBHelper(BaseDBHelper):
     def _save_m2m(self, new_model):
         return new_model
 
+    @transaction.atomic
     def save_this(self, data: dict):
         data['flow_design'] = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))
         return super().save_this(data)
@@ -78,6 +84,7 @@ class NodeInstanceDBHelper(BaseDBHelper):
     def _save_m2m(self, new_model):
         return new_model
 
+    @transaction.atomic
     def save_this(self, data: dict):
         data['node_design'] = save_foreignkey(REPOSITORIES_PATH, NodeDesignDBHelper.__name__, data.get('node_design'))
         data['flow_instance'] = save_foreignkey(REPOSITORIES_PATH, FlowInstanceDBHelper.__name__,
@@ -92,6 +99,7 @@ class FlowNodeDesignOderDBHelper(BaseDBHelper):
     def _save_m2m(self, new_model):
         return new_model
 
+    @transaction.atomic
     def save_this(self, data: dict):
         node_design = save_foreignkey(REPOSITORIES_PATH,
                                       NodeDesignDBHelper.__name__, data.get('node_design'))
@@ -112,6 +120,7 @@ class NodeStartRuleDesignDBHelper(BaseDBHelper):
     def _save_m2m(self, new_model):
         return new_model
 
+    @transaction.atomic
     def save_this(self, data: dict):
         data['node_design'] = save_foreignkey(REPOSITORIES_PATH,
                                               NodeDesignDBHelper.__name__, data.get('node_design'))
@@ -125,6 +134,7 @@ class NodeStartRuleDBHelper(BaseDBHelper):
     def _save_m2m(self, new_model):
         return new_model
 
+    @transaction.atomic
     def save_this(self, data: dict):
         data['rule_design'] = save_foreignkey(REPOSITORIES_PATH,
                                               NodeStartRuleDesignDBHelper.__name__, data.get('rule_design'))
