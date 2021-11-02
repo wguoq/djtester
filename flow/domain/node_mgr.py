@@ -14,6 +14,7 @@ class NodeMgr:
         self.return_data = {}
 
     def run_node_instance(self, node_instance: Node_Instance, flow_data: dict):
+        self.node_instance = node_instance
         # 判断是否满足节点运行条件
         a = self._check_node_start_rule(node_instance, flow_data)
         if a:
