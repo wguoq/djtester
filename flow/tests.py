@@ -113,7 +113,7 @@ class Test_Flow(TestCase):
                         "response_property": "status_code",
                         "rule": "",
                         "operator": "eq",
-                        "expect": "200"
+                        "expect": "2000"
                     }
                 },
             ],
@@ -163,7 +163,7 @@ class Test_Flow(TestCase):
             'id': None,
             'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'stop',
+            'node_status': 'skip',
             'node_design': 2,
         }
 
@@ -214,12 +214,12 @@ class Test_Flow(TestCase):
             'node_status': 'skip',
             'node_design': 4,
         }
+
         node_start_rule_design_1 = {
             'rule_type': 'or',
             'rule_order': '1',
             'node_design': 4
         }
-
         node_start_rule_design_2 = {
             'rule_type': 'and',
             'rule_order': '1',
@@ -233,7 +233,6 @@ class Test_Flow(TestCase):
             'rule_value': 'ok',
             'rule_design': 1
         }
-
         node_start_rule_2 = {
             'rule_target': 'flow_data',
             'rule_where': 'flag',
@@ -241,7 +240,6 @@ class Test_Flow(TestCase):
             'rule_value': 'pass',
             'rule_design': 1
         }
-
         node_start_rule_3 = {
             'rule_target': 'node_result',
             'rule_where': 1,
@@ -249,7 +247,6 @@ class Test_Flow(TestCase):
             'rule_value': 'pass',
             'rule_design': 2
         }
-
         node_start_rule_4 = {
             'rule_target': 'node_result',
             'rule_where': 2,
