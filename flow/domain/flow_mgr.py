@@ -1,8 +1,8 @@
 from django.db import transaction
 from django.forms import model_to_dict
-from flow.domain.enums import FlowStatus
+from flow.domain.enums import FlowStatus, NodeStatus
 from flow.domain.flow_runner import FlowInstanceRunner
-from flow.models import Flow_Instance, Flow_Design
+from flow.models import Flow_Instance, Flow_Design, Node_Instance
 from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNodeDesignOderDBHelper
 
 
@@ -38,11 +38,33 @@ class FlowMgr:
         # 先判断流程状态是不是已完成或者终止
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value]:
             self.flow_instance = flow_instance
+            print(f'流程状态是Finish|Stop 不运行; flow_instance_id = {flow_instance.id}')
             return self
         else:
             self.flow_instance = FlowInstanceRunner().run(flow_instance).flow_instance
             # 保存
             FlowInstanceDBHelper().save_this(model_to_dict(self.flow_instance))
             return self
+
+    @transaction.atomic
+    def rollback_to_node(self, node_instance: Node_Instance):
+        # 把这条node的状态和结果都重置并保存
+        node_instance.node_result = None
+        node_instance.node_status = NodeStatus.Ready.value
+        NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
+        # 查询出流程里所有节点,把当前节点之后的全部重置
+        flow_instance_id = node_instance.flow_instance.id
+        node_order_ = node_instance.node_order
+        node_ins_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance_id}).order_by('-node_order')
+        for node_ins in node_ins_list:
+            if node_ins.node_order > node_order_:
+                node_ins.node_result = None
+                node_ins.node_status = NodeStatus.Ready.value
+                NodeInstanceDBHelper().save_this(model_to_dict(node_ins))
+            else:
+                continue
+        self.flow_instance = node_instance.flow_instance
+        return self
+
 
 
