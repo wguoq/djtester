@@ -30,7 +30,6 @@ class FlowInstanceRunner:
         # 按顺序执行node
         for node_instance in node_instance_list:
             nodeMgr_result: NodeMgr = NodeMgr().run_node_instance(node_instance=node_instance, flow_data=self.flow_instance.flow_data)
-            print(f'111111111111111111111111111111\n{nodeMgr_result.node_instance.__dict__}')
             # 运行node后更改状态和flow_data
             self.flow_instance.flow_status = FlowStatus.Running.value
             data = self.flow_instance.flow_data

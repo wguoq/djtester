@@ -26,19 +26,22 @@ class NodeMgr:
             NodeInstanceDBHelper().save_this(model_to_dict(self.node_instance))
             return self
         else:
+            print(f'节点不满足运行状态 node_instance_id = {node_instance.id}')
             return self
 
-    @staticmethod
-    def re_check_node_status(new_result: str, node_instance_id):
+    def re_check_node_status(self, new_result: str, node_instance_id):
         node_instance = NodeInstanceDBHelper().get_by({'pk': node_instance_id})
         new_node_instance = NodeInstanceRunner().re_check_status(new_result, node_instance)
         NodeInstanceDBHelper().save_this(model_to_dict(new_node_instance))
-        return {'node_status': new_node_instance.node_status,
-                'flow_instance_id': new_node_instance.flow_instance.id}
+        self.node_instance = new_node_instance
+        return self
+        # return {'node_status': new_node_instance.node_status,
+        #         'flow_instance_id': new_node_instance.flow_instance.id}
 
     def _check_node_start_rule(self, node_instance, flow_data):
         # 1.node 状态不为finish,stop,skip才执行
         if node_instance.node_status in [NodeStatus.Finish.value, NodeStatus.Stop.value, NodeStatus.Skip.value]:
+            print(f'节点状态为Finish|Stop|Skip 不运行 node_instance_id = {node_instance.id}')
             return False
         else:
             # 查询出 start_rule_design_list
@@ -50,6 +53,7 @@ class NodeMgr:
                 if self._check_start_rule_design(start_rule_design, flow_data, node_instance):
                     continue
                 else:
+                    print(f'节点启动条件没有通过 start_rule_design = {start_rule_design.id}')
                     return False
             return True
 
