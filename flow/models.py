@@ -140,6 +140,11 @@ class Node_Design(Public_Field):
                                  null=True,
                                  verbose_name="节点编码")
 
+    node_type = models.CharField(max_length=32,
+                                 blank=True,
+                                 null=True,
+                                 verbose_name="节点类型: func_node | sub_flow")
+
     node_name = models.CharField(max_length=128,
                                  blank=True,
                                  null=True,
