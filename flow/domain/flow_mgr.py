@@ -48,6 +48,10 @@ class FlowMgr:
 
     @transaction.atomic
     def rollback_to_node(self, node_instance: Node_Instance):
+        """
+        只能回滚流程和节点的执行结果和状态,不能回滚flow_data和node_data
+        也无法回滚子流程,对于子流程会重新跑一条新的flow_inst出来
+        """
         # 把这条node的状态和结果都重置并保存
         node_instance.node_result = None
         node_instance.node_status = NodeStatus.Ready.value
@@ -63,7 +67,12 @@ class FlowMgr:
                 NodeInstanceDBHelper().save_this(model_to_dict(node_ins))
             else:
                 continue
-        self.flow_instance = node_instance.flow_instance
+        # 把对应的flow_instance的状态也要重置并保存
+        flow_instance_ = node_instance.flow_instance
+        flow_instance_.flow_result = None
+        flow_instance_.flow_status = FlowStatus.Ready.value
+        FlowInstanceDBHelper().save_this(model_to_dict(flow_instance_))
+        self.flow_instance = flow_instance_
         return self
 
 

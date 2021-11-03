@@ -249,7 +249,7 @@ class Test_Flow(TestCase):
         }
         node_start_rule_4 = {
             'rule_target': 'node_result',
-            'rule_where': 2,
+            'rule_where': 3,
             'rule_operator': 'eq',
             'rule_value': 'pass',
             'rule_design': 2
@@ -429,5 +429,21 @@ class Test_Flow(TestCase):
             print(model_to_dict(a))
 
         print(f'==== re_check_node_status to fail ====')
-        a = NodeMgr().re_check_node_status('fail', 2)
-        print(a)
+        a = NodeMgr().re_check_node_status('pass', 2)
+        print(model_to_dict(a.node_instance))
+
+        print(f'==== rollback_to_node 2 ====')
+        node_ins_2 = NodeInstanceDBHelper().get_by({'pk': 2})
+        a = FlowMgr().rollback_to_node(node_ins_2)
+        print(model_to_dict(a.flow_instance))
+        aaa = NodeInstanceDBHelper().get_all()
+        for a in aaa:
+            print(model_to_dict(a))
+        flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
+        print(f'==== 重新运行flow_inst_1 ====')
+        FlowMgr().run_flow_instance(flow_inst_1)
+        flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
+        print(model_to_dict(flow_inst_1))
+        aaa = NodeInstanceDBHelper().get_all()
+        for a in aaa:
+            print(model_to_dict(a))
