@@ -35,7 +35,7 @@ class FlowInstanceRunner:
             data = self.flow_instance.flow_data
             data.update(nodeMgr_result.return_data)
             self.flow_instance.flow_data = data
-            # 如果 node 状态是 stop 就停止
+            # 如果 node 状态是 Cancelled 就停止
             if nodeMgr_result.node_instance.node_status == NodeStatus.Cancelled.value:
                 self.flow_instance.flow_status = FlowStatus.Cancelled.value
                 self.flow_instance.flow_result = nodeMgr_result.node_instance.node_result
