@@ -2,7 +2,7 @@ import operator
 
 from django.forms import model_to_dict
 from djtester.tools_man import verify_str
-from flow.domain.enums import NodeStatus
+from flow.domain.enums import NodeStatus, NodeStartRuleTarget
 from flow.domain.node_runner import NodeInstanceRunner
 from flow.models import Node_Instance, Node_Start_Rule
 from flow.repositories import NodeInstanceDBHelper, NodeStartRuleDesignDBHelper, NodeStartRuleDBHelper
@@ -94,10 +94,10 @@ class NodeMgr:
         rule_where = start_rule.rule_where
         rule_operator = start_rule.rule_operator
         rule_value = start_rule.rule_value
-        if rule_target == 'flow_data':
+        if rule_target == NodeStartRuleTarget.FlowData.value:
             data = flow_data.get(str(rule_where))
             return verify_str(data, rule_operator, rule_value)
-        elif rule_target == 'node_result':
+        elif rule_target == NodeStartRuleTarget.NodeResult.value:
             # 先查询出对应 flow_instance 里所有 node_instance
             flow_instance_id = node_instance.flow_instance.id
             node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance_id})
@@ -108,5 +108,16 @@ class NodeMgr:
                 else:
                     continue
             return False
+        elif rule_target == NodeStartRuleTarget.NodeStatus.value:
+            # 先查询出对应 flow_instance 里所有 node_instance
+            flow_instance_id = node_instance.flow_instance.id
+            node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance_id})
+            # 找到对应 rule_where 里面 node_design_id 的那一条取 node_status
+            for node_instance_ in node_instance_list:
+                if str(node_instance_.node_design.id) == str(rule_where):
+                    return verify_str(node_instance_.node_status, rule_operator, rule_value)
+                else:
+                    continue
+            return False
         else:
-            raise Exception(f' 无法识别的 rule_target = {rule_target} 只能是 flow_data | node_result')
+            raise Exception(f' 无法识别的 rule_target = {rule_target} 只能是 flow_data | node_result | node_status')
