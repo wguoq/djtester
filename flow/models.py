@@ -233,7 +233,7 @@ class Node_Start_Rule(Public_Field):
     rule_target = models.CharField(max_length=32,
                                    blank=True,
                                    null=True,
-                                   verbose_name="目标: flow_data | node_result")
+                                   verbose_name="目标: flow_data | node_result | node_status")
 
     rule_where = models.CharField(max_length=32,
                                   blank=True,
