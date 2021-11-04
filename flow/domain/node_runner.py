@@ -55,6 +55,7 @@ class NodeInstanceRunner:
         self.node_instance.node_status = self._check_status(result)
 
     def _check_status(self, result):
+        # 查询出所有 rule_list 可以是多条,约定为or关系,先到先得
         rule_list = self.node_instance.node_design.node_status_rule_set.all()
         for rule in rule_list:
             node_status = self._get_node_status_by_rule(rule, result)

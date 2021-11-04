@@ -94,6 +94,7 @@ class FlowInstanceRunner:
 
     def _check_status_rule(self):
         status = None
+        # 查出对应的 flow_status_rules 可以是多条,约定为or关系
         status_rules = FlowStatusRuleDBHelper().filter_by({'flow_design_id': self.flow_instance.flow_design_id})
         for status_rule in status_rules:
             status = self._get_flow_status_by_rule(status_rule)
