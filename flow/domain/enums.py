@@ -7,18 +7,18 @@ class FlowType(Enum):
 
 
 class FlowStatus(Enum):
-    Ready = 'ready'
+    Pending = 'pending'
     Running = 'running'
     Finish = 'finish'
-    Stop = 'stop'
+    Cancelled = 'cancelled'
     Unknown = 'unknown'
 
 
 class NodeStatus(Enum):
-    Ready = 'ready'
+    Pending = 'pending'
     Running = 'running'
     Finish = 'finish'
-    Stop = 'stop'
+    Cancelled = 'cancelled'
     Skip = 'skip'
     Unknown = 'unknown'
 

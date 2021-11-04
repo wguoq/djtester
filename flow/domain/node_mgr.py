@@ -40,7 +40,7 @@ class NodeMgr:
 
     def _check_node_start_rule(self, node_instance, flow_data):
         # 1.node 状态不为finish,stop,skip才执行
-        if node_instance.node_status in [NodeStatus.Finish.value, NodeStatus.Stop.value, NodeStatus.Skip.value]:
+        if node_instance.node_status in [NodeStatus.Finish.value, NodeStatus.Cancelled.value, NodeStatus.Skip.value]:
             print(f'节点状态为Finish|Stop|Skip 不运行 node_instance_id = {node_instance.id}')
             return False
         else:

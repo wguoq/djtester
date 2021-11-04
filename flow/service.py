@@ -24,7 +24,7 @@ class NodeFuncRunFLow(NodeFuncBase):
     def node_func_result_list(self) -> list[str]:
         return [FlowStatus.Running.value,
                 FlowStatus.Finish.value,
-                FlowStatus.Stop.value]
+                FlowStatus.Cancelled.value]
 
     def do_func(self, node_func_data: dict, flow_data: dict):
         flow_design_id = node_func_data.get('flow_design_id')

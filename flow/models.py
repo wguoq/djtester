@@ -301,7 +301,7 @@ class Flow_Instance(Public_Field):
     flow_status = models.CharField(max_length=32,
                                    blank=True,
                                    null=True,
-                                   default='ready',
+                                   default='pending',
                                    verbose_name="流程状态")
 
     flow_result = models.CharField(max_length=32,
@@ -343,7 +343,7 @@ class Node_Instance(Public_Field):
     node_status = models.CharField(max_length=32,
                                    blank=True,
                                    null=True,
-                                   default='ready',
+                                   default='pending',
                                    verbose_name="节点状态")
 
     node_result = models.CharField(max_length=32,

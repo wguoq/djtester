@@ -36,8 +36,8 @@ class FlowInstanceRunner:
             data.update(nodeMgr_result.return_data)
             self.flow_instance.flow_data = data
             # 如果 node 状态是 stop 就停止
-            if nodeMgr_result.node_instance.node_status == NodeStatus.Stop.value:
-                self.flow_instance.flow_status = FlowStatus.Stop.value
+            if nodeMgr_result.node_instance.node_status == NodeStatus.Cancelled.value:
+                self.flow_instance.flow_status = FlowStatus.Cancelled.value
                 self.flow_instance.flow_result = nodeMgr_result.node_instance.node_result
                 return -1
             else:
@@ -45,23 +45,9 @@ class FlowInstanceRunner:
                 continue
         return 1
 
-        #     # node的状态是finish或者skip时继续执行后面的
-        #     if nodeMgr_result.node_instance.node_status in [NodeStatus.Finish.value, NodeStatus.Skip.value]:
-        #         # 把return_data添加到flow_data里
-        #         flow_data.update(nodeMgr_result.return_data)
-        #     # node的状态是stop时停止执行
-        #     elif nodeMgr_result.node_instance.node_status == NodeStatus.Stop.value:
-        #         self.flow_instance.flow_status = FlowStatus.Stop.value
-        #         self.flow_instance.flow_result = nodeMgr_result.node_instance.node_result
-        #         return -1
-        #     else:
-        #         return 0
-        # return 1
-
-    @staticmethod
-    def _run_parallel():
+    def _run_parallel(self):
         # todo
-        pass
+        return self._run_serial()
 
     def _update_result_and_status(self, result):
         # -1就表示终止
@@ -95,7 +81,7 @@ class FlowInstanceRunner:
             node_instance_list = NodeInstanceDBHelper().filter_by(
                 {'flow_instance_id': self.flow_instance.id}).order_by('-node_order')
             for node_instance in node_instance_list:
-                if node_instance.node_status != NodeStatus.Ready.value:
+                if node_instance.node_status != NodeStatus.Pending.value:
                     return node_instance.node_result
                 else:
                     continue
@@ -125,7 +111,7 @@ class FlowInstanceRunner:
             node_instance_list = NodeInstanceDBHelper().filter_by(
                 {'flow_instance_id': self.flow_instance.id}).order_by('-node_order')
             for node_instance in node_instance_list:
-                if node_instance.node_status != NodeStatus.Ready.value:
+                if node_instance.node_status != NodeStatus.Pending.value:
                     return node_instance.node_status
                 else:
                     return None

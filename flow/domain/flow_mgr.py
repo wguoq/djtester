@@ -36,7 +36,7 @@ class FlowMgr:
     def run_flow_instance(self, flow_instance: Flow_Instance):
         self.flow_instance = flow_instance
         # 先判断流程状态是不是已完成或者终止
-        if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value]:
+        if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Cancelled.value]:
             self.flow_instance = flow_instance
             print(f'流程状态是Finish|Stop 不运行; flow_instance_id = {flow_instance.id}')
             return self
@@ -54,7 +54,7 @@ class FlowMgr:
         """
         # 把这条node的状态和结果都重置并保存
         node_instance.node_result = None
-        node_instance.node_status = NodeStatus.Ready.value
+        node_instance.node_status = NodeStatus.Pending.value
         NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
         # 查询出流程里所有节点,把当前节点之后的全部重置
         flow_instance_id = node_instance.flow_instance.id
@@ -63,14 +63,14 @@ class FlowMgr:
         for node_ins in node_ins_list:
             if node_ins.node_order > node_order_:
                 node_ins.node_result = None
-                node_ins.node_status = NodeStatus.Ready.value
+                node_ins.node_status = NodeStatus.Pending.value
                 NodeInstanceDBHelper().save_this(model_to_dict(node_ins))
             else:
                 continue
         # 把对应的flow_instance的状态也要重置并保存
         flow_instance_ = node_instance.flow_instance
         flow_instance_.flow_result = None
-        flow_instance_.flow_status = FlowStatus.Ready.value
+        flow_instance_.flow_status = FlowStatus.Pending.value
         FlowInstanceDBHelper().save_this(model_to_dict(flow_instance_))
         self.flow_instance = flow_instance_
         return self
