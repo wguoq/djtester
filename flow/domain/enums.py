@@ -21,3 +21,9 @@ class NodeStatus(Enum):
     Stop = 'stop'
     Skip = 'skip'
     Unknown = 'unknown'
+
+
+class NodeStartRuleTarget(Enum):
+    FlowData = 'flow_data'
+    NodeResult = 'node_result'
+    NodeStatus = 'node_status'
