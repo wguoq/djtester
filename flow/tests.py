@@ -1,3 +1,5 @@
+import time
+
 from django.forms import model_to_dict
 from django.test import TestCase
 from djtester.all_app_service import TestCaseService
@@ -414,8 +416,14 @@ class Test_Flow(TestCase):
         fi_all = FlowInstanceDBHelper().get_all()
         for fi in fi_all:
             print(model_to_dict(fi))
-            print(f'==== run flow_instance {fi.flow_design.flow_name} ====')
+            print(f'==== 运行 flow_instance {fi.flow_design.flow_name} ====')
+            s = time.time()
+            print(s)
             run_flow = FlowMgr().run_flow_instance(fi)
+            e = time.time()
+            time_ = e-s
+            print(e)
+            print(f'==== time ==== {time_}')
             print(model_to_dict(run_flow.flow_instance))
 
         print(f'==== 查询运行的 node_instance all ====')

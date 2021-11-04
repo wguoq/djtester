@@ -238,7 +238,7 @@ class Node_Start_Rule(Public_Field):
     rule_where = models.CharField(max_length=32,
                                   blank=True,
                                   null=True,
-                                  verbose_name="目标flow_data用key | 目标node_result用node_design_id")
+                                  verbose_name="目标flow_data用key | 目标node_result和node_status用node_design_id")
 
     rule_operator = models.CharField(max_length=32,
                                      blank=True,
