@@ -1,5 +1,3 @@
-import operator
-
 from django.forms import model_to_dict
 from djtester.tools_man import verify_str
 from flow.domain.enums import NodeStatus, NodeStartRuleTarget
@@ -35,8 +33,6 @@ class NodeMgr:
         NodeInstanceDBHelper().save_this(model_to_dict(new_node_instance))
         self.node_instance = new_node_instance
         return self
-        # return {'node_status': new_node_instance.node_status,
-        #         'flow_instance_id': new_node_instance.flow_instance.id}
 
     def _check_node_start_rule(self, node_instance, flow_data):
         # 1.node 状态不为finish,stop,skip才执行

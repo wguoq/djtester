@@ -1,12 +1,10 @@
 import time
-
 from django.forms import model_to_dict
 from django.test import TestCase
 from djtester.all_app_service import TestCaseService
 from .domain.flow_mgr import FlowMgr
 from .domain.node_mgr import NodeMgr
 from .repositories import *
-from .service import NodeFuncRunFLow
 
 
 class Test_Flow(TestCase):

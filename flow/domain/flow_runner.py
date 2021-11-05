@@ -53,9 +53,6 @@ class FlowInstanceRunner:
         # -1就表示终止
         if result == -1:
             pass
-        # # 0就表示串行的节点没有运行完,使用默认结果
-        # elif result == 0:
-        #     self.flow_instance.flow_status = FlowStatus.Running.value
         # 1表示串行流程的节点都运行完了,需要根据规则来确定结果
         elif result == 1:
             self.flow_instance.flow_result = self._check_result_rule()
