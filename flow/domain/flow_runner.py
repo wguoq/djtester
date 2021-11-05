@@ -1,6 +1,6 @@
 from flow.domain.enums import NodeStatus, FlowType, FlowStatus
 from flow.domain.node_mgr import NodeMgr
-from flow.models import Flow_Instance, Flow_Result_Rule, Node_Instance, Flow_Status_Rule
+from flow.models import Flow_Instance, Flow_Result_Rule, Flow_Status_Rule
 from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper, NodeInstanceDBHelper
 
 

@@ -33,8 +33,10 @@ class FlowMgr:
             NodeInstanceDBHelper().save_this(ni)
         return self
 
-    def run_flow_instance(self, flow_instance: Flow_Instance):
+    def run_flow_instance(self, flow_instance: Flow_Instance, flow_data: dict = None):
         self.flow_instance = flow_instance
+        if flow_data:
+            self.flow_instance.flow_data.update(flow_data)
         # 先判断流程状态是不是已完成或者终止
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Cancelled.value]:
             self.flow_instance = flow_instance

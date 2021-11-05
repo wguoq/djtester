@@ -447,7 +447,7 @@ class Test_Flow(TestCase):
             print(model_to_dict(a))
         flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
         print(f'==== 重新运行flow_inst_1 ====')
-        FlowMgr().run_flow_instance(flow_inst_1)
+        FlowMgr().run_flow_instance(flow_inst_1, {'name': '重新运行'})
         flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
         print(model_to_dict(flow_inst_1))
         aaa = NodeInstanceDBHelper().get_all()
