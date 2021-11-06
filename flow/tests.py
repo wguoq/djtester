@@ -163,7 +163,7 @@ class Test_Flow(TestCase):
             'id': None,
             'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'skip',
+            'node_status': 'running',
             'node_design': 2,
         }
 
@@ -259,7 +259,7 @@ class Test_Flow(TestCase):
             'id': None,
             'flow_code': 'fw432453212',
             'flow_name': 'flow_design_1',
-            'flow_type': 'serial',
+            'flow_type': 'parallel',
         }
         flow_node_design_oder_1 = {
             'id': None,
@@ -438,8 +438,8 @@ class Test_Flow(TestCase):
         a = NodeMgr().re_check_node_status('fail', 3)
         print(model_to_dict(a.node_instance))
 
-        print(f'==== 回滚到2号节点 rollback_to_node 2 ====')
-        node_ins_2 = NodeInstanceDBHelper().get_by({'pk': 2})
+        print(f'==== 回滚到3号节点 rollback_to_node  ====')
+        node_ins_2 = NodeInstanceDBHelper().get_by({'pk': 3})
         a = FlowMgr().rollback_to_node(node_ins_2)
         print(model_to_dict(a.flow_instance))
         aaa = NodeInstanceDBHelper().get_all()

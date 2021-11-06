@@ -11,10 +11,20 @@ class NodeMgr:
         self.node_instance = None
         self.return_data = {}
 
+    # def only_run_node_instance(self, node_instance: Node_Instance, flow_data: dict = None):
+    #     print(f'开始 run node_instance = {node_instance.id}')
+    #     self.node_instance = node_instance
+    #     run_node_result = NodeInstanceRunner().run(node_instance, flow_data)
+    #     self.node_instance = run_node_result.node_instance
+    #     self.return_data = run_node_result.return_data
+    #     print(f'结束 run node_instance = {node_instance.id}')
+    #     return self
+    #
+
     def run_node_instance(self, node_instance: Node_Instance, flow_data: dict):
         self.node_instance = node_instance
         # 判断是否满足节点运行条件
-        a = self._check_node_start_rule(node_instance, flow_data)
+        a = self.check_node_start_rule(node_instance, flow_data)
         if a:
             # run 并且返回新的 Node_Instance
             run_node_result = NodeInstanceRunner().run(node_instance, flow_data)
@@ -34,12 +44,9 @@ class NodeMgr:
         self.node_instance = new_node_instance
         return self
 
-    def _check_node_start_rule(self, node_instance, flow_data):
-        # 1.node 状态不为finish,stop,skip才执行
-        if node_instance.node_status in [NodeStatus.Finish.value, NodeStatus.Cancelled.value, NodeStatus.Skip.value]:
-            print(f'节点状态为Finish|Stop|Skip 不运行 node_instance_id = {node_instance.id}')
-            return False
-        else:
+    def check_node_start_rule(self, node_instance, flow_data):
+        # 1.只运行 node 状态是 Pending 和 Unknown 的,不运行 Running 状态的避免重复提交
+        if node_instance.node_status in [NodeStatus.Pending.value, NodeStatus.Unknown.value]:
             # 查询出 start_rule_design_list
             node_design_id = node_instance.node_design.id
             start_rule_design_list = NodeStartRuleDesignDBHelper().filter_by(
@@ -52,6 +59,9 @@ class NodeMgr:
                     print(f'节点启动条件没有通过 start_rule_design = {start_rule_design.id}')
                     return False
             return True
+        else:
+            print(f'节点状态为 {node_instance.node_status} 不运行 node_instance_id = {node_instance.id}')
+            return False
 
     def _check_start_rule_design(self, start_rule_design, flow_data, node_instance):
         start_rule_list = NodeStartRuleDBHelper().filter_by({'rule_design': start_rule_design.id})

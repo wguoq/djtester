@@ -1,3 +1,6 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
 from flow.domain.enums import NodeStatus, FlowType, FlowStatus
 from flow.domain.node_mgr import NodeMgr
 from flow.models import Flow_Instance, Flow_Result_Rule, Flow_Status_Rule
@@ -47,6 +50,33 @@ class FlowInstanceRunner:
 
     def _run_parallel(self):
         # todo
+        """
+        # orm不支持异步,sqlite3不支持多线程 gg
+        # 确认哪些节点可以运行
+        # 查询所有节点
+        node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': self.flow_instance.id}).order_by(
+            'node_order')
+        nodes = []
+        for node_instance_ in node_instance_list:
+            if NodeMgr().check_node_start_rule(node_instance_, self.flow_instance.flow_data):
+                print(f'节点可以运行 node_instance_id = {node_instance_.id}')
+                nodes.append(node_instance_)
+        if len(nodes) == 0:
+            print(f'没有节点可以运行 flow_instance = {self.flow_instance.id}')
+            return None
+        else:
+            # 事件循环
+            loop = asyncio.get_event_loop()
+            # 线程池
+            pool = ThreadPoolExecutor()
+            tasks = []
+            for node in nodes:
+                tasks.append(loop.run_in_executor(pool, NodeMgr().only_run_node_instance, node, self.flow_instance.flow_data))
+            # 等待所有任务结束并返回
+            ttt = asyncio.gather(*tasks)
+            loop.run_until_complete(ttt)
+        return tasks
+        """
         return self._run_serial()
 
     def _update_result_and_status(self, result):
