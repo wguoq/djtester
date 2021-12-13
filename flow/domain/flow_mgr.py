@@ -38,9 +38,15 @@ class FlowMgr:
         if flow_data:
             self.flow_instance.flow_data.update(flow_data)
         # 先判断流程状态是不是已完成或者终止
-        if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Cancelled.value]:
+        if flow_instance.flow_status == FlowStatus.Finish.value:
             self.flow_instance = flow_instance
-            print(f'流程状态是Finish|Stop 不运行; flow_instance_id = {flow_instance.id}')
+            print(f'流程状态是 Finish 不运行; flow_instance_id = {flow_instance.id}')
+            return self
+        elif flow_instance.flow_status == FlowStatus.Stop.value:
+            print(f'流程状态是 Stop 不运行; flow_instance_id = {flow_instance.id}')
+            return self
+        elif flow_instance.flow_status == FlowStatus.Cancelled.value:
+            print(f'流程状态是 Cancelled 不运行; flow_instance_id = {flow_instance.id}')
             return self
         else:
             self.flow_instance = FlowInstanceRunner().run(flow_instance).flow_instance
