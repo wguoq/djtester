@@ -108,12 +108,12 @@ class Test_Flow(TestCase):
             "tc_check_list": [
                 {
                     "check_point_type": "ApiCheckPoint",
-                    "check_point_name": "status_code == 200",
+                    "check_point_name": "status_code == 10086",
                     "check_point": {
                         "response_property": "status_code",
                         "rule": "",
                         "operator": "eq",
-                        "expect": "2000"
+                        "expect": "10086"
                     }
                 },
             ],
@@ -163,7 +163,7 @@ class Test_Flow(TestCase):
             'id': None,
             'status_operator': 'eq',
             'status_target': 'fail',
-            'node_status': 'running',
+            'node_status': 'skip',
             'node_design': 2,
         }
 
@@ -259,7 +259,7 @@ class Test_Flow(TestCase):
             'id': None,
             'flow_code': 'fw432453212',
             'flow_name': 'flow_design_1',
-            'flow_type': 'parallel',
+            'flow_type': 'serial',
         }
         flow_node_design_oder_1 = {
             'id': None,
