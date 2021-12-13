@@ -78,7 +78,7 @@ class FlowMgr:
         # 把对应的flow_instance的状态也要重置并保存
         flow_instance_ = node_instance.flow_instance
         flow_instance_.flow_result = None
-        flow_instance_.flow_status = FlowStatus.Pending.value
+        flow_instance_.flow_status = FlowStatus.Running.value
         FlowInstanceDBHelper().save_this(model_to_dict(flow_instance_))
         self.flow_instance = flow_instance_
         return self
