@@ -1,13 +1,14 @@
-import operator
-from pydantic import BaseModel
-from djtester.enums import Operators
+import abc
 
 
-class BaseTester:
+class Tester:
     def __init__(self):
         self.test_case_id = None
         self.test_case_name = None
         self.test_case_result = None
         self.message = None
 
+    @abc.abstractmethod
+    def run(self, *args, **kwargs):
+        pass
 

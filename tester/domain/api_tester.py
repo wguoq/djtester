@@ -1,7 +1,7 @@
 import requests
 from djtester.enums import ResponseProperty, Operators, TestResult
 from djtester.tools_man import verify_str
-from tester.domain.base_tester import BaseTester
+from tester.domain.tester import Tester
 from tester.utils import *
 from pydantic import BaseModel
 
@@ -92,7 +92,7 @@ class ApiRequestSender(object):
             raise Exception(f'requests.post error:\n {e}')
 
 
-class ApiTester(BaseTester):
+class ApiTester(Tester):
     def __init__(self):
         self.check_point_result_list = []
         super().__init__()

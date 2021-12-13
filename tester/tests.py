@@ -66,5 +66,5 @@ class TestTester(TestCase):
         aaa = TesterServicer().run_testcase(case1)
         print(aaa.__dict__)
         print(aaa.test_case_result)
-        #print(f'test_result ==========\n{aaa.test_case_result.__dict__}')
+
 
