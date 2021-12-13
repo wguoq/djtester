@@ -165,3 +165,13 @@ print(operator.gt(a, b))
 #         print(f'Result is Ok value is {value}')
 #     case Err(message):
 #         print(f'Result is Err value is {message}')
+
+lll = [1, 2, 3, 4, 5, 6, 7, 8]
+
+lll.reverse()
+print(lll)
+
+a = 123
+b = '-asd113'
+print(a/10)
+print(int(b))
