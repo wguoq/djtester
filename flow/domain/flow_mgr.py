@@ -1,7 +1,7 @@
 from django.db import transaction
 from django.forms import model_to_dict
-from flow.domain.enums import FlowStatus, NodeStatus
-from flow.domain.flow_runner import FlowInstanceRunner
+from flow.domain.enums import FlowStatus, NodeStatus, FlowType
+from flow.domain.flow_runner import *
 from flow.models import Flow_Instance, Flow_Design, Node_Instance
 from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNodeDesignOderDBHelper
 
@@ -12,6 +12,12 @@ class FlowMgr:
 
     @transaction.atomic
     def instance_flow_design(self, flow_design: Flow_Design, flow_data: dict = None):
+        # 保存 flow_instance
+        if flow_data is None:
+            flow_data = {}
+        fi = {'flow_design': flow_design,
+              'flow_data': flow_data}
+        self.flow_instance = FlowInstanceDBHelper().save_this(fi)
         # 查询出 node_list 保存 node_instance
         node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design.id})
         for node in node_list:
@@ -25,19 +31,13 @@ class FlowMgr:
                   'node_order': node_order,
                   'flow_instance': self.flow_instance}
             NodeInstanceDBHelper().save_this(ni)
-        # 保存 flow_instance
-        if flow_data is None:
-            flow_data = {}
-        fi = {'flow_design': flow_design,
-              'flow_data': flow_data}
-        self.flow_instance = FlowInstanceDBHelper().save_this(fi)
         return self
 
     def run_flow_instance(self, flow_instance: Flow_Instance, flow_data: dict = None):
         self.flow_instance = flow_instance
         if flow_data:
             self.flow_instance.flow_data.update(flow_data)
-        # 先判断流程状态是不是已完成或者终止
+        # 先判断流程状态能不能运行
         if flow_instance.flow_status == FlowStatus.Finish.value:
             self.flow_instance = flow_instance
             print(f'流程状态是 Finish 不运行; flow_instance_id = {flow_instance.id}')
@@ -49,7 +49,13 @@ class FlowMgr:
             print(f'流程状态是 Cancelled 不运行; flow_instance_id = {flow_instance.id}')
             return self
         else:
-            self.flow_instance = FlowInstanceRunner().run(flow_instance).flow_instance
+            flow_type = self.flow_instance.flow_design.flow_type
+            if flow_type == FlowType.Serial.value:
+                self.flow_instance = FlowSerialRunner().run(self.flow_instance).flow_instance
+            elif flow_type == FlowType.Parallel.value:
+                raise Exception(f'并行的没写')
+            else:
+                raise Exception(f'无法识别的 flow_type = {flow_type},serial=串行;parallel=并行')
             # 保存
             FlowInstanceDBHelper().save_this(model_to_dict(self.flow_instance))
             return self
