@@ -7,13 +7,6 @@ class TestCaseType(Enum):
     MOBILE = 'mobile'
 
 
-# class HttpMethod(Enum):
-#     GET = 'GET'
-#     POST = 'POST'
-#     DELETE = 'DELETE'
-#     OPTIONS = 'OPTIONS'
-
-
 class HttpProtocol(Enum):
     HTTP = 'http'
     HTTPS = 'https'

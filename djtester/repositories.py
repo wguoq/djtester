@@ -62,5 +62,3 @@ class BaseDBHelper:
                 return self._save_m2m(new_model)
             else:
                 return new_model
-
-
