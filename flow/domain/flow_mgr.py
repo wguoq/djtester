@@ -8,16 +8,10 @@ from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNo
 
 class FlowMgr:
     def __init__(self):
-        self.flow_instance = None
+        self.flow_instance: Flow_Instance = Flow_Instance()
 
     @transaction.atomic
     def instance_flow_design(self, flow_design: Flow_Design, flow_data: dict = None):
-        if flow_data is None:
-            flow_data = {}
-        # 保存 flow_instance
-        fi = {'flow_design': flow_design,
-              'flow_data': flow_data}
-        self.flow_instance: Flow_Instance = FlowInstanceDBHelper().save_this(fi)
         # 查询出 node_list 保存 node_instance
         node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design.id})
         for node in node_list:
@@ -31,6 +25,12 @@ class FlowMgr:
                   'node_order': node_order,
                   'flow_instance': self.flow_instance}
             NodeInstanceDBHelper().save_this(ni)
+        # 保存 flow_instance
+        if flow_data is None:
+            flow_data = {}
+        fi = {'flow_design': flow_design,
+              'flow_data': flow_data}
+        self.flow_instance = FlowInstanceDBHelper().save_this(fi)
         return self
 
     def run_flow_instance(self, flow_instance: Flow_Instance, flow_data: dict = None):
