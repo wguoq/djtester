@@ -9,7 +9,7 @@ from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper, No
 
 class FlowInstanceRunner:
     def __init__(self):
-        self.flow_instance = None
+        self.flow_instance: Flow_Instance = Flow_Instance()
 
     def run(self, flow_instance: Flow_Instance):
         self.flow_instance = flow_instance
@@ -27,21 +27,20 @@ class FlowInstanceRunner:
             raise Exception(f'无法识别的 flow_type = {flow_type},serial=串行;parallel=并行')
 
     def _run_serial(self):
+        self.flow_instance.flow_status = FlowStatus.Running.value
         # 查询node_instance,并排序
         node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': self.flow_instance.id}).order_by(
             'node_order')
         # 按顺序执行node
         for node_instance in node_instance_list:
-            nodeMgr_result: NodeMgr = NodeMgr().run_node_instance(node_instance=node_instance, flow_data=self.flow_instance.flow_data)
-            # 运行node后更改状态和flow_data
-            self.flow_instance.flow_status = FlowStatus.Running.value
+            node_mgr = NodeMgr().run_node_instance(node_instance=node_instance, flow_data=self.flow_instance.flow_data)
             data = self.flow_instance.flow_data
-            data.update(nodeMgr_result.return_data)
+            data.update(node_mgr.return_data)
             self.flow_instance.flow_data = data
             # 如果 node 状态是 Cancelled 就停止
-            if nodeMgr_result.node_instance.node_status == NodeStatus.Cancelled.value:
+            if node_mgr.node_instance.node_status == NodeStatus.Cancelled.value:
                 self.flow_instance.flow_status = FlowStatus.Cancelled.value
-                self.flow_instance.flow_result = nodeMgr_result.node_instance.node_result
+                self.flow_instance.flow_result = node_mgr.node_instance.node_result
                 return -1
             else:
                 # 其他任何情况都继续执行,假装是个并行
