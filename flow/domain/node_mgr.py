@@ -8,18 +8,8 @@ from flow.repositories import NodeInstanceDBHelper, NodeStartRuleDesignDBHelper,
 
 class NodeMgr:
     def __init__(self):
-        self.node_instance = None
+        self.node_instance = Node_Instance()
         self.return_data = {}
-
-    # def only_run_node_instance(self, node_instance: Node_Instance, flow_data: dict = None):
-    #     print(f'开始 run node_instance = {node_instance.id}')
-    #     self.node_instance = node_instance
-    #     run_node_result = NodeInstanceRunner().run(node_instance, flow_data)
-    #     self.node_instance = run_node_result.node_instance
-    #     self.return_data = run_node_result.return_data
-    #     print(f'结束 run node_instance = {node_instance.id}')
-    #     return self
-    #
 
     def run_node_instance(self, node_instance: Node_Instance, flow_data: dict):
         self.node_instance = node_instance
