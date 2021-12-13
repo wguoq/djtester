@@ -11,6 +11,7 @@ class FlowStatus(Enum):
     Running = 'running'
     Finish = 'finish'
     Cancelled = 'cancelled'
+    Stop = 'stop'
     Unknown = 'unknown'
 
 
@@ -19,6 +20,7 @@ class NodeStatus(Enum):
     Running = 'running'
     Finish = 'finish'
     Cancelled = 'cancelled'
+    Stop = 'stop'
     Skip = 'skip'
     Unknown = 'unknown'
 
