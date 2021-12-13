@@ -37,13 +37,17 @@ class FlowInstanceRunner:
             data = self.flow_instance.flow_data
             data.update(node_mgr.return_data)
             self.flow_instance.flow_data = data
-            # 如果 node 状态是 Cancelled 就停止
+            # 判断 node 运行状态,是 Stop 和 Cancelled 就退出循环
             if node_mgr.node_instance.node_status == NodeStatus.Cancelled.value:
                 self.flow_instance.flow_status = FlowStatus.Cancelled.value
                 self.flow_instance.flow_result = node_mgr.node_instance.node_result
                 return -1
+            elif node_mgr.node_instance.node_status == NodeStatus.Stop.value:
+                self.flow_instance.flow_status = FlowStatus.Stop.value
+                self.flow_instance.flow_result = node_mgr.node_instance.node_result
+                return -1
             else:
-                # 其他任何情况都继续执行,假装是个并行
+                # 其他任何情况都继续执行
                 continue
         return 1
 
@@ -79,7 +83,7 @@ class FlowInstanceRunner:
         return self._run_serial()
 
     def _update_result_and_status(self, result):
-        # -1就表示终止
+        # -1就表示流程没运行完
         if result == -1:
             pass
         # 1表示串行流程的节点都运行完了,需要根据规则来确定结果
