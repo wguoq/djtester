@@ -18,7 +18,7 @@ class NodeFuncRunFLow(NodeFuncBase):
     def __init__(self):
         super().__init__()
 
-    def node_func_data_model(self) -> dict:
+    def node_func_param(self) -> dict:
         return {'flow_design_id': ''}
 
     def node_func_result_list(self) -> list[str]:
@@ -26,8 +26,8 @@ class NodeFuncRunFLow(NodeFuncBase):
                 FlowStatus.Finish.value,
                 FlowStatus.Cancelled.value]
 
-    def do_func(self, node_func_data: dict, flow_data: dict):
-        flow_design_id = node_func_data.get('flow_design_id')
+    def do_func(self, node_func_param: dict, flow_data: dict):
+        flow_design_id = node_func_param.get('flow_design_id')
         flow_design = FlowDesignDBHelper().get_by({'pk': flow_design_id})
         flow_instance = FlowMgr().instance_flow_design(flow_design, flow_data).flow_instance
         new_flow_instance = FlowMgr().run_flow_instance(flow_instance).flow_instance

@@ -45,14 +45,14 @@ class NodeFuncRunApiTestCase(NodeFuncBase):
     def __init__(self):
         super().__init__()
 
-    def node_func_data_model(self):
+    def node_func_param(self):
         return {'test_case_id': ''}
 
     def node_func_result_list(self) -> list[str]:
         pass
 
-    def do_func(self, node_func_data: dict, flow_data):
-        test_case_id = node_func_data.get('test_case_id')
+    def do_func(self, node_func_param: dict, flow_data):
+        test_case_id = node_func_param.get('test_case_id')
         a = TesterServicer().run_testcase(test_case_id, flow_data)
         self.result = a.test_case_result
         self.return_data = {'test_case_id': test_case_id}
@@ -65,15 +65,15 @@ class NodeFuncRunApiTestCaseList(NodeFuncBase):
     def __init__(self):
         super().__init__()
 
-    def node_func_data_model(self):
+    def node_func_param(self):
         return [{'test_case_id': ''}]
 
     def node_func_result_list(self) -> list[str]:
         pass
 
-    def do_func(self, node_func_data: list, flow_data):
+    def do_func(self, node_func_param: list, flow_data):
         res = []
-        for data in node_func_data:
+        for data in node_func_param:
             test_case_id = data.get('test_case_id')
             a = TesterServicer().run_testcase(test_case_id, flow_data)
             res.append(a.test_case_result.case_result)
