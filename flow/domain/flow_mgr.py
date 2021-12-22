@@ -7,17 +7,16 @@ from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNo
 
 
 class FlowMgr:
-    def __init__(self):
-        self.flow_instance: Flow_Instance = Flow_Instance()
 
+    @staticmethod
     @transaction.atomic
-    def instance_flow_design(self, flow_design: Flow_Design, flow_data: dict = None):
+    def instance_flow_design(flow_design: Flow_Design, flow_data: dict = None) -> Flow_Instance:
         # 保存 flow_instance
         if flow_data is None:
             flow_data = {}
         fi = {'flow_design': flow_design,
               'flow_data': flow_data}
-        self.flow_instance = FlowInstanceDBHelper().save_this(fi)
+        flow_instance = FlowInstanceDBHelper().save_this(fi)
         # 查询出 node_list 保存 node_instance
         node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design.id})
         for node in node_list:
@@ -29,39 +28,31 @@ class FlowMgr:
                   'node_func_name': node_func_name,
                   'node_func_data': node_func_data,
                   'node_order': node_order,
-                  'flow_instance': self.flow_instance}
+                  'flow_instance': flow_instance}
             NodeInstanceDBHelper().save_this(ni)
-        return self
+        return flow_instance
 
-    def run_flow_instance(self, flow_instance: Flow_Instance, flow_data: dict = None):
-        self.flow_instance = flow_instance
-        if flow_data:
-            self.flow_instance.flow_data.update(flow_data)
+    @staticmethod
+    def run_flow_instance(flow_instance: Flow_Instance) -> Flow_Instance:
         # 先判断流程状态能不能运行
-        if flow_instance.flow_status == FlowStatus.Finish.value:
-            self.flow_instance = flow_instance
-            print(f'流程状态是 Finish 不运行; flow_instance_id = {flow_instance.id}')
-            return self
-        elif flow_instance.flow_status == FlowStatus.Stop.value:
-            print(f'流程状态是 Stop 不运行; flow_instance_id = {flow_instance.id}')
-            return self
-        elif flow_instance.flow_status == FlowStatus.Cancelled.value:
-            print(f'流程状态是 Cancelled 不运行; flow_instance_id = {flow_instance.id}')
-            return self
+        if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value, FlowStatus.Cancelled.value]:
+            print(f'流程状态是 {flow_instance.flow_status} 不运行; flow_instance_id = {flow_instance.id}')
+            return flow_instance
         else:
-            flow_type = self.flow_instance.flow_design.flow_type
+            flow_type = flow_instance.flow_design.flow_type
             if flow_type == FlowType.Serial.value:
-                self.flow_instance = FlowSerialRunner().run(self.flow_instance).flow_instance
+                flow_instance = SerialFlowRunner.run(flow_instance).flow_instance
             elif flow_type == FlowType.Parallel.value:
                 raise Exception(f'并行的没写')
             else:
                 raise Exception(f'无法识别的 flow_type = {flow_type},serial=串行;parallel=并行')
             # 保存
-            FlowInstanceDBHelper().save_this(model_to_dict(self.flow_instance))
-            return self
+            FlowInstanceDBHelper().save_this(model_to_dict(flow_instance))
+            return flow_instance
 
+    @staticmethod
     @transaction.atomic
-    def rollback_to_node(self, node_instance: Node_Instance):
+    def rollback_to_node(node_instance: Node_Instance) -> Flow_Instance:
         """
         只能回滚流程和节点的执行结果和状态,不能回滚flow_data和node_data
         也无法回滚子流程,对于子流程会重新跑一条新的flow_inst出来
@@ -86,8 +77,4 @@ class FlowMgr:
         flow_instance_.flow_result = None
         flow_instance_.flow_status = FlowStatus.Running.value
         FlowInstanceDBHelper().save_this(model_to_dict(flow_instance_))
-        self.flow_instance = flow_instance_
-        return self
-
-
-
+        return flow_instance_

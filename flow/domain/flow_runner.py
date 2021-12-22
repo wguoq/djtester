@@ -1,166 +1,128 @@
 import abc
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from flow.domain.enums import NodeStatus, FlowStatus
+from flow.domain.enums import NodeStatus, FlowResultRuleType, FlowStatusRuleType
 from flow.domain.node_mgr import NodeMgr
-from flow.models import Flow_Instance, Flow_Result_Rule, Flow_Status_Rule
+from flow.models import Flow_Instance
 from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper, NodeInstanceDBHelper
 
 
-class FlowRunner:
-    def __init__(self):
-        self.flow_instance: Flow_Instance = Flow_Instance()
-
-    @abc.abstractmethod
-    def run(self, *args, **kwargs):
-        pass
-
-    def _check_result_rule(self):
-        result = None
-        # 查出对应的 flow_result_rules 可以是多条,约定为or关系
-        result_rule_list = FlowResultRuleDBHelper().filter_by({'flow_design_id': self.flow_instance.flow_design_id})
-        for result_rule in result_rule_list:
-            result = self._get_flow_result_by_rule(result_rule)
-            if result:
-                return result
-            else:
-                continue
-        if result is None:
-            return None
-
-    def _get_flow_result_by_rule(self, result_rule):
-        rule: Flow_Result_Rule = result_rule
-        if rule.result_rule_type == 'last_node_result':
-            # 使用最后一个有运行状态的节点的结果
-            node_instance_list = NodeInstanceDBHelper().filter_by(
-                {'flow_instance_id': self.flow_instance.id}).order_by('-node_order')
-            for node_instance in node_instance_list:
-                if node_instance.node_status != NodeStatus.Pending.value:
-                    return node_instance.node_result
-                else:
-                    continue
-            return None
-        elif rule.result_rule_type == 'custom':
-            # todo 自定义的先放着
-            return None
+def run_node_list(flow_instance: Flow_Instance) -> Flow_Instance:
+    # 查询node_instance,并排序
+    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.id}).order_by('node_order')
+    # 按顺序执行node
+    for node_inst in node_inst_list:
+        node_mgr = NodeMgr().run_node_instance(node_instance=node_inst, flow_data=flow_instance.flow_data)
+        # 运行完node以后把返回的return_data放进flow_data
+        data = flow_instance.flow_data
+        data.update(node_mgr.return_data)
+        flow_instance.flow_data = data
+        # 判断 node 运行状态,是 Stop 和 Cancelled 就退出循环
+        if node_mgr.node_instance.node_status in [NodeStatus.Cancelled.value, NodeStatus.Stop.value]:
+            return flow_instance
         else:
-            raise Exception(f'无法识别的result_rule_type = {rule.result_rule_type}')
-
-    def _check_status_rule(self):
-        status = None
-        # 查出对应的 flow_status_rules 可以是多条,约定为or关系
-        status_rules = FlowStatusRuleDBHelper().filter_by({'flow_design_id': self.flow_instance.flow_design_id})
-        for status_rule in status_rules:
-            status = self._get_flow_status_by_rule(status_rule)
-            if status:
-                return status
-            else:
-                continue
-        if status is None:
-            return FlowStatus.Running.value
-
-    def _get_flow_status_by_rule(self, status_rule):
-        rule: Flow_Status_Rule = status_rule
-        if rule.status_rule_type == 'last_node_status':
-            #  使用最后一个节点的状态,如果最后一个节点没有运行,则不使用
-            node_instance_list = NodeInstanceDBHelper().filter_by(
-                {'flow_instance_id': self.flow_instance.id}).order_by('-node_order')
-            for node_instance in node_instance_list:
-                if node_instance.node_status != NodeStatus.Pending.value:
-                    return node_instance.node_status
-                else:
-                    return None
-            return None
-        elif rule.status_rule_type == 'custom':
-            # todo 自定义的先放着
-            return None
+            # 其他任何情况都继续执行
+            continue
+    return flow_instance
 
 
-class FlowSerialRunner(FlowRunner):
-
-    def run(self, flow_instance: Flow_Instance):
-        self.flow_instance = flow_instance
-        result = self._run()
-        self._update_result_and_status(result)
-        return self
-
-    def _run(self):
-        self.flow_instance.flow_status = FlowStatus.Running.value
-        # 查询node_instance,并排序
-        node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': self.flow_instance.id}).order_by(
-            'node_order')
-        # 按顺序执行node
-        for node_instance in node_instance_list:
-            node_mgr = NodeMgr().run_node_instance(node_instance=node_instance, flow_data=self.flow_instance.flow_data)
-            data = self.flow_instance.flow_data
-            data.update(node_mgr.return_data)
-            self.flow_instance.flow_data = data
-            # 判断 node 运行状态,是 Stop 和 Cancelled 就退出循环
-            if node_mgr.node_instance.node_status == NodeStatus.Cancelled.value:
-                self.flow_instance.flow_status = FlowStatus.Cancelled.value
-                self.flow_instance.flow_result = node_mgr.node_instance.node_result
-                return -1
-            elif node_mgr.node_instance.node_status == NodeStatus.Stop.value:
-                self.flow_instance.flow_status = FlowStatus.Stop.value
-                self.flow_instance.flow_result = node_mgr.node_instance.node_result
-                return -1
-            else:
-                # 其他任何情况都继续执行
-                continue
-        return 1
-
-    def _update_result_and_status(self, result):
-        # -1就表示流程没运行完
-        if result == -1:
-            pass
-        # 1表示串行流程的节点都运行完了,需要根据规则来确定结果
-        elif result == 1:
-            self.flow_instance.flow_result = self._check_result_rule()
-            self.flow_instance.flow_status = self._check_status_rule()
+def update_result_and_status(flow_instance: Flow_Instance) -> Flow_Instance:
+    flow_instance.flow_result = check_flow_result(flow_instance)
+    flow_instance.flow_status = check_flow_status(flow_instance)
+    return flow_instance
 
 
-class FlowParallelRunner(FlowRunner):
-
-    def run(self, flow_instance: Flow_Instance):
-        self.flow_instance = flow_instance
-        while self._run():
-            self._run()
-        self._update_result_and_status()
-        return self
-
-    def _run(self):
-        # todo
-        # orm不支持异步,sqlite3不支持多线程
-        # 确认哪些节点可以运行
-        node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': self.flow_instance.id}).order_by(
-            'node_order')
-        nodes = []
-        for node_instance_ in node_instance_list:
-            if NodeMgr().check_node_start_rule(node_instance_, self.flow_instance.flow_data):
-                print(f'节点可以运行 node_instance_id = {node_instance_.id}')
-                nodes.append(node_instance_)
-            else:
-                continue
-        if len(nodes) == 0:
-            print(f'没有节点可以运行 flow_instance = {self.flow_instance.id}')
-            return False
+def get_last_node_inst_attr(flow_instance: Flow_Instance, attr_name):
+    # 使用最后一个运行过的节点结果
+    node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.id}).order_by('-node_order')
+    for node_instance in node_instance_list:
+        # 运行过的 node_instance 才检查
+        if node_instance.node_status != NodeStatus.Pending.value:
+            return node_instance.__getattribute__(attr_name)
         else:
-            # 事件循环
-            loop = asyncio.get_event_loop()
-            # 线程池
-            pool = ThreadPoolExecutor()
-            tasks = []
-            for node in nodes:
-                tasks.append(
-                    loop.run_in_executor(pool, NodeMgr().run_node_instance, node, self.flow_instance.flow_data))
-            # 等待所有任务结束并返回
-            ttt = asyncio.gather(*tasks)
-            loop.run_until_complete(ttt)
-            for task in tasks:
-                print(task)
-            self._update_result_and_status()
-            return True
+            continue
+    return None
 
-    def _update_result_and_status(self):
-        self.flow_instance.flow_result = self._check_result_rule()
-        self.flow_instance.flow_status = self._check_status_rule()
+
+def check_flow_result(flow_instance: Flow_Instance):
+    # 查出对应的 flow_result_rules
+    result_rule = FlowResultRuleDBHelper().get_by({'pk': flow_instance.flow_design.flow_result_rule_id})
+    if result_rule.result_rule_type == FlowResultRuleType.LastNodeResult.value:
+        return get_last_node_inst_attr(flow_instance, 'node_result')
+    elif result_rule.result_rule_type == FlowResultRuleType.Custom.value:
+        # todo 没想好
+        return None
+    else:
+        raise Exception(f'无法识别的result_rule_type = {result_rule.result_rule_type}')
+
+
+def check_flow_status(flow_instance: Flow_Instance):
+    status_rule = FlowStatusRuleDBHelper().get_by({'pk': flow_instance.flow_design.flow_status_rule_id})
+    if status_rule.status_rule_type == FlowStatusRuleType.LastNodeStatus.value:
+        return get_last_node_inst_attr(flow_instance, 'node_status')
+    elif status_rule.status_rule_type == FlowStatusRuleType.Custom.value:
+        # todo 没想好
+        return None
+    else:
+        raise Exception(f'无法识别的 status_rule_type = {status_rule.status_rule_type}')
+
+
+class SerialFlowRunnerResult:
+    def __init__(self, flow_instance):
+        self.flow_instance = flow_instance
+
+
+class SerialFlowRunner:
+
+    @staticmethod
+    def run(flow_instance: Flow_Instance) -> SerialFlowRunnerResult:
+        flow_instance = run_node_list(flow_instance)
+        flow_instance = update_result_and_status(flow_instance)
+        return SerialFlowRunnerResult(flow_instance)
+
+
+# class FlowParallelRunner(FlowRunner):
+#
+#     def run(self, flow_instance: Flow_Instance):
+#         self.flow_instance = flow_instance
+#         while self._run():
+#             self._run()
+#         self._update_result_and_status()
+#         return self
+#
+#     def _run(self):
+#         # todo
+#         # orm不支持异步,sqlite3不支持多线程
+#         # 确认哪些节点可以运行
+#         node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': self.flow_instance.id}).order_by(
+#             'node_order')
+#         nodes = []
+#         for node_instance_ in node_instance_list:
+#             if NodeMgr().check_node_start_rule(node_instance_, self.flow_instance.flow_data):
+#                 print(f'节点可以运行 node_instance_id = {node_instance_.id}')
+#                 nodes.append(node_instance_)
+#             else:
+#                 continue
+#         if len(nodes) == 0:
+#             print(f'没有节点可以运行 flow_instance = {self.flow_instance.id}')
+#             return False
+#         else:
+#             # 事件循环
+#             loop = asyncio.get_event_loop()
+#             # 线程池
+#             pool = ThreadPoolExecutor()
+#             tasks = []
+#             for node in nodes:
+#                 tasks.append(
+#                     loop.run_in_executor(pool, NodeMgr().run_node_instance, node, self.flow_instance.flow_data))
+#             # 等待所有任务结束并返回
+#             ttt = asyncio.gather(*tasks)
+#             loop.run_until_complete(ttt)
+#             for task in tasks:
+#                 print(task)
+#             self._update_result_and_status()
+#             return True
+#
+#     def _update_result_and_status(self):
+#         self.flow_instance.flow_result = self._check_result_rule()
+#         self.flow_instance.flow_status = self._check_status_rule()
