@@ -25,7 +25,7 @@ class Flow_Design(Public_Field):
     流程设计表
     """
 
-    flow_code = models.CharField(max_length=32,
+    flow_code = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
                                  verbose_name="流程编码")
@@ -35,10 +35,20 @@ class Flow_Design(Public_Field):
                                  null=True,
                                  verbose_name="流程名称")
 
-    flow_type = models.CharField(max_length=32,
+    flow_type = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
                                  verbose_name="流程类型: serial=串行;parallel=并行")
+
+    flow_result_rule_id = models.CharField(max_length=64,
+                                           blank=True,
+                                           null=True,
+                                           verbose_name="流程结果规则id")
+
+    flow_status_rule_id = models.CharField(max_length=64,
+                                           blank=True,
+                                           null=True,
+                                           verbose_name="流程状态规则id")
 
     version = models.IntegerField(blank=True,
                                   null=True,
@@ -61,7 +71,7 @@ class Flow_Result_Rule(Public_Field):
     流程结果规则表
     """
 
-    result_rule_type = models.CharField(max_length=32,
+    result_rule_type = models.CharField(max_length=64,
                                         blank=True,
                                         null=True,
                                         verbose_name="规则类型")
@@ -71,7 +81,7 @@ class Flow_Result_Rule(Public_Field):
                                         null=True,
                                         verbose_name="规则名")
 
-    flow_result = models.CharField(max_length=32,
+    flow_result = models.CharField(max_length=64,
                                    blank=True,
                                    null=True,
                                    verbose_name="流程结果")
@@ -79,12 +89,6 @@ class Flow_Result_Rule(Public_Field):
     result_rule_script = models.JSONField(null=True,
                                           blank=True,
                                           verbose_name="规则脚本")
-
-    flow_design = models.ForeignKey(to=Flow_Design,
-                                    on_delete=models.SET_NULL,
-                                    blank=True,
-                                    null=True,
-                                    verbose_name="流程设计id")
 
     objects = models.Manager()
 
@@ -98,7 +102,7 @@ class Flow_Status_Rule(Public_Field):
     流程状态规则表
     """
 
-    status_rule_type = models.CharField(max_length=32,
+    status_rule_type = models.CharField(max_length=64,
                                         blank=True,
                                         null=True,
                                         verbose_name="规则类型")
@@ -106,9 +110,9 @@ class Flow_Status_Rule(Public_Field):
     status_rule_name = models.CharField(max_length=128,
                                         blank=True,
                                         null=True,
-                                        verbose_name="规则类型")
+                                        verbose_name="规则名称")
 
-    flow_status = models.CharField(max_length=32,
+    flow_status = models.CharField(max_length=64,
                                    blank=True,
                                    null=True,
                                    verbose_name="状态值")
@@ -116,12 +120,6 @@ class Flow_Status_Rule(Public_Field):
     status_rule_script = models.JSONField(null=True,
                                           blank=True,
                                           verbose_name="规则脚本")
-
-    flow_design = models.ForeignKey(to=Flow_Design,
-                                    on_delete=models.SET_NULL,
-                                    blank=True,
-                                    null=True,
-                                    verbose_name="流程设计id")
 
     objects = models.Manager()
 
