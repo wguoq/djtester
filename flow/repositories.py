@@ -101,6 +101,9 @@ class FlowNodeDesignOderDBHelper(BaseDBHelper):
 
     @transaction.atomic
     def save_this(self, data: dict):
+        node_order = data.get('node_order')
+        if node_order is None or len(str(node_order)) == 0:
+            raise Exception(' node_order 为空')
         node_design = save_foreignkey(REPOSITORIES_PATH,
                                       NodeDesignDBHelper.__name__, data.get('node_design'))
         flow_design = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))
