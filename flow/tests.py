@@ -3,6 +3,7 @@ from django.forms import model_to_dict
 from django.test import TestCase
 from djtester.all_app_service import TestCaseService
 from .domain.flow_mgr import FlowMgr
+from .domain.flow_tools_man import check_flow_result, check_flow_status
 from .domain.node_mgr import NodeMgr
 from .repositories import *
 
@@ -451,5 +452,10 @@ class Test_Flow(TestCase):
         flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
         print(model_to_dict(flow_inst_1))
         aaa = NodeInstanceDBHelper().get_all()
+        result = 'node_result'
         for a in aaa:
             print(model_to_dict(a))
+            print(a.__getattribute__(result))
+        print('===============')
+        print(check_flow_result(flow_inst_1))
+        print(check_flow_status(flow_inst_1))
