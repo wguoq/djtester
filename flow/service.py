@@ -16,7 +16,7 @@ class NodeFuncRunFLow(NodeFuncBase):
 
     @reg_node_func(node_type='flow_runner', class_path='flow.service')
     def __init__(self):
-        super().__init__()
+        pass
 
     def node_func_param(self) -> dict:
         return {'flow_design_id': ''}
@@ -31,5 +31,4 @@ class NodeFuncRunFLow(NodeFuncBase):
         flow_design = FlowDesignDBHelper().get_by({'pk': flow_design_id})
         flow_instance = FlowMgr().instance_flow_design(flow_design, flow_data)
         new_flow_instance = FlowMgr().run_flow_instance(flow_instance)
-        self.result = new_flow_instance.flow_result
-        return self
+        return self.NodeFuncResult(new_flow_instance.flow_result)

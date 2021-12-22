@@ -2,7 +2,6 @@ import importlib
 import operator
 from djtester.tools_man import get_node_func_list
 from flow.domain.enums import NodeStatus
-from flow.domain.node_func import NodeFuncBase
 from flow.models import Node_Instance, Node_Status_Rule
 
 
@@ -24,10 +23,10 @@ class NodeInstanceRunner:
             flow_data = {}
         self.node_instance = node_instance
         self._flow_data = flow_data
-        func_result: NodeFuncBase = self._run()
+        node_func_result = self._run()
         # 运行完了就更新数据
-        self._update_result_and_status(func_result.result)
-        self.return_data = func_result.return_data
+        self._update_result_and_status(node_func_result.result)
+        self.return_data = node_func_result.return_data
         return self
 
     def re_check_status(self, new_result, node_instance):

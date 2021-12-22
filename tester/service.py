@@ -43,7 +43,7 @@ class NodeFuncRunApiTestCase(NodeFuncBase):
 
     @reg_node_func(node_type='api_tester', class_path='tester.service')
     def __init__(self):
-        super().__init__()
+        pass
 
     def node_func_param(self):
         return {'test_case_id': ''}
@@ -54,9 +54,7 @@ class NodeFuncRunApiTestCase(NodeFuncBase):
     def do_func(self, node_func_param: dict, flow_data):
         test_case_id = node_func_param.get('test_case_id')
         a = TesterServicer().run_testcase(test_case_id, flow_data)
-        self.result = a.test_case_result
-        self.return_data = {'test_case_id': test_case_id}
-        return self
+        return self.NodeFuncResult(a.test_case_result, {'test_case_id': test_case_id})
 
 
 class NodeFuncRunApiTestCaseList(NodeFuncBase):
@@ -77,11 +75,10 @@ class NodeFuncRunApiTestCaseList(NodeFuncBase):
             test_case_id = data.get('test_case_id')
             a = TesterServicer().run_testcase(test_case_id, flow_data)
             res.append(a.test_case_result.case_result)
+        # 全部pass才行
         for r in res:
             if r != 'pass':
-                self.result = 'fail'
-                return self
+                return self.NodeFuncResult('fail')
             else:
                 continue
-        self.result = 'pass'
-        return self
+        return self.NodeFuncResult('pass')

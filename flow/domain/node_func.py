@@ -2,9 +2,6 @@ import abc
 
 
 class NodeFuncBase:
-    def __init__(self):
-        self.result = ""
-        self.return_data = {}
 
     @abc.abstractmethod
     def node_func_param(self) -> dict:
@@ -20,9 +17,14 @@ class NodeFuncBase:
         """
         return []
 
+    class NodeFuncResult:
+        def __init__(self, result: str, return_data: dict = None):
+            self.result = result
+            self.return_data = return_data if return_data else {}
+
     @abc.abstractmethod
-    def do_func(self, node_func_param: dict, flow_data: dict):
+    def do_func(self, node_func_param: dict, flow_data: dict) -> NodeFuncResult:
         """
-        node_func 执行方法,完成后要把结果写入self.result和self.return_data
+        node_func 执行方法,完成后返回self.NodeFuncResult
         """
-        return self
+        return self.NodeFuncResult('')
