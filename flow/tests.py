@@ -3,7 +3,6 @@ from django.forms import model_to_dict
 from django.test import TestCase
 from djtester.all_app_service import TestCaseService
 from .domain.flow_mgr import FlowMgr
-from .domain.flow_tools_man import check_flow_result, check_flow_status
 from .domain.node_mgr import NodeMgr
 from .repositories import *
 
@@ -256,11 +255,30 @@ class Test_Flow(TestCase):
             'rule_design': 2
         }
 
+        flow_result_rule_1 = {
+            'id': None,
+            'result_rule_type': 'last_node_result',
+            'result_rule_name': 'result_rule 1',
+            'flow_result': 'ok',
+            'result_rule_script': {},
+        }
+        flow_status_rule_1 = {
+            'id': None,
+            'status_rule_type': 'last_node_status',
+            'status_rule_name': 'status_rule 1',
+            'flow_status': 'finish',
+            'status_rule_script': {},
+        }
+
         flow_design_1 = {
             'id': None,
             'flow_code': 'fw432453212',
             'flow_name': 'flow_design_1',
             'flow_type': 'serial',
+            'flow_result_rule_id': 1,
+            'flow_status_rule_id': 1,
+            'version': 1,
+            'version_status': 1
         }
         flow_node_design_oder_1 = {
             'id': None,
@@ -287,50 +305,21 @@ class Test_Flow(TestCase):
             'node_design': 4,
         }
 
-        flow_result_rule_1 = {
-            'id': None,
-            'result_rule_type': 'last_node_result',
-            'result_rule_name': 'result_rule_name 1',
-            'flow_result': 'ok',
-            'result_rule_script': {},
-            'flow_design': 1,
-        }
-        flow_status_rule_1 = {
-            'id': None,
-            'status_rule_type': 'last_node_status',
-            'status_rule_name': 'status_rule_name 1',
-            'flow_status': 'finish',
-            'status_rule_script': {},
-            'flow_design': 1
-        }
-
         flow_design_2 = {
             'id': None,
             'flow_code': 'fw4324535512',
             'flow_name': 'flow_design_2',
             'flow_type': 'serial',
+            'flow_result_rule_id': 1,
+            'flow_status_rule_id': 1,
+            'version': 1,
+            'version_status': 1
         }
         flow_node_design_oder_5 = {
             'id': None,
             'flow_design': 2,
             'node_order': 1,
             'node_design': 1,
-        }
-        flow_result_rule_2 = {
-            'id': None,
-            'result_rule_type': 'last_node_result',
-            'result_rule_name': 'result_rule_name 2',
-            'flow_result': 'ok',
-            'result_rule_script': {},
-            'flow_design': 2
-        }
-        flow_status_rule_2 = {
-            'id': None,
-            'status_rule_type': 'last_node_status',
-            'status_rule_name': 'status_rule_name 2',
-            'flow_status': 'finish',
-            'status_rule_script': {},
-            'flow_design': 2
         }
 
         print(f'==== 新增 flow_design ==== ')
@@ -390,13 +379,13 @@ class Test_Flow(TestCase):
             print(model_to_dict(a))
 
         print(f'==== 新增 flow_result_rule ====')
-        flow_result_rule_list = [flow_result_rule_1, flow_result_rule_2, ]
+        flow_result_rule_list = [flow_result_rule_1, ]
         for flow_result_rule in flow_result_rule_list:
             a = FlowResultRuleDBHelper().save_this(flow_result_rule)
             print(model_to_dict(a))
 
         print(f'==== 新增 flow_status_rule ====')
-        flow_status_rule_list = [flow_status_rule_1, flow_status_rule_2]
+        flow_status_rule_list = [flow_status_rule_1, ]
         for flow_status_rule in flow_status_rule_list:
             a = FlowStatusRuleDBHelper().save_this(flow_status_rule)
             print(model_to_dict(a))
@@ -404,7 +393,7 @@ class Test_Flow(TestCase):
         print(f'==== instance_flow_design fd1 ====')
         fd1 = FlowDesignDBHelper().get_by({'pk': 1})
         flow_data = {'flag': 'ok'}
-        FlowMgr().instance_flow_design(fd1, flow_data)
+        FlowMgr.instance_flow_design(fd1, flow_data)
 
         print(f'==== 查询初始化的 node_instance all  ====')
         ni_all = NodeInstanceDBHelper().get_all()
@@ -418,12 +407,12 @@ class Test_Flow(TestCase):
             print(f'==== 运行 flow_instance {fi.flow_design.flow_name} ====')
             s = time.time()
             print(s)
-            run_flow = FlowMgr().run_flow_instance(fi)
+            run_flow = FlowMgr.run_flow_instance(fi)
             e = time.time()
             time_ = e-s
             print(e)
             print(f'==== time ==== {time_}')
-            print(model_to_dict(run_flow.flow_instance))
+            print(model_to_dict(run_flow))
 
         print(f'==== 查询运行的 node_instance all ====')
         ni_all = NodeInstanceDBHelper().get_all()
@@ -441,14 +430,14 @@ class Test_Flow(TestCase):
 
         print(f'==== 回滚到3号节点 rollback_to_node  ====')
         node_ins_2 = NodeInstanceDBHelper().get_by({'pk': 3})
-        a = FlowMgr().rollback_to_node(node_ins_2)
-        print(model_to_dict(a.flow_instance))
+        a = FlowMgr.rollback_to_node(node_ins_2)
+        print(model_to_dict(a))
         aaa = NodeInstanceDBHelper().get_all()
         for a in aaa:
             print(model_to_dict(a))
         flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
         print(f'==== 重新运行flow_inst_1 ====')
-        FlowMgr().run_flow_instance(flow_inst_1, {'name': '重新运行'})
+        FlowMgr.run_flow_instance(flow_inst_1)
         flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
         print(model_to_dict(flow_inst_1))
         aaa = NodeInstanceDBHelper().get_all()
@@ -456,6 +445,4 @@ class Test_Flow(TestCase):
         for a in aaa:
             print(model_to_dict(a))
             print(a.__getattribute__(result))
-        print('===============')
-        print(check_flow_result(flow_inst_1))
-        print(check_flow_status(flow_inst_1))
+
