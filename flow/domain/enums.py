@@ -32,10 +32,10 @@ class NodeStartRuleTarget(Enum):
 
 
 class FlowResultRuleType(Enum):
-    Default_1 = ['last_node_result', '使用最后一个运行过的节点结果']
-    Custom = ['custom', '使用自定义方法']
+    LastNodeResult = 'last_node_result'
+    Custom = 'custom'
 
 
 class FlowStatusRuleType(Enum):
-    Default_1 = ['last_node_status', '使用最后一个运行过的节点状态']
-    Custom = ['custom', '使用自定义方法']
+    LastNodeStatus = 'last_node_status'
+    Custom = 'custom'
