@@ -1,7 +1,7 @@
 import abc
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from flow.domain.enums import NodeStatus, FlowResultRuleType, FlowStatusRuleType
+from flow.domain.enums import NodeStatus, FlowResultRuleType, FlowStatusRuleType, FlowStatus
 from flow.domain.node_mgr import NodeMgr
 from flow.models import Flow_Instance
 from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper, NodeInstanceDBHelper
@@ -28,7 +28,11 @@ def run_node_list(flow_instance: Flow_Instance) -> Flow_Instance:
 
 def update_result_and_status(flow_instance: Flow_Instance) -> Flow_Instance:
     flow_instance.flow_result = check_flow_result(flow_instance)
-    flow_instance.flow_status = check_flow_status(flow_instance)
+    flow_status = check_flow_status(flow_instance)
+    if flow_status:
+        flow_instance.flow_status = flow_status
+    else:
+        pass
     return flow_instance
 
 
@@ -50,7 +54,7 @@ def check_flow_result(flow_instance: Flow_Instance):
     if result_rule.result_rule_type == FlowResultRuleType.LastNodeResult.value:
         return get_last_node_inst_attr(flow_instance, 'node_result')
     elif result_rule.result_rule_type == FlowResultRuleType.Custom.value:
-        # todo 没想好
+        # todo
         return None
     else:
         raise Exception(f'无法识别的result_rule_type = {result_rule.result_rule_type}')
@@ -61,7 +65,7 @@ def check_flow_status(flow_instance: Flow_Instance):
     if status_rule.status_rule_type == FlowStatusRuleType.LastNodeStatus.value:
         return get_last_node_inst_attr(flow_instance, 'node_status')
     elif status_rule.status_rule_type == FlowStatusRuleType.Custom.value:
-        # todo 没想好
+        # todo
         return None
     else:
         raise Exception(f'无法识别的 status_rule_type = {status_rule.status_rule_type}')
@@ -77,6 +81,8 @@ class SerialFlowRunner:
     @staticmethod
     def run(flow_instance: Flow_Instance) -> SerialFlowRunnerResult:
         flow_instance = run_node_list(flow_instance)
+        if flow_instance.flow_status == FlowStatus.Pending.value:
+            flow_instance.flow_status = FlowStatus.Running.value
         flow_instance = update_result_and_status(flow_instance)
         return SerialFlowRunnerResult(flow_instance)
 
