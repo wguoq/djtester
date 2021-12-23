@@ -39,3 +39,9 @@ class FlowResultRuleType(Enum):
 class FlowStatusRuleType(Enum):
     LastNodeStatus = 'last_node_status'
     Custom = 'custom'
+
+
+class NodeStartRuleType(Enum):
+    AND = 'and'
+    OR = 'or'
+    Custom = 'custom'
