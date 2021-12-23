@@ -123,11 +123,13 @@ class Test_Flow(TestCase):
             'id': None,
             'node_code': 'nd07675770',
             'node_name': '节点设计1 api_tester',
+            'start_rule_type': 'and',
             'node_func_name': 'api_tester',
             'node_func_data': {'test_case_id': 1},
             'version': 1,
             'version_status': 0,
         }
+
         node_status_rule_1 = {
             'id': None,
             'status_operator': 'eq',
@@ -147,11 +149,29 @@ class Test_Flow(TestCase):
             'id': None,
             'node_code': 'nd076545770',
             'node_name': '节点设计2 api_tester',
+            'start_rule_type': 'and',
             'node_func_name': 'api_tester',
             'node_func_data': {'test_case_id': 2},
             'version': 1,
             'version_status': 0,
         }
+
+        node_start_rule_1 = {
+            'rule_target': 'node_status',
+            'rule_where': 1,
+            'rule_operator': 'eq',
+            'rule_value': 'finish',
+            'node_design': 2
+        }
+
+        node_start_rule_2 = {
+            'rule_target': 'node_result',
+            'rule_where': 1,
+            'rule_operator': 'eq',
+            'rule_value': 'pass',
+            'node_design': 2
+        }
+
         node_status_rule_3 = {
             'id': None,
             'status_operator': 'eq',
@@ -171,11 +191,30 @@ class Test_Flow(TestCase):
             'id': None,
             'node_code': 'nd076545770',
             'node_name': '节点设计3 flow_runner',
+            'start_rule_type': 'or',
             'node_func_name': 'flow_runner',
             'node_func_data': {'flow_design_id': 2},
             'version': 1,
             'version_status': 0,
         }
+
+        node_start_rule_3 = {
+            'rule_target': 'node_status',
+            'rule_where': 2,
+            'rule_operator': 'eq',
+            'rule_value': 'finish',
+            'node_design': 3
+        }
+
+        node_start_rule_4 = {
+            'rule_target': 'flow_data',
+            'rule_where': 'flag',
+            'rule_operator': 'eq',
+            'rule_value': 'ok',
+            'node_design': 3
+        }
+
+
         node_status_rule_5 = {
             'id': None,
             'status_operator': 'eq',
@@ -213,46 +252,6 @@ class Test_Flow(TestCase):
             'status_target': 'fail',
             'node_status': 'skip',
             'node_design': 4,
-        }
-
-        node_start_rule_design_1 = {
-            'rule_type': 'or',
-            'rule_order': '1',
-            'node_design': 4
-        }
-        node_start_rule_design_2 = {
-            'rule_type': 'and',
-            'rule_order': '1',
-            'node_design': 4
-        }
-
-        node_start_rule_1 = {
-            'rule_target': 'flow_data',
-            'rule_where': 'flag',
-            'rule_operator': 'eq',
-            'rule_value': 'ok',
-            'rule_design': 1
-        }
-        node_start_rule_2 = {
-            'rule_target': 'flow_data',
-            'rule_where': 'flag',
-            'rule_operator': 'eq',
-            'rule_value': 'pass',
-            'rule_design': 1
-        }
-        node_start_rule_3 = {
-            'rule_target': 'node_result',
-            'rule_where': 1,
-            'rule_operator': 'eq',
-            'rule_value': 'pass',
-            'rule_design': 2
-        }
-        node_start_rule_4 = {
-            'rule_target': 'node_status',
-            'rule_where': 1,
-            'rule_operator': 'eq',
-            'rule_value': "finish",
-            'rule_design': 2
         }
 
         flow_result_rule_1 = {
@@ -345,10 +344,10 @@ class Test_Flow(TestCase):
             print(model_to_dict(a))
 
         print(f'==== 新增 node_start_rule_design ==== ')
-        node_start_rule_design_list = [node_start_rule_design_1, node_start_rule_design_2, ]
+        node_start_rule_list = [node_start_rule_1, node_start_rule_2, node_start_rule_3, node_start_rule_4 ]
 
-        for node_start_rule_design in node_start_rule_design_list:
-            a = NodeStartRuleDesignDBHelper().save_this(node_start_rule_design)
+        for node_start_rule in node_start_rule_list:
+            a = NodeStartRuleDBHelper().save_this(node_start_rule)
             print(model_to_dict(a))
 
         print(f'==== 新增 node_start_rule ==== ')
@@ -426,7 +425,7 @@ class Test_Flow(TestCase):
 
         print(f'==== 重新设置节点3的结果和状态 re_check_node_status to fail ====')
         a = NodeMgr().re_check_node_status('fail', 3)
-        print(model_to_dict(a.node_instance))
+        print(model_to_dict(a))
 
         print(f'==== 回滚到3号节点 rollback_to_node  ====')
         node_ins_2 = NodeInstanceDBHelper().get_by({'pk': 3})
