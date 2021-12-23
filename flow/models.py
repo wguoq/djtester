@@ -38,6 +38,7 @@ class Flow_Design(Public_Field):
     flow_type = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
+                                 default='serial',
                                  verbose_name="流程类型: serial=串行;parallel=并行")
 
     flow_result_rule_id = models.CharField(max_length=64,
@@ -54,10 +55,10 @@ class Flow_Design(Public_Field):
                                   null=True,
                                   verbose_name="版本")
 
-    version_status = models.CharField(max_length=8,
-                                      blank=True,
-                                      null=True,
-                                      verbose_name="版本状态: -1=停用,0=草稿,1=启用")
+    version_status = models.IntegerField(blank=True,
+                                         null=True,
+                                         default=0,
+                                         verbose_name="版本状态: -1=停用,0=草稿,1=启用")
 
     objects = models.Manager()
 
@@ -133,14 +134,15 @@ class Node_Design(Public_Field):
     流程节点设计表
     """
 
-    node_code = models.CharField(max_length=32,
+    node_code = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
                                  verbose_name="节点编码")
 
-    node_type = models.CharField(max_length=32,
+    node_type = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
+                                 default='func_node',
                                  verbose_name="节点类型: func_node | sub_flow")
 
     node_name = models.CharField(max_length=128,
@@ -148,7 +150,13 @@ class Node_Design(Public_Field):
                                  null=True,
                                  verbose_name="节点名称")
 
-    node_func_name = models.CharField(max_length=32,
+    start_rule_type = models.CharField(max_length=64,
+                                       blank=True,
+                                       null=True,
+                                       default='and',
+                                       verbose_name="启动条件类型：and | or | custom")
+
+    node_func_name = models.CharField(max_length=64,
                                       blank=True,
                                       null=True,
                                       verbose_name="节点业务方法名称")
@@ -161,10 +169,10 @@ class Node_Design(Public_Field):
                                   null=True,
                                   verbose_name="版本")
 
-    version_status = models.CharField(max_length=8,
-                                      blank=True,
-                                      null=True,
-                                      verbose_name="版本状态: -1=停用,0=草稿,1=启用")
+    version_status = models.IntegerField(blank=True,
+                                         null=True,
+                                         default=0,
+                                         verbose_name="版本状态: -1=停用,0=草稿,1=启用")
 
     objects = models.Manager()
 
@@ -173,12 +181,43 @@ class Node_Design(Public_Field):
         db_table = "flow_node_design"
 
 
+class Node_Start_Rule(Public_Field):
+    rule_target = models.CharField(max_length=64,
+                                   blank=True,
+                                   null=True,
+                                   verbose_name="目标: flow_data | node_result | node_status")
+
+    rule_where = models.CharField(max_length=64,
+                                  blank=True,
+                                  null=True,
+                                  verbose_name="目标flow_data用key | 目标node_result和node_status用node_design_id")
+
+    rule_operator = models.CharField(max_length=64,
+                                     blank=True,
+                                     null=True,
+                                     verbose_name="eq | nq | lt | le | gt | ge")
+
+    rule_value = models.CharField(max_length=64,
+                                  blank=True,
+                                  null=True,
+                                  verbose_name="匹配值")
+
+    node_design = models.ForeignKey(to=Node_Design,
+                                    on_delete=models.SET_NULL,
+                                    blank=True,
+                                    null=True,
+                                    verbose_name="顺序id")
+
+
 class Node_Status_Rule(Public_Field):
     """
     流程节点状态规则表
     """
+    rule_order = models.IntegerField(blank=True,
+                                     null=True,
+                                     verbose_name="顺序")
 
-    status_operator = models.CharField(max_length=32,
+    status_operator = models.CharField(max_length=64,
                                        blank=True,
                                        null=True,
                                        verbose_name="比较方式: eq;ne")
@@ -188,7 +227,7 @@ class Node_Status_Rule(Public_Field):
                                      blank=True,
                                      verbose_name="对比目标")
 
-    node_status = models.CharField(max_length=32,
+    node_status = models.CharField(max_length=64,
                                    blank=True,
                                    null=True,
                                    verbose_name="节点状态")
@@ -206,53 +245,25 @@ class Node_Status_Rule(Public_Field):
         db_table = "flow_node_status_rule"
 
 
-class Node_Start_Rule_Design(Public_Field):
-    """
-    流程启动条件表
-    """
-    rule_type = models.CharField(max_length=32,
-                                 blank=True,
-                                 null=True,
-                                 default='and',
-                                 verbose_name="and | or")
-
-    rule_order = models.IntegerField(blank=True,
-                                     null=True,
-                                     verbose_name="顺序")
-
-    node_design = models.ForeignKey(to=Node_Design,
-                                    on_delete=models.SET_NULL,
-                                    blank=True,
-                                    null=True,
-                                    verbose_name="节点设计id")
-
-
-class Node_Start_Rule(Public_Field):
-    rule_target = models.CharField(max_length=32,
-                                   blank=True,
-                                   null=True,
-                                   verbose_name="目标: flow_data | node_result | node_status")
-
-    rule_where = models.CharField(max_length=32,
-                                  blank=True,
-                                  null=True,
-                                  verbose_name="目标flow_data用key | 目标node_result和node_status用node_design_id")
-
-    rule_operator = models.CharField(max_length=32,
-                                     blank=True,
-                                     null=True,
-                                     verbose_name="eq | nq | lt | le | gt | ge")
-
-    rule_value = models.CharField(max_length=32,
-                                  blank=True,
-                                  null=True,
-                                  verbose_name="匹配值")
-
-    rule_design = models.ForeignKey(to=Node_Start_Rule_Design,
-                                    on_delete=models.SET_NULL,
-                                    blank=True,
-                                    null=True,
-                                    verbose_name="顺序id")
+# class Node_Start_Rule_Design(Public_Field):
+#     """
+#     流程启动条件表
+#     """
+#     rule_type = models.CharField(max_length=64,
+#                                  blank=True,
+#                                  null=True,
+#                                  default='and',
+#                                  verbose_name="and | or")
+#
+#     rule_order = models.IntegerField(blank=True,
+#                                      null=True,
+#                                      verbose_name="顺序")
+#
+#     node_design = models.ForeignKey(to=Node_Design,
+#                                     on_delete=models.SET_NULL,
+#                                     blank=True,
+#                                     null=True,
+#                                     verbose_name="节点设计id")
 
 
 class Flow_Node_Design_Oder(Public_Field):
@@ -302,7 +313,7 @@ class Flow_Instance(Public_Field):
                                    default='pending',
                                    verbose_name="流程状态")
 
-    flow_result = models.CharField(max_length=32,
+    flow_result = models.CharField(max_length=64,
                                    blank=True,
                                    null=True,
                                    verbose_name="流程结果")
@@ -325,7 +336,7 @@ class Node_Instance(Public_Field):
                                     null=True,
                                     verbose_name="节点设计id")
 
-    node_func_name = models.CharField(max_length=32,
+    node_func_name = models.CharField(max_length=64,
                                       blank=True,
                                       null=True,
                                       verbose_name="节点业务方法名称")
@@ -338,7 +349,7 @@ class Node_Instance(Public_Field):
                                      null=True,
                                      verbose_name="节点顺序")
 
-    node_status = models.CharField(max_length=32,
+    node_status = models.CharField(max_length=64,
                                    blank=True,
                                    null=True,
                                    default='pending',
