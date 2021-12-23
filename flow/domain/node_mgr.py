@@ -1,7 +1,7 @@
 from django.forms import model_to_dict
 from djtester.tools_man import verify_str
 from flow.domain.enums import NodeStatus, NodeStartRuleTarget, NodeStartRuleType
-from flow.domain.node_runner import NodeInstanceRunner
+from flow.domain.node_runner import NodeInstanceRunner, check_node_status
 from flow.models import Node_Instance, Node_Start_Rule
 from flow.repositories import NodeInstanceDBHelper, NodeStartRuleDBHelper
 
@@ -75,7 +75,7 @@ class NodeMgr:
             # 判断是否满足节点运行条件
             if check_node_start_rule(node_instance, flow_data):
                 # run 并且返回新的 Node_Instance
-                run_node_result = NodeInstanceRunner().run(node_instance, flow_data)
+                run_node_result = NodeInstanceRunner.run(node_instance, flow_data)
                 node_instance = run_node_result.node_instance
                 return_data = run_node_result.return_data
                 # 保存新的 Node_Instance
@@ -88,10 +88,11 @@ class NodeMgr:
             return RunNodeInstResult(node_instance)
 
     @staticmethod
-    def re_check_node_status(new_result: str, node_instance_id) -> Node_Instance:
+    def reset_node_status(new_result: str, node_instance_id) -> Node_Instance:
         node_instance = NodeInstanceDBHelper().get_by({'pk': node_instance_id})
-        new_node_instance = NodeInstanceRunner().re_check_status(new_result, node_instance)
-        NodeInstanceDBHelper().save_this(model_to_dict(new_node_instance))
-        return new_node_instance
+        node_instance.node_result = new_result
+        node_instance.node_status = check_node_status(new_result, node_instance)
+        NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
+        return node_instance
 
 
