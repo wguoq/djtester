@@ -206,7 +206,7 @@ class Node_Start_Rule(Public_Field):
                                     on_delete=models.SET_NULL,
                                     blank=True,
                                     null=True,
-                                    verbose_name="顺序id")
+                                    verbose_name="节点设计id")
 
 
 class Node_Status_Rule(Public_Field):
