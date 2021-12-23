@@ -424,7 +424,7 @@ class Test_Flow(TestCase):
             print(model_to_dict(a))
 
         print(f'==== 重新设置节点3的结果和状态 re_check_node_status to fail ====')
-        a = NodeMgr().re_check_node_status('fail', 3)
+        a = NodeMgr.reset_node_status('fail', 3)
         print(model_to_dict(a))
 
         print(f'==== 回滚到3号节点 rollback_to_node  ====')
