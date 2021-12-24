@@ -3,6 +3,7 @@ import operator
 from djtester.tools_man import get_node_func_list
 from flow.domain.enums import NodeStatus
 from flow.models import Node_Instance, Node_Status_Rule
+from flow.repositories import NodeStatusRuleDBHelper
 
 
 def get_node_func_class(node_func_name: str):
@@ -13,8 +14,10 @@ def get_node_func_class(node_func_name: str):
 
 
 def check_node_status(result: str, node_instance: Node_Instance):
-    # 查询出所有 rule_list 可以是多条,约定为or关系,先到先得
-    rule_list = node_instance.node_design.node_status_rule_set.all()
+    # 查询出所有 rule_list ,排序，返回第一个匹配到的
+    # rule_list1 = node_instance.node_design.node_status_rule_set.all()
+    # print(f'1111111111111== {rule_list1}')
+    rule_list = NodeStatusRuleDBHelper().filter_by({'node_design': node_instance.node_design_id}).order_by('rule_order')
     for rule in rule_list:
         node_status = _get_node_status_by_rule(rule, result)
         if node_status:
