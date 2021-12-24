@@ -245,27 +245,6 @@ class Node_Status_Rule(Public_Field):
         db_table = "flow_node_status_rule"
 
 
-# class Node_Start_Rule_Design(Public_Field):
-#     """
-#     流程启动条件表
-#     """
-#     rule_type = models.CharField(max_length=64,
-#                                  blank=True,
-#                                  null=True,
-#                                  default='and',
-#                                  verbose_name="and | or")
-#
-#     rule_order = models.IntegerField(blank=True,
-#                                      null=True,
-#                                      verbose_name="顺序")
-#
-#     node_design = models.ForeignKey(to=Node_Design,
-#                                     on_delete=models.SET_NULL,
-#                                     blank=True,
-#                                     null=True,
-#                                     verbose_name="节点设计id")
-
-
 class Flow_Node_Design_Oder(Public_Field):
     """
     流程设计,节点顺序,节点设计关联表
