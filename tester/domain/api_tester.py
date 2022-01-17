@@ -9,11 +9,9 @@ from pydantic import BaseModel
 class ApiTestCase(object):
     def __init__(self, api_test_case: dict):
         self.id = api_test_case.get('id')
+        self.test_case_code = api_test_case.get('test_case_code')
+        self.test_case_name = api_test_case.get('test_case_name')
         self.test_case_type = api_test_case.get('test_case_type')
-        # identity
-        self.tc_identity = api_test_case.get('tc_identity')
-        self.test_case_id = self.tc_identity.get('test_case_id')
-        self.test_case_name = self.tc_identity.get('test_case_name')
         # action
         self.tc_action = api_test_case.get('tc_action')
         self.action_type = self.tc_action.get('action_type')
@@ -98,7 +96,7 @@ class ApiTester(Tester):
         super().__init__()
 
     def run(self, test_case: ApiTestCase, test_case_config: ApiTestConfig):
-        self.test_case_id = test_case.test_case_id
+        self.test_case_code = test_case.test_case_code
         self.test_case_name = test_case.test_case_name
         # 配置 test_case_config
         test_case = self._config(test_case, test_case_config)

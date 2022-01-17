@@ -53,7 +53,7 @@ class NodeFuncRunApiTestCase(NodeFuncBase):
 
     def do_func(self, node_func_param: dict, flow_data):
         test_case_id = node_func_param.get('test_case_id')
-        a = TesterServicer().run_testcase(test_case_id, flow_data)
+        a = TesterServicer.run_testcase(test_case_id, flow_data)
         return self.NodeFuncResult(a.test_case_result, {'test_case_id': test_case_id})
 
 
@@ -73,7 +73,7 @@ class NodeFuncRunApiTestCaseList(NodeFuncBase):
         res = []
         for data in node_func_param:
             test_case_id = data.get('test_case_id')
-            a = TesterServicer().run_testcase(test_case_id, flow_data)
+            a = TesterServicer.run_testcase(test_case_id, flow_data)
             res.append(a.test_case_result.case_result)
         # 全部pass才行
         for r in res:
