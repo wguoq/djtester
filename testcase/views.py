@@ -30,3 +30,14 @@ def get_all_testcase(request):
         # return HttpResponse(json.dumps(all_case))
         context = {'data': all_case}
         return render(request, 'testcase/test_case.html', context)
+
+
+def get_all(request):
+    if request.method != 'GET':
+        return HttpResponseNotFound
+    else:
+        all_case = TestCaseServicer().get_all()
+        # return HttpResponse(json.dumps(all_case))
+        total = len(all_case)
+        context = {'data': all_case, 'total': total}
+        return JsonResponse(context, status=200)

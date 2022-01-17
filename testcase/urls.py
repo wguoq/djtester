@@ -9,8 +9,6 @@ urlpatterns = [
     # path('init_ui_testcase/', views.init_ui_testcase, name='init_ui_testcase'),
     # path('init_mobile_testcase/', views.init_mobile_testcase, name='init_mobile_testcase'),
     path('all_testcase/', views.get_all_testcase, name='get_all_testcase'),
-
-
-
+    path('get_all/', views.get_all, name='get_all'),
 
 ]
