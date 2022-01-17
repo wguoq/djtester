@@ -2,11 +2,10 @@ from django.test import TestCase
 from tester.service import TesterServicer
 
 case1 = {
+    "test_case_code": "tc1622690409",
+    "test_case_name": "test_case_name001",
     "test_case_type": "api",
-    "tc_identity": {
-        "test_case_id": "tc1622690409",
-        "test_case_name": "test_case_name001"
-    },
+    "version": 1,
     "tc_action": {
         "action_type": "ApiAction",
         "action_name": "get index",
@@ -52,7 +51,7 @@ case1 = {
                 "operator": "eq",
                 "expect": "200"
             }
-        },
+        }
     ],
 }
 
