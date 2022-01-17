@@ -13,13 +13,12 @@
 
         <tr>
             <th>id</th>
-            <th>test_case_type</th>
-            <th>tc_identity</th>
-            <th>test_case_id</th>
+            <th>test_case_code</th>
             <th>test_case_name</th>
-            <th>tc_action</th>
-            <th>tc_data</th>
-            <th>tc_check_list</th>
+            <th>test_case_type</th>
+            <th>action</th>
+            <th>data</th>
+            <th>check_list</th>
             <th>操作</th>
 
         </tr>
@@ -27,16 +26,15 @@
         {%for item in data%}
             <tr>
                 <td>{{item.id}}</td>
+                <td>{{item.test_case_code}}</td>
+                <td>{{item.test_case_name}}</td>
                 <td>{{item.test_case_type}}</td>
-                <td>{{item.tc_identity}}</td>
-                <td>{{item.tc_identity.test_case_id}}</td>
-                <td>{{item.tc_identity.test_case_name}}</td>
                 <td>{{item.tc_action}}</td>
                 <td>{{item.tc_data}}</td>
                 <td>{{item.tc_check_list}}</td>
                 <td>
                         <form action='/tester/run_test_case/' method="post">{% csrf_token %}
-                            <input type="hidden" name ='test_case_pk' value="{{item.id}}">
+                            <input type="hidden" name ='test_case_id' value="{{item.id}}">
                             <p><input type="submit" value="执行"></p>
                         </form>
                 </td>

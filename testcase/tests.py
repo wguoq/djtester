@@ -6,11 +6,10 @@ from django.test import TestCase
 from .service import *
 
 case1 = {
+    "test_case_code": "tc1622690409",
+    "test_case_name": "test_case_name001",
     "test_case_type": "api",
-    "tc_identity": {
-        "test_case_id": "tc1622690409",
-        "test_case_name": "test_case_name001"
-    },
+    "version": 1,
     "tc_action": {
         "action_type": "ApiAction",
         "action_name": "get index",
@@ -70,11 +69,10 @@ case1 = {
 }
 
 case2 = {
+    "test_case_code": "tc2622693409",
+    "test_case_name": "test_case_name002",
     "test_case_type": "api",
-    "tc_identity": {
-        "test_case_id": "tc2622693409",
-        "test_case_name": "test_case_name002"
-    },
+    "version": 1,
     "tc_action": {
         "action_type": "ApiAction",
         "action_name": "get index",
@@ -142,21 +140,21 @@ class TestTestCase(TestCase):
         print(f'api_case new =====')
         print(TestCaseServicer().new_api_testcase())
         #############################################################
-        print(f'Tc_Identity new =====')
-        print(TestCaseIdentityServicer.new())
+        # print(f'Tc_Identity new =====')
+        # print(TestCaseIdentityServicer.new())
 
-        print(f'Tc_Identity 新增 =====')
-        tc_identity1 = {"test_case_id": "tc1628342459",
-                        "test_case_name": "tc_identity1"}
-        a = TestCaseIdentityServicer().add(tc_identity1)
-        print(a)
-        print(model_to_dict(a))
+        # print(f'Tc_Identity 新增 =====')
+        # tc_identity1 = {"test_case_id": "tc1628342459",
+        #                 "test_case_name": "tc_identity1"}
+        # a = TestCaseIdentityServicer().add(tc_identity1)
+        # print(a)
+        # print(model_to_dict(a))
 
-        print(f'Tc_Identity 修改 =====')
-        tc_identity1_1 = {"id": 1,
-                          "test_case_name": "tc_identity1_修改"}
-        a = TestCaseIdentityServicer().edit(tc_identity1_1)
-        print(model_to_dict(a))
+        # print(f'Tc_Identity 修改 =====')
+        # tc_identity1_1 = {"id": 1,
+        #                   "test_case_name": "tc_identity1_修改"}
+        # a = TestCaseIdentityServicer().edit(tc_identity1_1)
+        # print(model_to_dict(a))
 
         #############################################################
         print(f'tc_action new =====')
@@ -269,7 +267,6 @@ class TestTestCase(TestCase):
         ##########################################################################
         print(f' test_case 修改 外键字段dict =====')
         case1_2 = {'id': 1, 'test_case_type': 'api_修改',
-                   'tc_identity': {'id': 2, 'test_case_id': 'tc1622690409', 'test_case_name': 'test_case_name001-修改'},
                    'tc_action': {'id': 2, 'action_type': 'ApiAction', 'action_name': 'get index-修改',
                                  'action': {'method': 'get', 'protocol': 'http', 'host': '127.0.0.1', 'port': '8000',
                                             'path': ''}},
@@ -286,16 +283,16 @@ class TestTestCase(TestCase):
         print(TestCaseServicer().get_by_pk(1))
         ##############################################################################
         print(f' test_case 修改 外键字段id =====')
-        case1_3 = {'id': 1, 'test_case_type': 'api_修改', 'tc_identity': 1, 'tc_action': 1, 'tc_data': 1, 'version': 1,
+        case1_3 = {'id': 1, 'test_case_type': 'api_修改', 'tc_action': 1, 'tc_data': 1, 'version': 1,
                    'tc_check_list': [1, 2]}
         a = TestCaseServicer().edit(case1_3)
         print(a)
         print(TestCaseServicer().get_by_pk(1))
         #########################################################
-        print(f'用test_case_id查询')
-        a = TestCaseServicer().filter_by_case_id('tc1628342459')
-        print(a)
-
-        print(f'用test_case_name查询')
-        a = TestCaseServicer().filter_by_case_name('tc_identity1_修改')
-        print(a)
+        # print(f'用test_case_id查询')
+        # a = TestCaseServicer().filter_by_case_id('tc1628342459')
+        # print(a)
+        #
+        # print(f'用test_case_name查询')
+        # a = TestCaseServicer().filter_by_case_name('tc_identity1_修改')
+        # print(a)

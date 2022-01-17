@@ -21,22 +21,22 @@ class TestCaseEnums:
         return list(e.value for e in TestCaseType)
 
 
-class TestCaseIdentityServicer(BaseServicer):
-    def __init__(self):
-        self.DBHelper = TcIdentityDBHelper()
-        super().__init__(self.DBHelper)
-
-    @staticmethod
-    def new():
-        # 默认test_case_id是时间戳+随机数
-        test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
-        return model_to_dict(Identity(test_case_id=test_case_id))
-
-    def add(self, data):
-        if self.DBHelper.has_case_id(data) or self.DBHelper.has_case_name(data):
-            raise Exception(f'test_case_id 或 test_case_name 已经存在')
-        else:
-            return super().add(data)
+# class TestCaseIdentityServicer(BaseServicer):
+#     def __init__(self):
+#         self.DBHelper = TcIdentityDBHelper()
+#         super().__init__(self.DBHelper)
+#
+#     @staticmethod
+#     def new():
+#         # 默认test_case_id是时间戳+随机数
+#         test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
+#         return model_to_dict(Identity(test_case_id=test_case_id))
+#
+#     def add(self, data):
+#         if self.DBHelper.has_case_id(data) or self.DBHelper.has_case_name(data):
+#             raise Exception(f'test_case_id 或 test_case_name 已经存在')
+#         else:
+#             return super().add(data)
 
 
 class TestCaseActionServicer(BaseServicer):
@@ -77,9 +77,9 @@ class TestCaseServicer(BaseServicer):
 
     @staticmethod
     def new_api_testcase():
-        test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
+        test_case_code = 'tc' + str(round(time.time()) + random.randint(0, 99))
+        test_case_name = ''
         test_case_type = TestCaseType.API.value
-        tc_identity = model_to_dict(Identity(test_case_id=test_case_id))
         tc_action = model_to_dict(Action(action_type=ApiAction.__name__,
                                          action_name="",
                                          action=ApiAction().__dict__))
@@ -92,13 +92,15 @@ class TestCaseServicer(BaseServicer):
                          model_to_dict(Check_Point(check_point_type=ApiJsonSchemaCheckPoint.__name__,
                                                    check_point_name="",
                                                    check_point=ApiJsonSchemaCheckPoint().__dict__))]
-
-        a = dict(test_case_id=test_case_id,
+        version = 1
+        a = dict(test_case_code=test_case_code,
+                 test_case_name=test_case_name,
                  test_case_type=test_case_type,
-                 tc_identity=tc_identity,
                  tc_action=tc_action,
                  tc_data=tc_data,
-                 tc_check_list=tc_check_list)
+                 tc_check_list=tc_check_list,
+                 version=version
+                 )
         # setattr(Test_Case(), **a)
         return a
 
@@ -131,15 +133,15 @@ class TestCaseServicer(BaseServicer):
         a = TestCaseDBHelper().filter_by(kwargs)
         return _query_set_to_case_dict(a)
 
-    @staticmethod
-    def filter_by_case_id(test_case_id: str):
-        a = TestCaseDBHelper.filter_by_case_id(test_case_id)
-        return _query_set_to_case_dict(a)
-
-    @staticmethod
-    def filter_by_case_name(test_case_name: str):
-        a = TestCaseDBHelper.filter_by_case_name(test_case_name)
-        return _query_set_to_case_dict(a)
+    # @staticmethod
+    # def filter_by_case_id(test_case_id: str):
+    #     a = TestCaseDBHelper.filter_by_case_id(test_case_id)
+    #     return _query_set_to_case_dict(a)
+    #
+    # @staticmethod
+    # def filter_by_case_name(test_case_name: str):
+    #     a = TestCaseDBHelper.filter_by_case_name(test_case_name)
+    #     return _query_set_to_case_dict(a)
 
 
 def _get_check_point_pk(tc_check_list: list):
@@ -156,15 +158,9 @@ def _get_full_case(case_dict) -> dict:
     """
     把testcase里面的外键关联的数据一个个都查出来,组装成一个dict
     """
-    tc_identity = case_dict.get('tc_identity')
     tc_action = case_dict.get('tc_action')
     tc_data = case_dict.get('tc_data')
     tc_check_list = case_dict.get('tc_check_list')
-    if tc_identity is None or len(str(tc_identity)) == 0:
-        case_dict['tc_identity'] = {}
-    else:
-        case_dict['tc_identity'] = TestCaseIdentityServicer().get_by_pk(case_dict.get('tc_identity'))
-
     if tc_action is None or len(str(tc_action)) == 0:
         case_dict['tc_action'] = {}
     else:

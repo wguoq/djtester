@@ -35,16 +35,14 @@ class TestCaseDBHelper(BaseDBHelper):
 
     @transaction.atomic
     def save_this(self, data: dict):
-        tc_identity = data.get('tc_identity')
+        # 把外键拿出来
         tc_action = data.get('tc_action')
         tc_data = data.get('tc_data')
         tc_check_list = data.get('tc_check_list')
         # tc_check_list是m2m要先移除
+        # 存外键
         if tc_check_list:
             data.pop('tc_check_list')
-        # 存外键
-        if tc_identity:
-            data['tc_identity'] = save_foreignkey(REPOSITORIES_PATH, TcIdentityDBHelper.__name__, tc_identity)
         if tc_action:
             data['tc_action'] = save_foreignkey(REPOSITORIES_PATH, TcActionDBHelper.__name__, tc_action)
         if tc_data:
@@ -53,12 +51,12 @@ class TestCaseDBHelper(BaseDBHelper):
         self.m2m = self._set_m2m(tc_check_list)
         return super().save_this(data)
 
-    @staticmethod
-    def filter_by_case_id(test_case_id):
-        tc_identity_id = TcIdentityDBHelper().get_by(dict(test_case_id=test_case_id)).pk
-        return Test_Case.objects.filter(tc_identity=tc_identity_id)
-
-    @staticmethod
-    def filter_by_case_name(test_case_name):
-        tc_identity_id = TcIdentityDBHelper().get_by(dict(test_case_name=test_case_name)).pk
-        return Test_Case.objects.filter(tc_identity=tc_identity_id)
+    # @staticmethod
+    # def filter_by_case_id(test_case_id):
+    #     tc_identity_id = TcIdentityDBHelper().get_by(dict(test_case_id=test_case_id)).pk
+    #     return Test_Case.objects.filter(tc_identity=tc_identity_id)
+    #
+    # @staticmethod
+    # def filter_by_case_name(test_case_name):
+    #     tc_identity_id = TcIdentityDBHelper().get_by(dict(test_case_name=test_case_name)).pk
+    #     return Test_Case.objects.filter(tc_identity=tc_identity_id)
