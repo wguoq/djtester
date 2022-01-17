@@ -9,13 +9,11 @@ from .repositories import *
 
 class Test_Flow(TestCase):
     def test_flow_design(self):
-
         case1 = {
+            "test_case_code": "tc1622690409",
+            "test_case_name": "test_case_name001",
             "test_case_type": "api",
-            "tc_identity": {
-                "test_case_id": "tc1622690409",
-                "test_case_name": "test_case_name001"
-            },
+            "version": 1,
             "tc_action": {
                 "action_type": "ApiAction",
                 "action_name": "get index",
@@ -61,15 +59,15 @@ class Test_Flow(TestCase):
                         "operator": "eq",
                         "expect": "200"
                     }
-                },
+                }
             ],
         }
+
         case2 = {
+            "test_case_code": "tc2622693409",
+            "test_case_name": "test_case_name002",
             "test_case_type": "api",
-            "tc_identity": {
-                "test_case_id": "tc18765690409",
-                "test_case_name": "test_case_name002"
-            },
+            "version": 1,
             "tc_action": {
                 "action_type": "ApiAction",
                 "action_name": "get index",
@@ -115,7 +113,7 @@ class Test_Flow(TestCase):
                         "operator": "eq",
                         "expect": "10086"
                     }
-                },
+                }
             ],
         }
 
