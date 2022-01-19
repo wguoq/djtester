@@ -1,7 +1,7 @@
 import requests
 from djtester.enums import ResponseProperty, Operators, TestResult
 from djtester.tools_man import verify_str
-from tester.domain.tester import Tester
+from tester.domain.tester import RunTestResult
 from tester.utils import *
 from pydantic import BaseModel
 
@@ -90,14 +90,12 @@ class ApiRequestSender(object):
             raise Exception(f'requests.post error:\n {e}')
 
 
-class ApiTester(Tester):
+class ApiTester:
     def __init__(self):
         self.check_point_result_list = []
         super().__init__()
 
     def run(self, test_case: ApiTestCase, test_case_config: ApiTestConfig):
-        self.test_case_code = test_case.test_case_code
-        self.test_case_name = test_case.test_case_name
         # 配置 test_case_config
         test_case = self._config(test_case, test_case_config)
         # 调用requests
@@ -106,20 +104,30 @@ class ApiTester(Tester):
         check_list = test_case.check_list
         if check_list is None or len(check_list) == 0:
             # 如果没有check_list就默认不需要验证直接通过
-            self.test_case_result = TestResult.PASS.value
-            self.message = '没有 check_list,默认为 pass'
-            return self
+            # self.test_case_result = TestResult.PASS.value
+            msg = '没有 check_list,默认为 pass'
+            return RunTestResult(test_case_id=test_case.id,
+                                 test_case_code=test_case.test_case_code,
+                                 test_case_name=test_case.test_case_name,
+                                 test_case_result=TestResult.PASS.value,
+                                 log=msg)
         else:
             result_list = []
             for check_data in check_list:
                 r = ApiCheckPointVerifier().verify(check_data, api_response)
                 result_list.append(r)
             # 判断测试结果,填写返回值
-            self.test_case_result = self._verify_test_case_result(result_list)
+            test_case_result = self._verify_test_case_result(result_list)
             for result in result_list:
                 self.check_point_result_list.append(result.__dict__)
-            self.message = '测试完成'
-            return self
+            msg = ''
+            for r in self.check_point_result_list:
+                msg += str(r)
+            return RunTestResult(test_case_id=test_case.id,
+                                 test_case_code=test_case.test_case_code,
+                                 test_case_name=test_case.test_case_name,
+                                 test_case_result=test_case_result,
+                                 log=msg)
 
     @staticmethod
     def _config(test_case: ApiTestCase, test_case_config: ApiTestConfig):
