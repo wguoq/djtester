@@ -5,7 +5,7 @@ app_name = 'tester'
 
 urlpatterns = [
     # path('', views.index, name='testcase_index'),
-    path('run_test_case/', views.run_test_case, name='run_test_case'),
+    path('run/', views.run_test_case, name='run'),
 
 
 ]
