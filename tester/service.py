@@ -1,9 +1,8 @@
 from djtester.decorators import reg_node_func, show_class_name
-from djtester.enums import TestCaseType
 from flow.domain.node_func import NodeFuncBase
-from tester.domain.api_tester import ApiTester
-from tester.domain.api_tester import ApiTestConfig, ApiTestCase
+from tester.domain.api_tester import ApiTestConfig
 from djtester.all_app_service import TestCaseService
+from tester.domain.tester import RunTestResult
 from tester.domain.tester_mgr import TesterMgr
 
 
@@ -22,7 +21,7 @@ class TesterServicer:
         return ApiTestConfig().__dict__
 
     @staticmethod
-    def run_testcase(test_case, test_config: dict = None) -> ApiTester:
+    def run_testcase(test_case, test_config: dict = None) -> RunTestResult:
         """
         test_case 必须是:dict或者pk
         """
@@ -74,7 +73,7 @@ class NodeFuncRunApiTestCaseList(NodeFuncBase):
         for data in node_func_param:
             test_case_id = data.get('test_case_id')
             a = TesterServicer.run_testcase(test_case_id, flow_data)
-            res.append(a.test_case_result.case_result)
+            res.append(a.test_case_result)
         # 全部pass才行
         for r in res:
             if r != 'pass':
