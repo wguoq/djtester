@@ -26,10 +26,9 @@ SECRET_KEY = ')bzrm(-t=z4u5-#s!mfybn8$xff29$&4-()7z6c%5!*2&02sij'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "*"
-
+    "*",
+    "127.0.0.1:3333"
 ]
-
 
 # Application definition 注册app
 
@@ -47,7 +46,7 @@ INSTALLED_APPS = [
     'mock.apps.MockConfig'
 
 ]
-
+# https://docs.djangoproject.com/zh-hans/4.0/ref/csrf/
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -57,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+CSRF_HEADER_NAME = 'HTTP_X_CSRFToken'
 
 ROOT_URLCONF = 'djtester.urls'
 
