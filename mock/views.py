@@ -1,3 +1,5 @@
+import time
+
 from django.http import JsonResponse, HttpResponseNotFound
 from django.shortcuts import render
 
@@ -6,7 +8,7 @@ from django.shortcuts import render
 json1 = {
     "message": "操作成功",
     "data": {
-        "total": 5,
+        "total": 20,
         "rows": [{
             "contractType": "businessQuota",
             "businessName": "额度法人账户透支",
@@ -205,6 +207,7 @@ json1 = {
 
 
 def test_json(request):
+    #time.sleep(2)
     return JsonResponse(json1, status=200)
 
 
@@ -225,3 +228,28 @@ def index(request):
         return HttpResponseNotFound
     else:
         return render(request, 'mock/index.html')
+
+
+# http://172.22.82.105:9000/api/customer/app/execute
+
+data = {
+    "globalId": "",
+    "appId": "",
+    "requestId": "",
+    "serviceId": "PeerCustomerAuthService",
+    "requestType": "SMARTFORM",
+    "action": "query",
+    "parameters": {
+        "filters": {
+            "__EQS_customerType": "01"
+        },
+        "page": {
+            "pageSize": 10,
+            "pageNumber": 1,
+            "pageable": 'true'
+        },
+        "orders": {}
+    }
+}
+
+
