@@ -13,7 +13,8 @@ class Public_Field(models.Model):
     del_flag = models.CharField(max_length=1,
                                 blank=True,
                                 null=True,
-                                verbose_name="逻辑删除标记")
+                                default=0,
+                                verbose_name="逻辑删除标记: 1=删除")
 
     # 定义为抽象类,不会创建表
     class Meta:
