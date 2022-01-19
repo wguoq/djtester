@@ -2,3 +2,6 @@
 安装vue: $ npm install vue@next | $ npm install -g @vue/cli
 用vite创建项目: $ npm init vite@latest | 输入my-project,选vue,vue-ts| $ cd my-project | $ npm install
 vite项目入口: index.html
+安装vuex: npm install vuex@next --save
+安装router: npm install vue-router@4 --save
+安装element: npm install element-plus --save | npm install @element-plus/icons
