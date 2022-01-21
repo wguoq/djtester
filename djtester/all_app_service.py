@@ -3,13 +3,13 @@ import importlib
 
 class TestCaseService:
     @staticmethod
-    def test_case_servicer():
+    def test_case_service():
         module = importlib.import_module('testcase.service')
-        return getattr(module, 'TestCaseServicer')
+        return getattr(module, 'TestCaseService')
 
 
 class TesterService:
     @staticmethod
-    def tester_servicer():
+    def tester_service():
         module = importlib.import_module('tester.service')
-        return getattr(module, 'TesterServicer')
+        return getattr(module, 'TesterService')
