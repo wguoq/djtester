@@ -364,7 +364,7 @@ class Test_Flow(TestCase):
         for a in nd1_node_status_rule_set_all:
             print(model_to_dict(a))
 
-        test_case_servicer = TestCaseService().test_case_servicer()
+        test_case_servicer = TestCaseService().test_case_service()
         test_case_servicer().add(case1)
         test_case_servicer().add(case2)
 

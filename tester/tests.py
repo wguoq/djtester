@@ -1,5 +1,5 @@
 from django.test import TestCase
-from tester.service import TesterServicer
+from tester.service import TesterService
 
 case1 = {
     "test_case_code": "tc1622690409",
@@ -62,7 +62,7 @@ class TestTester(TestCase):
         # config = TesterServicer.new_test_config()
         # print(config)
         print(f'===== run_testcase case1 ======')
-        aaa = TesterServicer().run_testcase(case1)
+        aaa = TesterService().run_testcase(case1)
         print(aaa.__dict__)
         print(aaa.test_case_result)
 
