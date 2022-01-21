@@ -1,15 +1,15 @@
 from djtester.decorators import reg_node_func, show_class_name
-from djtester.service import BaseServicer
+from djtester.service import BaseService
 from flow.domain.enums import FlowStatus
 from flow.domain.flow_mgr import FlowMgr
 from flow.domain.node_func import NodeFuncBase
 from flow.repositories import *
 
 
-class FLowServicer(BaseServicer):
+class FlowDesignService(BaseService):
     @show_class_name('service')
-    def __init__(self, db_helper):
-        super().__init__(db_helper)
+    def __init__(self):
+        super().__init__(FlowDesignDBHelper())
 
 
 class NodeFuncRunFLow(NodeFuncBase):
