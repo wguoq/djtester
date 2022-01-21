@@ -7,11 +7,11 @@ from tester.domain.tester_mgr import TesterMgr
 
 
 def _get_test_case_by_pk(pk):
-    test_case_servicer = TestCaseService.test_case_servicer()
-    return test_case_servicer().get_by_pk(pk)
+    test_case_service = TestCaseService.test_case_service()
+    return test_case_service().get_by_pk(pk)
 
 
-class TesterServicer:
+class TesterService:
     @show_class_name('service')
     def __init__(self):
         pass
@@ -52,7 +52,7 @@ class NodeFuncRunApiTestCase(NodeFuncBase):
 
     def do_func(self, node_func_param: dict, flow_data):
         test_case_id = node_func_param.get('test_case_id')
-        a = TesterServicer.run_testcase(test_case_id, flow_data)
+        a = TesterService.run_testcase(test_case_id, flow_data)
         return self.NodeFuncResult(a.test_case_result, {'test_case_id': test_case_id})
 
 
@@ -72,7 +72,7 @@ class NodeFuncRunApiTestCaseList(NodeFuncBase):
         res = []
         for data in node_func_param:
             test_case_id = data.get('test_case_id')
-            a = TesterServicer.run_testcase(test_case_id, flow_data)
+            a = TesterService.run_testcase(test_case_id, flow_data)
             res.append(a.test_case_result)
         # 全部pass才行
         for r in res:
