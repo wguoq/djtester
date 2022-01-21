@@ -5,7 +5,7 @@ from django.core import serializers
 from django.forms import model_to_dict
 from djtester.decorators import show_class_name
 from djtester.enums import TestCaseType
-from djtester.service import query_set_dict_to_model_dict, BaseServicer
+from djtester.service import query_set_dict_to_model_dict, BaseService
 from testcase.domain.models.tc_api_model import *
 from testcase.domain.test_case_mgr import TestCaseDBHelper
 from testcase.repositories import *
@@ -21,59 +21,37 @@ class TestCaseEnums:
         return list(e.value for e in TestCaseType)
 
 
-# class TestCaseIdentityServicer(BaseServicer):
-#     def __init__(self):
-#         self.DBHelper = TcIdentityDBHelper()
-#         super().__init__(self.DBHelper)
-#
-#     @staticmethod
-#     def new():
-#         # 默认test_case_id是时间戳+随机数
-#         test_case_id = 'tc' + str(round(time.time()) + random.randint(0, 99))
-#         return model_to_dict(Identity(test_case_id=test_case_id))
-#
-#     def add(self, data):
-#         if self.DBHelper.has_case_id(data) or self.DBHelper.has_case_name(data):
-#             raise Exception(f'test_case_id 或 test_case_name 已经存在')
-#         else:
-#             return super().add(data)
-
-
-class TestCaseActionServicer(BaseServicer):
+class TestCaseActionService(BaseService):
     def __init__(self):
-        self.DBHelper = TcActionDBHelper()
-        super().__init__(self.DBHelper)
+        super().__init__(TcActionDBHelper())
 
     @staticmethod
     def new():
         return model_to_dict(Action())
 
 
-class TestCaseDataServicer(BaseServicer):
+class TestCaseDataService(BaseService):
     def __init__(self):
-        self.DBHelper = TcDataDBHelper()
-        super().__init__(self.DBHelper)
+        super().__init__(TcDataDBHelper())
 
     @staticmethod
     def new():
         return model_to_dict(TestData())
 
 
-class TestCaseCheckPointServicer(BaseServicer):
+class TestCaseCheckPointService(BaseService):
     def __init__(self):
-        self.DBHelper = TcCheckPointDBHelper()
-        super().__init__(self.DBHelper)
+        super().__init__(TcCheckPointDBHelper())
 
     @staticmethod
     def new():
         return model_to_dict(Check_Point())
 
 
-class TestCaseServicer(BaseServicer):
+class TestCaseService(BaseService):
     @show_class_name('service')
     def __init__(self):
-        self.DBHelper = TestCaseDBHelper()
-        super().__init__(self.DBHelper)
+        super().__init__(TestCaseDBHelper())
 
     @staticmethod
     def new_api_testcase():
@@ -164,12 +142,12 @@ def _get_full_case(case_dict) -> dict:
     if tc_action is None or len(str(tc_action)) == 0:
         case_dict['tc_action'] = {}
     else:
-        case_dict['tc_action'] = TestCaseActionServicer().get_by_pk(case_dict.get('tc_action'))
+        case_dict['tc_action'] = TestCaseActionService().get_by_pk(case_dict.get('tc_action'))
 
     if tc_data is None or len(str(tc_data)) == 0:
         case_dict['tc_data'] = {}
     else:
-        case_dict['tc_data'] = TestCaseDataServicer().get_by_pk(case_dict.get('tc_data'))
+        case_dict['tc_data'] = TestCaseDataService().get_by_pk(case_dict.get('tc_data'))
 
     if tc_check_list is None or len(tc_check_list) == 0:
         case_dict['tc_check_list'] = []
@@ -179,7 +157,7 @@ def _get_full_case(case_dict) -> dict:
             if isinstance(check, Check_Point):
                 check_list.append(model_to_dict(check))
             elif isinstance(check, int):
-                c = TestCaseCheckPointServicer().get_by_pk(check)
+                c = TestCaseCheckPointService().get_by_pk(check)
                 check_list.append(c)
         case_dict['tc_check_list'] = check_list
     return case_dict
