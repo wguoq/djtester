@@ -13,7 +13,7 @@ def query_set_dict_to_model_dict(query_set_dict: dict):
     return model_dict
 
 
-class BaseServicer:
+class BaseService:
     @show_class_name('service')
     def __init__(self, db_helper):
         self.DBHelper = db_helper
@@ -25,21 +25,23 @@ class BaseServicer:
         return self.DBHelper.save_this(data)
 
     def get_all(self, offset: int = 0, limit: int = 100) -> list[dict]:
-        aaa = self.DBHelper.get_all(offset, limit)
-        all_aaa = []
-        for a in aaa:
-            all_aaa.append(model_to_dict(a))
-        return all_aaa
+        # 切片和排序不能写一起
+        # query_set = self.DBHelper.get_all(offset, limit).order_by(order)
+        query_set = self.DBHelper.get_all(offset, limit)
+        res = []
+        for a in query_set:
+            res.append(model_to_dict(a))
+        return res
 
     def get_by_pk(self, pk: int):
         a = self.DBHelper.get_by({'pk': pk})
         return model_to_dict(a)
 
     def filter_by(self, kwargs: dict):
-        a = self.DBHelper.filter_by(kwargs)
-        s = serializers.serialize('json', a)
-        dd = json.loads(s)
-        dict_list = []
-        for d in dd:
-            dict_list.append(query_set_dict_to_model_dict(d))
-        return dict_list
+        query_set = self.DBHelper.filter_by(kwargs)
+        ss = serializers.serialize('json', query_set)
+        query_set_dicts = json.loads(ss)
+        res = []
+        for d in query_set_dicts:
+            res.append(query_set_dict_to_model_dict(d))
+        return res
