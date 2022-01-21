@@ -23,6 +23,6 @@ urlpatterns = [
     path('testcase/', include('testcase.urls')),
     path('tester/', include('tester.urls')),
     path('mock/', include('mock.urls')),
-
+    path('flow/', include('flow.urls')),
 ]
 
