@@ -66,6 +66,7 @@ class Flow_Design(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_design"
+        ordering = ['-id']
 
 
 class Flow_Result_Rule(Public_Field):
@@ -97,6 +98,7 @@ class Flow_Result_Rule(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_result_rule"
+        ordering = ['-id']
 
 
 class Flow_Status_Rule(Public_Field):
@@ -128,6 +130,7 @@ class Flow_Status_Rule(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_status_rule"
+        ordering = ['-id']
 
 
 class Node_Design(Public_Field):
@@ -180,6 +183,7 @@ class Node_Design(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_node_design"
+        ordering = ['-id']
 
 
 class Node_Start_Rule(Public_Field):
@@ -208,6 +212,11 @@ class Node_Start_Rule(Public_Field):
                                     blank=True,
                                     null=True,
                                     verbose_name="节点设计id")
+
+    class Meta:
+        # 自定义表名
+        db_table = "node_start_rule"
+        ordering = ['-id']
 
 
 class Node_Status_Rule(Public_Field):
@@ -244,6 +253,7 @@ class Node_Status_Rule(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_node_status_rule"
+        ordering = ['-id']
 
 
 class Flow_Node_Design_Oder(Public_Field):
@@ -270,6 +280,7 @@ class Flow_Node_Design_Oder(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_node_design_oder"
+        ordering = ['-id']
 
 
 class Flow_Instance(Public_Field):
@@ -303,6 +314,7 @@ class Flow_Instance(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_instance"
+        ordering = ['-id']
 
 
 class Node_Instance(Public_Field):
@@ -351,3 +363,4 @@ class Node_Instance(Public_Field):
     class Meta:
         # 自定义表名
         db_table = "flow_node_instance"
+        ordering = ['-id']
