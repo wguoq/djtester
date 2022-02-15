@@ -10,15 +10,17 @@ class FlowMgr:
 
     @staticmethod
     @transaction.atomic
-    def instance_flow_design(flow_design: Flow_Design, flow_data: dict = None) -> Flow_Instance:
+    def instance_flow_design(flow_design_id, flow_data: dict = None) -> Flow_Instance:
+        node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design_id})
+        if node_list is None or node_list.count() == 0:
+            raise Exception("node_list 为空，不能实例化")
         # 保存 flow_instance
         if flow_data is None:
             flow_data = {}
-        fi = {'flow_design': flow_design,
+        fi = {'flow_design': flow_design_id,
               'flow_data': flow_data}
         flow_instance = FlowInstanceDBHelper().save_this(fi)
         # 查询出 node_list 保存 node_instance
-        node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design.id})
         for node in node_list:
             node_design = node.node_design
             node_func_name = node_design.node_func_name
