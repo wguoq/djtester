@@ -1,3 +1,5 @@
+from django.forms import model_to_dict
+
 from djtester.decorators import reg_node_func, show_class_name
 from djtester.service import BaseService
 from flow.domain.enums import FlowStatus
@@ -10,6 +12,31 @@ class FlowDesignService(BaseService):
     @show_class_name('service')
     def __init__(self):
         super().__init__(FlowDesignDBHelper())
+
+    @staticmethod
+    def get_node_list(flow_design_id):
+        node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design_id})
+        a = []
+        for node in node_list:
+            node_dict = dict(id=node.id, flow_design_id=node.flow_design.id, node_order=node.node_order,
+                             node_design_id=node.node_design.id)
+            node_design = node.node_design
+            node_dict.update(model_to_dict(node_design))
+            a.append(node_dict)
+        return a
+
+
+class NodeDesignService(BaseService):
+    @show_class_name('service')
+    def __init__(self):
+        super().__init__(NodeDesignDBHelper())
+
+
+class FlowService:
+    @staticmethod
+    def instance_flow(flow_design_id, flow_data):
+        flow_design = FlowDesignService().get_by_pk(flow_design_id)
+        return FlowMgr.instance_flow_design(flow_design, flow_data)
 
 
 class NodeFuncRunFLow(NodeFuncBase):
