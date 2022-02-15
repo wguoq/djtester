@@ -212,7 +212,6 @@ class Test_Flow(TestCase):
             'node_design': 3
         }
 
-
         node_status_rule_5 = {
             'id': None,
             'status_operator': 'eq',
@@ -406,7 +405,7 @@ class Test_Flow(TestCase):
             print(s)
             run_flow = FlowMgr.run_flow_instance(fi)
             e = time.time()
-            time_ = e-s
+            time_ = e - s
             print(e)
             print(f'==== time ==== {time_}')
             print(model_to_dict(run_flow))
@@ -442,4 +441,3 @@ class Test_Flow(TestCase):
         for a in aaa:
             print(model_to_dict(a))
             print(a.__getattribute__(result))
-
