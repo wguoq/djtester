@@ -341,7 +341,7 @@ class Test_Flow(TestCase):
             print(model_to_dict(a))
 
         print(f'==== 新增 node_start_rule_design ==== ')
-        node_start_rule_list = [node_start_rule_1, node_start_rule_2, node_start_rule_3, node_start_rule_4 ]
+        node_start_rule_list = [node_start_rule_1, node_start_rule_2, node_start_rule_3, node_start_rule_4]
 
         for node_start_rule in node_start_rule_list:
             a = NodeStartRuleDBHelper().save_this(node_start_rule)
