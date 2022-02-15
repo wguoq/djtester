@@ -33,7 +33,8 @@
                 <td>{{item.tc_data}}</td>
                 <td>{{item.tc_check_list}}</td>
                 <td>
-                        <form action='/tester/run/' method="post">{% csrf_token %}
+                        <form action='/tester/run_test_case/' method="post">
+                            {% csrf_token %}
                             <input type="hidden" name ='id' value="{{item.id}}">
                             <p><input type="submit" value="执行"></p>
                         </form>
