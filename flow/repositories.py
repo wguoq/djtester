@@ -108,7 +108,7 @@ class FlowNodeDesignOderDBHelper(BaseDBHelper):
                                       NodeDesignDBHelper.__name__, data.get('node_design'))
         flow_design = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))
         # 检查一下 node_data 里面的flow_design_id 不能和自己关联的 flow_design_id 一样,避免死循环
-        if node_design.node_func_name == 'flow_runner' and node_design.node_func_data.get('flow_design_id') == flow_design.id:
+        if node_design.node_func_code == 'flow_runner' and node_design.node_func_data.get('flow_design_id') == flow_design.id:
             raise Exception(f' node_design_id = {node_design.id} node_design_name = {node_design.node_name} 嵌套了自己的 flow_design,会死循环')
         else:
             data['node_design'] = node_design
