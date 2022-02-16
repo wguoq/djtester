@@ -23,7 +23,7 @@ class FlowMgr:
         # 查询出 node_list 保存 node_instance
         for node in node_list:
             node_design = node.node_design
-            node_func_name = node_design.node_func_name
+            node_func_name = node_design.node_func_code
             node_func_data = node_design.node_func_data
             node_order = node.node_order
             ni = {'node_design': node_design,
