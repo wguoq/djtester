@@ -1,5 +1,4 @@
 from django.forms import model_to_dict
-
 from djtester.decorators import reg_node_func, show_class_name
 from djtester.service import BaseService
 from flow.domain.enums import FlowStatus
@@ -26,17 +25,28 @@ class FlowDesignService(BaseService):
         return a
 
 
+class FlowInstService(BaseService):
+    @show_class_name('service')
+    def __init__(self):
+        super().__init__(FlowInstanceDBHelper())
+
+
 class NodeDesignService(BaseService):
     @show_class_name('service')
     def __init__(self):
         super().__init__(NodeDesignDBHelper())
 
 
+class NodeInstService(BaseService):
+    @show_class_name('service')
+    def __init__(self):
+        super().__init__(NodeInstanceDBHelper())
+
+
 class FlowService:
     @staticmethod
     def instance_flow(flow_design_id, flow_data):
-        flow_design = FlowDesignService().get_by_pk(flow_design_id)
-        return FlowMgr.instance_flow_design(flow_design, flow_data)
+        return FlowMgr.instance_flow_design(flow_design_id, flow_data)
 
 
 class NodeFuncRunFLow(NodeFuncBase):
