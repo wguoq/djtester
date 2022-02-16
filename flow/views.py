@@ -32,7 +32,7 @@ flow_service = importlib.import_module('flow.service')
 
 
 def query(request):
-    time.sleep(1)
+    time.sleep(0.5)
     if request.method != 'GET':
         return HttpResponseNotFound
     else:
@@ -59,6 +59,8 @@ def query(request):
                 result = FlowDesignService().get_node_list(filters.get('flowDesignId'))
                 context = dict(rows=result, total=len(result))
             elif action == 'filter':
+                result = service().filter_by(filters)
+                context = dict(rows=result, total=len(result))
                 pass
             return JsonResponse(context, status=200)
 
@@ -69,8 +71,6 @@ def commit(request):
     else:
         context = {}
         payload = json.loads(request.body)
-        print(request)
-        print(payload)
         service_name = payload.get('service')
         service = getattr(flow_service, service_name)
         print(f"service= {service}")
