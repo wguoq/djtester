@@ -31,14 +31,9 @@ class NodeStartRuleTarget(Enum):
     NodeStatus = 'node_status'
 
 
-class FlowResultRuleType(Enum):
-    LastNodeResult = 'last_node_result'
-    Custom = 'custom'
-
-
-class FlowStatusRuleType(Enum):
-    LastNodeStatus = 'last_node_status'
-    Custom = 'custom'
+class FlowRuleType(Enum):
+    Default = 'default'
+    Script = 'script'
 
 
 class NodeStartRuleType(Enum):
