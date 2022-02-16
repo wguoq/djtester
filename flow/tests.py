@@ -119,10 +119,10 @@ class Test_Flow(TestCase):
 
         node_design_1 = {
             'id': None,
-            'node_code': 'nd07675770',
+            'code': 'nd07675770',
             'node_name': '节点设计1 api_tester',
             'start_rule_type': 'and',
-            'node_func_name': 'api_tester',
+            'node_func_code': 'api_tester',
             'node_func_data': {'test_case_id': 1},
             'version': 1,
             'version_status': 0,
@@ -145,10 +145,10 @@ class Test_Flow(TestCase):
 
         node_design_2 = {
             'id': None,
-            'node_code': 'nd076545770',
+            'code': 'nd076545770',
             'node_name': '节点设计2 api_tester',
             'start_rule_type': 'and',
-            'node_func_name': 'api_tester',
+            'node_func_code': 'api_tester',
             'node_func_data': {'test_case_id': 2},
             'version': 1,
             'version_status': 0,
@@ -187,10 +187,10 @@ class Test_Flow(TestCase):
 
         node_design_3 = {
             'id': None,
-            'node_code': 'nd076545770',
+            'code': 'nd076545770',
             'node_name': '节点设计3 flow_runner',
             'start_rule_type': 'or',
-            'node_func_name': 'flow_runner',
+            'node_func_code': 'flow_runner',
             'node_func_data': {'flow_design_id': 2},
             'version': 1,
             'version_status': 0,
@@ -229,9 +229,9 @@ class Test_Flow(TestCase):
 
         node_design_4 = {
             'id': None,
-            'node_code': 'nd076545770',
+            'code': 'nd076545770',
             'node_name': '节点设计4 api_tester',
-            'node_func_name': 'api_tester',
+            'node_func_code': 'api_tester',
             'node_func_data': {'test_case_id': 1},
             'version': 1,
             'version_status': 0,
@@ -253,22 +253,20 @@ class Test_Flow(TestCase):
 
         flow_result_rule_1 = {
             'id': None,
-            'result_rule_type': 'last_node_result',
+            'result_rule_type': 'default',
             'result_rule_name': 'result_rule 1',
-            'flow_result': 'ok',
             'result_rule_script': {},
         }
         flow_status_rule_1 = {
             'id': None,
-            'status_rule_type': 'last_node_status',
+            'status_rule_type': 'default',
             'status_rule_name': 'status_rule 1',
-            'flow_status': 'finish',
             'status_rule_script': {},
         }
 
         flow_design_1 = {
             'id': None,
-            'flow_code': 'fw432453212',
+            'code': 'fw432453212',
             'flow_name': 'flow_design_1',
             'flow_type': 'serial',
             'flow_result_rule_id': 1,
@@ -303,7 +301,7 @@ class Test_Flow(TestCase):
 
         flow_design_2 = {
             'id': None,
-            'flow_code': 'fw4324535512',
+            'code': 'fw4324535512',
             'flow_name': 'flow_design_2',
             'flow_type': 'serial',
             'flow_result_rule_id': 1,
