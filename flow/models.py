@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Public_Field(models.Model):
+class Time_Field(models.Model):
     created_time = models.DateTimeField(null=True,
                                         auto_now_add=True,
                                         verbose_name="创建时间")
@@ -10,26 +10,34 @@ class Public_Field(models.Model):
                                          auto_now=True,
                                          verbose_name="修改时间")
 
-    del_flag = models.CharField(max_length=1,
-                                blank=True,
-                                null=True,
-                                default=0,
-                                verbose_name="逻辑删除标记: 1=删除")
-
     # 定义为抽象类,不会创建表
     class Meta:
         abstract = True
 
 
-class Flow_Design(Public_Field):
+class Code_Field(models.Model):
+    code = models.CharField(max_length=64,
+                            blank=True,
+                            null=True,
+                            verbose_name="编码")
+
+    version = models.IntegerField(blank=True,
+                                  null=True,
+                                  verbose_name="版本")
+
+    version_status = models.IntegerField(blank=True,
+                                         null=True,
+                                         default=0,
+                                         verbose_name="版本状态")
+
+    class Meta:
+        abstract = True
+
+
+class Flow_Design(Time_Field, Code_Field):
     """
     流程设计表
     """
-
-    flow_code = models.CharField(max_length=64,
-                                 blank=True,
-                                 null=True,
-                                 verbose_name="流程编码")
 
     flow_name = models.CharField(max_length=128,
                                  blank=True,
@@ -52,15 +60,6 @@ class Flow_Design(Public_Field):
                                            null=True,
                                            verbose_name="流程状态规则id")
 
-    version = models.IntegerField(blank=True,
-                                  null=True,
-                                  verbose_name="版本")
-
-    version_status = models.IntegerField(blank=True,
-                                         null=True,
-                                         default=0,
-                                         verbose_name="版本状态: -1=停用,0=草稿,1=启用")
-
     objects = models.Manager()
 
     class Meta:
@@ -69,25 +68,19 @@ class Flow_Design(Public_Field):
         ordering = ['-id']
 
 
-class Flow_Result_Rule(Public_Field):
+class Flow_Result_Rule(Time_Field):
     """
     流程结果规则表
     """
-
     result_rule_type = models.CharField(max_length=64,
                                         blank=True,
                                         null=True,
-                                        verbose_name="规则类型")
+                                        verbose_name="规则类型: default | script")
 
     result_rule_name = models.CharField(max_length=128,
                                         blank=True,
                                         null=True,
                                         verbose_name="规则名")
-
-    flow_result = models.CharField(max_length=64,
-                                   blank=True,
-                                   null=True,
-                                   verbose_name="流程结果")
 
     result_rule_script = models.JSONField(null=True,
                                           blank=True,
@@ -101,7 +94,7 @@ class Flow_Result_Rule(Public_Field):
         ordering = ['-id']
 
 
-class Flow_Status_Rule(Public_Field):
+class Flow_Status_Rule(Time_Field):
     """
     流程状态规则表
     """
@@ -109,17 +102,12 @@ class Flow_Status_Rule(Public_Field):
     status_rule_type = models.CharField(max_length=64,
                                         blank=True,
                                         null=True,
-                                        verbose_name="规则类型")
+                                        verbose_name="规则类型: default | script")
 
     status_rule_name = models.CharField(max_length=128,
                                         blank=True,
                                         null=True,
                                         verbose_name="规则名称")
-
-    flow_status = models.CharField(max_length=64,
-                                   blank=True,
-                                   null=True,
-                                   verbose_name="状态值")
 
     status_rule_script = models.JSONField(null=True,
                                           blank=True,
@@ -133,21 +121,16 @@ class Flow_Status_Rule(Public_Field):
         ordering = ['-id']
 
 
-class Node_Design(Public_Field):
+class Node_Design(Time_Field, Code_Field):
     """
     流程节点设计表
     """
-
-    node_code = models.CharField(max_length=64,
-                                 blank=True,
-                                 null=True,
-                                 verbose_name="节点编码")
 
     node_type = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
                                  default='func_node',
-                                 verbose_name="节点类型: func_node | sub_flow")
+                                 verbose_name="节点类型: func | flow")
 
     node_name = models.CharField(max_length=128,
                                  blank=True,
@@ -158,25 +141,16 @@ class Node_Design(Public_Field):
                                        blank=True,
                                        null=True,
                                        default='and',
-                                       verbose_name="启动条件类型：and | or | custom")
+                                       verbose_name="启动条件类型：and | or ")
 
-    node_func_name = models.CharField(max_length=64,
+    node_func_code = models.CharField(max_length=64,
                                       blank=True,
                                       null=True,
-                                      verbose_name="节点业务方法名称")
+                                      verbose_name="节点业务方法编码")
 
     node_func_data = models.JSONField(null=True,
                                       blank=True,
                                       verbose_name="节点业务数据")
-
-    version = models.IntegerField(blank=True,
-                                  null=True,
-                                  verbose_name="版本")
-
-    version_status = models.IntegerField(blank=True,
-                                         null=True,
-                                         default=0,
-                                         verbose_name="版本状态: -1=停用,0=草稿,1=启用")
 
     objects = models.Manager()
 
@@ -186,7 +160,7 @@ class Node_Design(Public_Field):
         ordering = ['-id']
 
 
-class Node_Start_Rule(Public_Field):
+class Node_Start_Rule(Time_Field):
     rule_target = models.CharField(max_length=64,
                                    blank=True,
                                    null=True,
@@ -219,7 +193,7 @@ class Node_Start_Rule(Public_Field):
         ordering = ['-id']
 
 
-class Node_Status_Rule(Public_Field):
+class Node_Status_Rule(Time_Field):
     """
     流程节点状态规则表
     """
@@ -256,7 +230,7 @@ class Node_Status_Rule(Public_Field):
         ordering = ['-id']
 
 
-class Flow_Node_Design_Oder(Public_Field):
+class Flow_Node_Design_Oder(Time_Field):
     """
     流程设计,节点顺序,节点设计关联表
     """
@@ -283,7 +257,7 @@ class Flow_Node_Design_Oder(Public_Field):
         ordering = ['-id']
 
 
-class Flow_Instance(Public_Field):
+class Flow_Instance(Time_Field):
     """
     流程实例表
     """
@@ -317,7 +291,7 @@ class Flow_Instance(Public_Field):
         ordering = ['-id']
 
 
-class Node_Instance(Public_Field):
+class Node_Instance(Time_Field):
     """
     流程节点实例表
     """

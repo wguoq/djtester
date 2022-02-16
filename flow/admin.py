@@ -8,13 +8,13 @@ from .models import *
 
 class Flow_Design_Admin(admin.ModelAdmin):
     list_display = (
-        'id', 'flow_code', 'flow_name', 'flow_type', 'flow_result_rule_id', 'flow_status_rule_id', 'version',
+        'id', 'code', 'flow_name', 'flow_type', 'flow_result_rule_id', 'flow_status_rule_id', 'version',
         'version_status')
 
 
 class Node_Design_Admin(admin.ModelAdmin):
     list_display = (
-        'id', 'node_code', 'node_name', 'node_type', 'start_rule_type', 'node_func_name', 'node_func_data', 'version',
+        'id', 'code', 'node_name', 'node_type', 'start_rule_type', 'node_func_code', 'node_func_data', 'version',
         'version_status')
 
 
@@ -27,9 +27,12 @@ class Flow_Instance_Admin(admin.ModelAdmin):
     list_display = (
         'id', 'flow_design', 'flow_data', 'flow_status', 'flow_result')
 
+
 class Node_Instance_Admin(admin.ModelAdmin):
     list_display = (
-        'id', 'node_design', 'node_func_name', 'node_func_data', 'node_order','node_status','node_result','flow_instance')
+        'id', 'node_design', 'node_func_name', 'node_func_data', 'node_order', 'node_status', 'node_result',
+        'flow_instance')
+
 
 admin.site.register(Flow_Design, Flow_Design_Admin)
 admin.site.register(Flow_Result_Rule)
