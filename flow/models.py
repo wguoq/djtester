@@ -195,21 +195,18 @@ class Node_Start_Rule(Time_Field):
 
 class Node_Status_Rule(Time_Field):
     """
-    流程节点状态规则表
+    节点状态规则表
     """
-    rule_order = models.IntegerField(blank=True,
-                                     null=True,
-                                     verbose_name="顺序")
 
     status_operator = models.CharField(max_length=64,
                                        blank=True,
                                        null=True,
                                        verbose_name="比较方式: eq;ne")
 
-    status_target = models.CharField(max_length=128,
+    expect_result = models.CharField(max_length=128,
                                      null=True,
                                      blank=True,
-                                     verbose_name="对比目标")
+                                     verbose_name="期望运行结果")
 
     node_status = models.CharField(max_length=64,
                                    blank=True,
@@ -220,7 +217,7 @@ class Node_Status_Rule(Time_Field):
                                     on_delete=models.SET_NULL,
                                     blank=True,
                                     null=True,
-                                    verbose_name="流程设计id")
+                                    verbose_name="节点设计id")
 
     objects = models.Manager()
 
