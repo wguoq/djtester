@@ -73,12 +73,14 @@ def commit(request):
         payload = json.loads(request.body)
         service_name = payload.get('service')
         service = getattr(flow_service, service_name)
-        print(f"service= {service}")
+        print(f"payload = {payload}")
         action = payload.get('action')
         data = payload.get('data')
         if action == "instance":
             inst = FlowService.instance_flow(data.get('id'), data.get('flow_data'))
             context = dict(instance_id=inst.id)
         elif action == "run":
+            result = service().run_inst(data.get('id'))
+            context = dict(instance_id=result)
             pass
         return JsonResponse(context, status=200)
