@@ -131,14 +131,14 @@ class Test_Flow(TestCase):
         node_status_rule_1 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'pass',
+            'expect_result': 'pass',
             'node_status': 'finish',
             'node_design': 1,
         }
         node_status_rule_2 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'fail',
+            'expect_result': 'fail',
             'node_status': 'skip',
             'node_design': 1,
         }
@@ -173,14 +173,14 @@ class Test_Flow(TestCase):
         node_status_rule_3 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'pass',
+            'expect_result': 'pass',
             'node_status': 'finish',
             'node_design': 2,
         }
         node_status_rule_4 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'fail',
+            'expect_result': 'fail',
             'node_status': 'skip',
             'node_design': 2,
         }
@@ -215,14 +215,14 @@ class Test_Flow(TestCase):
         node_status_rule_5 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'pass',
+            'expect_result': 'pass',
             'node_status': 'finish',
             'node_design': 3,
         }
         node_status_rule_6 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'fail',
+            'expect_result': 'fail',
             'node_status': 'skip',
             'node_design': 3,
         }
@@ -239,14 +239,14 @@ class Test_Flow(TestCase):
         node_status_rule_7 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'pass',
+            'expect_result': 'pass',
             'node_status': 'finish',
             'node_design': 4,
         }
         node_status_rule_8 = {
             'id': None,
             'status_operator': 'eq',
-            'status_target': 'fail',
+            'expect_result': 'fail',
             'node_status': 'skip',
             'node_design': 4,
         }
