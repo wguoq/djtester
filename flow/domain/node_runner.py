@@ -14,10 +14,8 @@ def get_node_func_class(node_func_name: str):
 
 
 def check_node_status(result: str, node_instance: Node_Instance):
-    # 查询出所有 rule_list ,排序，返回第一个匹配到的
-    # rule_list1 = node_instance.node_design.node_status_rule_set.all()
-    # print(f'1111111111111== {rule_list1}')
-    rule_list = NodeStatusRuleDBHelper().filter_by({'node_design': node_instance.node_design_id}).order_by('rule_order')
+    # 状态规则不应该重复也不应该同时满足多条，所以只匹配一次
+    rule_list = NodeStatusRuleDBHelper().filter_by({'node_design': node_instance.node_design.id})
     for rule in rule_list:
         node_status = _get_node_status_by_rule(rule, result)
         if node_status:
@@ -29,14 +27,14 @@ def check_node_status(result: str, node_instance: Node_Instance):
 
 def _get_node_status_by_rule(rule: Node_Status_Rule, result: str):
     status_operator = rule.status_operator
-    status_target = rule.status_target
+    expect_result = rule.expect_result
     if status_operator == 'eq':
-        if operator.eq(str(result), str(status_target)):
+        if operator.eq(str(result), str(expect_result)):
             return rule.node_status
         else:
             return None
     elif status_operator == 'ne':
-        if operator.ne(str(result), str(status_target)):
+        if operator.ne(str(result), str(expect_result)):
             return rule.node_status
         else:
             return None
