@@ -8,14 +8,14 @@ from .models import *
 
 class Flow_Design_Admin(admin.ModelAdmin):
     list_display = (
-        'id', 'code', 'flow_name', 'flow_type', 'flow_result_rule_id', 'flow_status_rule_id', 'version',
-        'version_status')
+        'id', 'code', 'fw_name', 'fw_type', 'fw_result_rule', 'fw_status_rule', 'version',
+        'ver_status')
 
 
 class Node_Design_Admin(admin.ModelAdmin):
     list_display = (
         'id', 'code', 'node_name', 'node_type', 'start_rule_type', 'node_func_code', 'node_func_data', 'version',
-        'version_status')
+        'ver_status')
 
 
 class Flow_Node_Design_Oder_Admin(admin.ModelAdmin):

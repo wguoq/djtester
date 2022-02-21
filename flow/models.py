@@ -22,13 +22,15 @@ class Code_Field(models.Model):
                             verbose_name="编码")
 
     version = models.IntegerField(blank=True,
+                                  default=1,
                                   null=True,
                                   verbose_name="版本")
 
-    version_status = models.IntegerField(blank=True,
-                                         null=True,
-                                         default=0,
-                                         verbose_name="版本状态")
+    ver_status = models.CharField(max_length=64,
+                                  default="DISABLE",
+                                  blank=True,
+                                  null=True,
+                                  verbose_name="状态：DISABLE | ENABLE")
 
     class Meta:
         abstract = True
@@ -39,26 +41,26 @@ class Flow_Design(Time_Field, Code_Field):
     流程设计表
     """
 
-    flow_name = models.CharField(max_length=128,
-                                 blank=True,
-                                 null=True,
-                                 verbose_name="流程名称")
+    fw_name = models.CharField(max_length=128,
+                               blank=True,
+                               null=True,
+                               verbose_name="流程名称")
 
-    flow_type = models.CharField(max_length=64,
-                                 blank=True,
-                                 null=True,
-                                 default='serial',
-                                 verbose_name="流程类型: serial=串行;parallel=并行")
+    fw_type = models.CharField(max_length=64,
+                               blank=True,
+                               null=True,
+                               default='serial',
+                               verbose_name="流程类型: serial=串行;parallel=并行")
 
-    flow_result_rule_id = models.CharField(max_length=64,
-                                           blank=True,
-                                           null=True,
-                                           verbose_name="流程结果规则id")
+    fw_result_rule = models.CharField(max_length=64,
+                                      blank=True,
+                                      null=True,
+                                      verbose_name="流程结果规则id")
 
-    flow_status_rule_id = models.CharField(max_length=64,
-                                           blank=True,
-                                           null=True,
-                                           verbose_name="流程状态规则id")
+    fw_status_rule = models.CharField(max_length=64,
+                                      blank=True,
+                                      null=True,
+                                      verbose_name="流程状态规则id")
 
     objects = models.Manager()
 
