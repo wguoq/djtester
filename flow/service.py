@@ -1,3 +1,6 @@
+import random
+import time
+
 from django.forms import model_to_dict
 from djtester.decorators import reg_node_func, show_class_name
 from djtester.service import BaseService
@@ -18,8 +21,7 @@ class FlowDesignService(BaseService):
         for node in node_list:
             node_dict = dict(id=node.id, flow_design_id=node.flow_design.id, node_order=node.node_order,
                              node_design_id=node.node_design.id)
-            node_design = node.node_design
-            node_dict.update(model_to_dict(node_design))
+            node_dict.update(model_to_dict(node.node_design))
             a.append(node_dict)
         return a
 
@@ -52,6 +54,20 @@ class FlowService:
     @staticmethod
     def instance_flow(flow_design_id, flow_data):
         return FlowMgr.instance_flow_design(flow_design_id, flow_data)
+
+    @staticmethod
+    def get_design_temp():
+        a = model_to_dict(Flow_Design())
+        a.pop("id")
+        a.pop("code")
+        return a
+
+    @staticmethod
+    def add_flow_design(data: dict):
+        code = 'fw' + str(round(time.time()) + random.randint(0, 99))
+        data.update({"code": code})
+        a = FlowDesignDBHelper().save_this(data)
+        return a.id
 
 
 class NodeFuncRunFLow(NodeFuncBase):
