@@ -50,7 +50,7 @@ def get_last_node_inst_attr(flow_instance: Flow_Instance, attr_name):
 
 def check_flow_result(flow_instance: Flow_Instance):
     # 查出对应的 flow_result_rules
-    result_rule = FlowResultRuleDBHelper().get_by({'pk': flow_instance.flow_design.flow_result_rule_id})
+    result_rule = FlowResultRuleDBHelper().get_by({'pk': flow_instance.flow_design.fw_result_rule})
     if result_rule.result_rule_type == FlowRuleType.Default.value:
         return get_last_node_inst_attr(flow_instance, 'node_result')
     elif result_rule.result_rule_type == FlowRuleType.Script.value:
@@ -61,7 +61,7 @@ def check_flow_result(flow_instance: Flow_Instance):
 
 
 def check_flow_status(flow_instance: Flow_Instance):
-    status_rule = FlowStatusRuleDBHelper().get_by({'pk': flow_instance.flow_design.flow_status_rule_id})
+    status_rule = FlowStatusRuleDBHelper().get_by({'pk': flow_instance.flow_design.fw_status_rule})
     if status_rule.status_rule_type == FlowRuleType.Default.value:
         return get_last_node_inst_attr(flow_instance, 'node_status')
     elif status_rule.status_rule_type == FlowRuleType.Script.value:

@@ -398,7 +398,7 @@ class Test_Flow(TestCase):
         fi_all = FlowInstanceDBHelper().get_all()
         for fi in fi_all:
             print(model_to_dict(fi))
-            print(f'==== 运行 flow_instance {fi.flow_design.flow_name} ====')
+            print(f'==== 运行 flow_instance {fi.flow_design.fw_name} ====')
             s = time.time()
             print(s)
             run_flow = FlowMgr.run_flow_instance(fi)

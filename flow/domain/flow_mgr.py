@@ -41,7 +41,7 @@ class FlowMgr:
             print(f'流程状态是 {flow_instance.flow_status} 不运行; flow_instance_id = {flow_instance.id}')
             return flow_instance
         else:
-            flow_type = flow_instance.flow_design.flow_type
+            flow_type = flow_instance.flow_design.fw_type
             if flow_type == FlowType.Serial.value:
                 flow_instance = SerialFlowRunner.run(flow_instance).flow_instance
             elif flow_type == FlowType.Parallel.value:
