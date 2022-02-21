@@ -55,13 +55,15 @@ def query(request):
             if action == 'all':
                 result = service().get_all()
                 context = dict(rows=result, total=len(result))
-            elif action == 'getNodeList':
-                result = FlowDesignService().get_node_list(filters.get('flowDesignId'))
-                context = dict(rows=result, total=len(result))
             elif action == 'filter':
                 result = service().filter_by(filters)
                 context = dict(rows=result, total=len(result))
-                pass
+            elif action == 'getNodeList':
+                result = FlowDesignService().get_node_list(filters.get('id'))
+                context = dict(rows=result, total=len(result))
+            elif action == 'getDesignTemp':
+                result = service().get_design_temp()
+                context = dict(des=result)
             return JsonResponse(context, status=200)
 
 
@@ -82,5 +84,7 @@ def commit(request):
         elif action == "run":
             result = service().run_inst(data.get('id'))
             context = dict(instance_id=result)
-            pass
+        elif action == 'add':
+            result = service().add_flow_design(data)
+            context = dict(flow_id=result)
         return JsonResponse(context, status=200)
