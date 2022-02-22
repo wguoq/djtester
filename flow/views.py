@@ -37,6 +37,7 @@ def query(request):
         return HttpResponseNotFound
     else:
         context = {}
+        status = 200
         params = request.GET
         print(f"params= {params}")
         print(f"request= {request}")
@@ -64,7 +65,7 @@ def query(request):
             elif action == 'getDesignTemp':
                 result = service().get_design_temp()
                 context = dict(des=result)
-            return JsonResponse(context, status=200)
+            return JsonResponse(context, status=status)
 
 
 def commit(request):
@@ -72,6 +73,7 @@ def commit(request):
         return HttpResponseNotFound
     else:
         context = {}
+        status = 200
         payload = json.loads(request.body)
         service_name = payload.get('service')
         service = getattr(flow_service, service_name)
@@ -79,12 +81,31 @@ def commit(request):
         action = payload.get('action')
         data = payload.get('data')
         if action == "instance":
-            inst = FlowService.instance_flow(data.get('id'), data.get('flow_data'))
-            context = dict(instance_id=inst.id)
+            try:
+                inst = FlowService.instance_flow(data.get('id'), data.get('flow_data'))
+                context = dict(instance_id=inst.id, message="ok")
+            except Exception as e:
+                status = 500
+                context = dict(message=str(e))
         elif action == "run":
-            result = service().run_inst(data.get('id'))
-            context = dict(instance_id=result)
+            try:
+                result = service().run_inst(data.get('id'))
+                context = dict(instance_id=result, message="ok")
+            except Exception as e:
+                status = 500
+                context = dict(message=str(e))
         elif action == 'add':
-            result = service().add_flow_design(data)
-            context = dict(flow_id=result)
-        return JsonResponse(context, status=200)
+            try:
+                result = service().add_flow_design(data)
+                context = dict(flow_id=result, message="ok")
+            except Exception as e:
+                status = 500
+                context = dict(message=str(e))
+        elif action == 'edit':
+            try:
+                result = service().edit_flow_design(data)
+                context = dict(flow_id=result, message="ok")
+            except Exception as e:
+                status = 500
+                context = dict(message=str(e))
+        return JsonResponse(context, status=status)
