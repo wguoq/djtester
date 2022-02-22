@@ -15,6 +15,25 @@ class FlowDesignService(BaseService):
         super().__init__(FlowDesignDBHelper())
 
     @staticmethod
+    def get_design_temp():
+        a = model_to_dict(Flow_Design())
+        a.pop("id")
+        a.pop("code")
+        return a
+
+    @staticmethod
+    def add_flow_design(data: dict):
+        code = 'fw' + str(round(time.time()) + random.randint(0, 99))
+        data.update({"code": code})
+        a = FlowDesignDBHelper().save_this(data)
+        return a.id
+
+    @staticmethod
+    def edit_flow_design(data: dict):
+        a = FlowDesignDBHelper().save_this(data)
+        return a.id
+
+    @staticmethod
     def get_node_list(flow_design_id):
         node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design_id})
         a = []
@@ -54,20 +73,6 @@ class FlowService:
     @staticmethod
     def instance_flow(flow_design_id, flow_data):
         return FlowMgr.instance_flow_design(flow_design_id, flow_data)
-
-    @staticmethod
-    def get_design_temp():
-        a = model_to_dict(Flow_Design())
-        a.pop("id")
-        a.pop("code")
-        return a
-
-    @staticmethod
-    def add_flow_design(data: dict):
-        code = 'fw' + str(round(time.time()) + random.randint(0, 99))
-        data.update({"code": code})
-        a = FlowDesignDBHelper().save_this(data)
-        return a.id
 
 
 class NodeFuncRunFLow(NodeFuncBase):
