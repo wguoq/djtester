@@ -27,12 +27,17 @@ class BaseDBHelper:
         self.m2m = None
 
     def get_all(self, offset: int = 0, limit: int = 1000):
-        return self.model.objects.all()[offset: (offset + limit)]
+        if offset < 0 or limit < 0:
+            raise Exception('offset limit 不能小于0')
+        elif limit == 0:
+            return self.model.objects.all()
+        else:
+            return self.model.objects.all()[offset: (offset + limit)]
 
-    def get_by(self, kwargs):
+    def get_by(self, kwargs: dict):
         return self.model.objects.get(**kwargs)
 
-    def filter_by(self, kwargs):
+    def filter_by(self, kwargs: dict):
         return self.model.objects.filter(**kwargs)
 
     @abc.abstractmethod

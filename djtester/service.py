@@ -18,11 +18,13 @@ class BaseService:
     def __init__(self, db_helper):
         self.DBHelper = db_helper
 
-    def add(self, data):
-        return self.DBHelper.save_this(data)
+    def add(self, data: dict):
+        a = self.DBHelper.save_this(data)
+        return model_to_dict(a)
 
-    def edit(self, data):
-        return self.DBHelper.save_this(data)
+    def edit(self, data: dict):
+        a = self.DBHelper.save_this(data)
+        return model_to_dict(a)
 
     def get_all(self, offset: int = 0, limit: int = 100) -> list[dict]:
         # 切片和排序不能写一起

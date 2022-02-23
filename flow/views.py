@@ -40,7 +40,6 @@ def query(request):
         status = 200
         params = request.GET
         print(f"params= {params}")
-        print(f"request= {request}")
         if params and len(params) >= 1:
             # 这些取出来以后是str,可以用json.loads转一下，但是必须保证里面都是双引号
             service_name = params.get('service')
@@ -82,30 +81,24 @@ def commit(request):
         data = payload.get('data')
         if action == "instance":
             try:
-                inst = FlowService.instance_flow(data.get('id'), data.get('flow_data'))
-                context = dict(instance_id=inst.id, message="ok")
+                inst = service().instance_flow(data.get('id'), data.get('flow_data'))
+                context = dict(instance_id=inst.id)
             except Exception as e:
-                status = 500
-                context = dict(message=str(e))
+                return JsonResponse(dict(message=str(e)), status=500)
         elif action == "run":
             try:
                 result = service().run_inst(data.get('id'))
-                context = dict(instance_id=result, message="ok")
+                context = dict(instance_id=result)
             except Exception as e:
-                status = 500
-                context = dict(message=str(e))
+                return JsonResponse(dict(message=str(e)), status=500)
         elif action == 'add':
             try:
-                result = service().add_flow_design(data)
-                context = dict(flow_id=result, message="ok")
+                context = service().add(data)
             except Exception as e:
-                status = 500
-                context = dict(message=str(e))
+                return JsonResponse(dict(message=str(e)), status=500)
         elif action == 'edit':
             try:
-                result = service().edit_flow_design(data)
-                context = dict(flow_id=result, message="ok")
+                context = service().edit(data)
             except Exception as e:
-                status = 500
-                context = dict(message=str(e))
+                return JsonResponse(dict(message=str(e)), status=500)
         return JsonResponse(context, status=status)

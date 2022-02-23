@@ -50,13 +50,3 @@ class TestCaseDBHelper(BaseDBHelper):
         # 存m2m
         self.m2m = self._set_m2m(tc_check_list)
         return super().save_this(data)
-
-    # @staticmethod
-    # def filter_by_case_id(test_case_id):
-    #     tc_identity_id = TcIdentityDBHelper().get_by(dict(test_case_id=test_case_id)).pk
-    #     return Test_Case.objects.filter(tc_identity=tc_identity_id)
-    #
-    # @staticmethod
-    # def filter_by_case_name(test_case_name):
-    #     tc_identity_id = TcIdentityDBHelper().get_by(dict(test_case_name=test_case_name)).pk
-    #     return Test_Case.objects.filter(tc_identity=tc_identity_id)

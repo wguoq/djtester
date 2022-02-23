@@ -1,6 +1,8 @@
+"""
+这里和view对接接口，表的增删改查相关业务逻辑写在这里
+"""
 import random
 import time
-
 from django.forms import model_to_dict
 from djtester.decorators import reg_node_func, show_class_name
 from djtester.service import BaseService
@@ -21,17 +23,11 @@ class FlowDesignService(BaseService):
         a.pop("code")
         return a
 
-    @staticmethod
-    def add_flow_design(data: dict):
+    def add(self, data: dict):
+        # 新增时生成code
         code = 'fw' + str(round(time.time()) + random.randint(0, 99))
         data.update({"code": code})
-        a = FlowDesignDBHelper().save_this(data)
-        return a.id
-
-    @staticmethod
-    def edit_flow_design(data: dict):
-        a = FlowDesignDBHelper().save_this(data)
-        return a.id
+        return super().add(data)
 
     @staticmethod
     def get_node_list(flow_design_id):
@@ -67,6 +63,33 @@ class NodeInstService(BaseService):
     @show_class_name('service')
     def __init__(self):
         super().__init__(NodeInstanceDBHelper())
+
+
+class FlowNodeService(BaseService):
+    @show_class_name('service')
+    def __init__(self):
+        super().__init__(FlowNodeDesignOderDBHelper())
+
+    # 新增和编辑要检查
+    # 1.node_order不能为空
+    # 2.如果是子流程，不能出现死循环
+    @staticmethod
+    def _check(data: dict):
+        node_order = data.get('node_order')
+        flow_design_id = data.get('flow_design')
+        flow_id = data.get('node_design').get('node_func_data').get('flow_design_id')
+        if node_order is None or len(str(node_order)) == 0:
+            raise Exception(' node_order 不能为空并且要为数字')
+        elif flow_design_id == flow_id:
+            raise Exception(f'子流程的flow_design_id == 父流程的flow_design_id，会死循环')
+
+    def add(self, data: dict):
+        self._check(data)
+        return self.DBHelper.save_this(data)
+
+    def edit(self, data):
+        self._check(data)
+        return self.DBHelper.save_this(data)
 
 
 class FlowService:
