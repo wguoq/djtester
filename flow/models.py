@@ -229,7 +229,7 @@ class Node_Status_Rule(Time_Field):
         ordering = ['-id']
 
 
-class Flow_Node_Design_Oder(Time_Field):
+class Flow_Node_Oder(Time_Field):
     """
     流程设计,节点顺序,节点设计关联表
     """

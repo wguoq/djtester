@@ -86,7 +86,7 @@ class NodeInstanceDBHelper(BaseDBHelper):
 
 class FlowNodeDesignOderDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Flow_Node_Design_Oder.__name__)
+        super().__init__(MODELS_PATH, Flow_Node_Oder.__name__)
 
     def _save_m2m(self, new_model):
         return new_model
