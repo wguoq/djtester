@@ -17,7 +17,7 @@ class FlowDesignService(BaseService):
         super().__init__(FlowDesignDBHelper())
 
     @staticmethod
-    def get_design_temp():
+    def get_temp():
         a = model_to_dict(Flow_Design())
         a.pop("id")
         a.pop("code")
@@ -28,17 +28,6 @@ class FlowDesignService(BaseService):
         code = 'fw' + str(round(time.time()) + random.randint(0, 99))
         data.update({"code": code})
         return super().add(data)
-
-    @staticmethod
-    def get_node_list(flow_design_id):
-        node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design_id})
-        a = []
-        for node in node_list:
-            node_dict = dict(id=node.id, flow_design_id=node.flow_design.id, node_order=node.node_order,
-                             node_design_id=node.node_design.id)
-            node_dict.update(model_to_dict(node.node_design))
-            a.append(node_dict)
-        return a
 
 
 class FlowInstService(BaseService):
@@ -58,6 +47,13 @@ class NodeDesignService(BaseService):
     def __init__(self):
         super().__init__(NodeDesignDBHelper())
 
+    @staticmethod
+    def get_temp():
+        a = model_to_dict(Node_Design())
+        a.pop("id")
+        a.pop("code")
+        return a
+
 
 class NodeInstService(BaseService):
     @show_class_name('service')
@@ -69,6 +65,22 @@ class FlowNodeService(BaseService):
     @show_class_name('service')
     def __init__(self):
         super().__init__(FlowNodeDesignOderDBHelper())
+
+    @staticmethod
+    def get_temp():
+        a = model_to_dict(Flow_Node_Oder())
+        a.pop("id")
+        return a
+
+    def filter_by(self, kwargs: dict):
+        node_list = super().filter_by(kwargs)
+        a = []
+        for node in node_list:
+            node_dict = dict(id=node.id, flow_design_id=node.flow_design.id, node_order=node.node_order,
+                             node_design_id=node.node_design.id)
+            node_dict.update(model_to_dict(node.node_design))
+            a.append(node_dict)
+        return a
 
     # 新增和编辑要检查
     # 1.node_order不能为空

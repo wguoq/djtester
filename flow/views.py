@@ -58,12 +58,9 @@ def query(request):
             elif action == 'filter':
                 result = service().filter_by(filters)
                 context = dict(rows=result, total=len(result))
-            elif action == 'getNodeList':
-                result = FlowDesignService().get_node_list(filters.get('id'))
-                context = dict(rows=result, total=len(result))
-            elif action == 'getDesignTemp':
-                result = service().get_design_temp()
-                context = dict(des=result)
+            elif action == 'getTemp':
+                result = service().get_temp()
+                context = dict(rows=result)
             return JsonResponse(context, status=status)
 
 
