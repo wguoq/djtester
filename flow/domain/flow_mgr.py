@@ -3,7 +3,7 @@ from django.forms import model_to_dict
 from flow.domain.enums import FlowStatus, NodeStatus, FlowType
 from flow.domain.flow_runner import *
 from flow.models import Flow_Instance, Flow_Design, Node_Instance
-from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNodeDesignOderDBHelper
+from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNodeOderDBHelper
 
 
 class FlowMgr:
@@ -11,7 +11,7 @@ class FlowMgr:
     @staticmethod
     @transaction.atomic
     def instance_flow_design(flow_design_id, flow_data: dict = None) -> Flow_Instance:
-        node_list = FlowNodeDesignOderDBHelper().filter_by({'flow_design_id': flow_design_id})
+        node_list = FlowNodeOderDBHelper().filter_by({'flow_design_id': flow_design_id})
         if node_list is None or node_list.count() == 0:
             raise Exception("node_list 为空，不能实例化")
         # 保存 flow_instance

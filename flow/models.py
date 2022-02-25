@@ -131,7 +131,7 @@ class Node_Design(Time_Field, Code_Field):
     node_type = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
-                                 default='func_node',
+                                 default='func',
                                  verbose_name="节点类型: func | flow")
 
     node_name = models.CharField(max_length=128,
