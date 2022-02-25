@@ -369,7 +369,7 @@ class Test_Flow(TestCase):
         flow_node_design_oder_list = [flow_node_design_oder_1, flow_node_design_oder_2, flow_node_design_oder_3,
                                       flow_node_design_oder_4, flow_node_design_oder_5, ]
         for flow_node_design_oder in flow_node_design_oder_list:
-            a = FlowNodeDesignOderDBHelper().save_this(flow_node_design_oder)
+            a = FlowNodeOderDBHelper().save_this(flow_node_design_oder)
             print(model_to_dict(a))
 
         print(f'==== 新增 flow_result_rule ====')
