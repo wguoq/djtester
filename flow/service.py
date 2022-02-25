@@ -1,6 +1,7 @@
 """
 这里和view对接接口，表的增删改查相关业务逻辑写在这里
 """
+import json
 import random
 import time
 from django.forms import model_to_dict
@@ -54,6 +55,11 @@ class NodeDesignService(BaseService):
         a.pop("code")
         return a
 
+    def add(self, data):
+        code = 'nd' + str(round(time.time()) + random.randint(0, 99))
+        data.update({"code": code})
+        return super().add(data)
+
 
 class NodeInstService(BaseService):
     @show_class_name('service')
@@ -64,7 +70,7 @@ class NodeInstService(BaseService):
 class FlowNodeService(BaseService):
     @show_class_name('service')
     def __init__(self):
-        super().__init__(FlowNodeDesignOderDBHelper())
+        super().__init__(FlowNodeOderDBHelper())
 
     @staticmethod
     def get_temp():
@@ -73,7 +79,7 @@ class FlowNodeService(BaseService):
         return a
 
     def filter_by(self, kwargs: dict):
-        node_list = super().filter_by(kwargs)
+        node_list = FlowNodeOderDBHelper().filter_by(kwargs)
         a = []
         for node in node_list:
             node_dict = dict(id=node.id, flow_design_id=node.flow_design.id, node_order=node.node_order,
@@ -89,19 +95,32 @@ class FlowNodeService(BaseService):
     def _check(data: dict):
         node_order = data.get('node_order')
         flow_design_id = data.get('flow_design')
-        flow_id = data.get('node_design').get('node_func_data').get('flow_design_id')
+        node_func_data = json.loads(data.get('node_func_data'))
+        flow_id = node_func_data.get('flow_design_id')
         if node_order is None or len(str(node_order)) == 0:
             raise Exception(' node_order 不能为空并且要为数字')
         elif flow_design_id == flow_id:
             raise Exception(f'子流程的flow_design_id == 父流程的flow_design_id，会死循环')
 
+    # 需要同时保存到关系表和node表
+    @transaction.atomic
     def add(self, data: dict):
         self._check(data)
-        return self.DBHelper.save_this(data)
+        flow_design = data.pop('flow_design')
+        node_order = data.pop('node_order')
+        node_func_data = data.pop('node_func_data')
+        data.update(dict(node_func_data=json.loads(node_func_data)))
+        node_design = Node_Design(**data)
+        node = NodeDesignService().add(model_to_dict(node_design))
+        flow_node_dict = dict(flow_design=flow_design,
+                              node_order=node_order,
+                              node_design=node.get("id"))
+        return super().add(flow_node_dict)
 
+    # 需要同时修改关系表和node表
     def edit(self, data):
         self._check(data)
-        return self.DBHelper.save_this(data)
+        return super().edit(data)
 
 
 class FlowService:
