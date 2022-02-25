@@ -84,7 +84,7 @@ class NodeInstanceDBHelper(BaseDBHelper):
         return super().save_this(data)
 
 
-class FlowNodeDesignOderDBHelper(BaseDBHelper):
+class FlowNodeOderDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, Flow_Node_Oder.__name__)
 
