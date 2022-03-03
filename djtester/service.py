@@ -20,11 +20,15 @@ class BaseService:
 
     def add(self, data: dict):
         a = self.DBHelper.save_this(data)
-        return model_to_dict(a)
+        x = a.__dict__
+        x.pop('_state')
+        return x
 
     def edit(self, data: dict):
         a = self.DBHelper.save_this(data)
-        return model_to_dict(a)
+        x = a.__dict__
+        x.pop('_state')
+        return x
 
     def get_all(self, offset: int = 0, limit: int = 100) -> list[dict]:
         # 切片和排序不能写一起
@@ -32,12 +36,17 @@ class BaseService:
         query_set = self.DBHelper.get_all(offset, limit)
         res = []
         for a in query_set:
-            res.append(model_to_dict(a))
+            # res.append(model_to_dict(a))
+            x = a.__dict__
+            x.pop('_state')
+            res.append(x)
         return res
 
     def get_by_pk(self, pk: int):
         a = self.DBHelper.get_by({'pk': pk})
-        return model_to_dict(a)
+        x = a.__dict__
+        x.pop('_state')
+        return x
 
     def filter_by(self, kwargs: dict):
         query_set = self.DBHelper.filter_by(kwargs)
