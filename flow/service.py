@@ -17,6 +17,10 @@ class FlowDesignService(BaseService):
     def __init__(self):
         super().__init__(FlowDesignDBHelper())
 
+    def get_model_fields(self):
+        pass
+
+
     @staticmethod
     def get_temp():
         a = model_to_dict(Flow_Design())
@@ -79,13 +83,19 @@ class FlowNodeService(BaseService):
         return a
 
     def filter_by(self, kwargs: dict):
-        node_list = FlowNodeOderDBHelper().filter_by(kwargs)
+        fn_list = super().filter_by(kwargs)
+        # fn_list = FlowNodeOderDBHelper().filter_by(kwargs)
         a = []
-        for node in node_list:
-            node_dict = dict(id=node.id, flow_design_id=node.flow_design.id, node_order=node.node_order,
-                             node_design_id=node.node_design.id)
-            node_dict.update(model_to_dict(node.node_design))
-            a.append(node_dict)
+        for fn in fn_list:
+            # node_dict = dict(id=fn.id, flow_design_id=fn.flow_design.id, node_order=fn.node_order,
+            #                  node_design_id=fn.node_design.id)
+            # node_dict.update(model_to_dict(fn.node_design))
+            # a.append(node_dict)
+            node_design = NodeDesignService().get_by_pk(fn.get('node_design'))
+            node_design.pop('id')
+            # 就把fn的时间字段给覆盖进去
+            node_design.update(fn)
+            a.append(node_design)
         return a
 
     # 新增和编辑要检查
@@ -111,6 +121,7 @@ class FlowNodeService(BaseService):
         node_func_data = data.pop('node_func_data')
         data.update(dict(node_func_data=json.loads(node_func_data)))
         node_design = Node_Design(**data)
+        # 存node_design
         node = NodeDesignService().add(model_to_dict(node_design))
         flow_node_dict = dict(flow_design=flow_design,
                               node_order=node_order,
