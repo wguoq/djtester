@@ -1,4 +1,9 @@
+import json
+import pickle
 import time
+
+from django.core.serializers import serialize
+from django.db.models import fields, CharField, JSONField
 from django.forms import model_to_dict
 from django.test import TestCase
 from djtester.all_app_service import TestCaseService
@@ -62,7 +67,6 @@ class Test_Flow(TestCase):
                 }
             ],
         }
-
         case2 = {
             "test_case_code": "tc2622693409",
             "test_case_name": "test_case_name002",
@@ -116,7 +120,6 @@ class Test_Flow(TestCase):
                 }
             ],
         }
-
         node_design_1 = {
             'id': None,
             'code': 'nd07675770',
@@ -125,9 +128,8 @@ class Test_Flow(TestCase):
             'node_func_code': 'api_tester',
             'node_func_data': {'test_case_id': 1},
             'version': 1,
-            'version_status': 0,
+            'ver_status': 0,
         }
-
         node_status_rule_1 = {
             'id': None,
             'status_operator': 'eq',
@@ -142,7 +144,6 @@ class Test_Flow(TestCase):
             'node_status': 'skip',
             'node_design': 1,
         }
-
         node_design_2 = {
             'id': None,
             'code': 'nd076545770',
@@ -151,9 +152,8 @@ class Test_Flow(TestCase):
             'node_func_code': 'api_tester',
             'node_func_data': {'test_case_id': 2},
             'version': 1,
-            'version_status': 0,
+            'ver_status': 0,
         }
-
         node_start_rule_1 = {
             'rule_target': 'node_status',
             'rule_where': 1,
@@ -161,7 +161,6 @@ class Test_Flow(TestCase):
             'rule_value': 'finish',
             'node_design': 2
         }
-
         node_start_rule_2 = {
             'rule_target': 'node_result',
             'rule_where': 1,
@@ -169,7 +168,6 @@ class Test_Flow(TestCase):
             'rule_value': 'pass',
             'node_design': 2
         }
-
         node_status_rule_3 = {
             'id': None,
             'status_operator': 'eq',
@@ -184,7 +182,6 @@ class Test_Flow(TestCase):
             'node_status': 'skip',
             'node_design': 2,
         }
-
         node_design_3 = {
             'id': None,
             'code': 'nd076545770',
@@ -193,9 +190,8 @@ class Test_Flow(TestCase):
             'node_func_code': 'flow_runner',
             'node_func_data': {'flow_design_id': 2},
             'version': 1,
-            'version_status': 0,
+            'ver_status': 0,
         }
-
         node_start_rule_3 = {
             'rule_target': 'node_status',
             'rule_where': 2,
@@ -203,7 +199,6 @@ class Test_Flow(TestCase):
             'rule_value': 'finish',
             'node_design': 3
         }
-
         node_start_rule_4 = {
             'rule_target': 'flow_data',
             'rule_where': 'flag',
@@ -211,7 +206,6 @@ class Test_Flow(TestCase):
             'rule_value': 'ok',
             'node_design': 3
         }
-
         node_status_rule_5 = {
             'id': None,
             'status_operator': 'eq',
@@ -226,7 +220,6 @@ class Test_Flow(TestCase):
             'node_status': 'skip',
             'node_design': 3,
         }
-
         node_design_4 = {
             'id': None,
             'code': 'nd076545770',
@@ -234,7 +227,7 @@ class Test_Flow(TestCase):
             'node_func_code': 'api_tester',
             'node_func_data': {'test_case_id': 1},
             'version': 1,
-            'version_status': 0,
+            'ver_status': 0,
         }
         node_status_rule_7 = {
             'id': None,
@@ -250,7 +243,6 @@ class Test_Flow(TestCase):
             'node_status': 'skip',
             'node_design': 4,
         }
-
         flow_result_rule_1 = {
             'id': None,
             'result_rule_type': 'default',
@@ -263,16 +255,15 @@ class Test_Flow(TestCase):
             'status_rule_name': 'status_rule 1',
             'status_rule_script': {},
         }
-
         flow_design_1 = {
             'id': None,
             'code': 'fw432453212',
-            'flow_name': 'flow_design_1',
-            'flow_type': 'serial',
-            'flow_result_rule_id': 1,
-            'flow_status_rule_id': 1,
+            'fw_name': 'flow_design_1',
+            'fw_type': 'serial',
+            'fw_result_rule': 1,
+            'fw_status_rule': 1,
             'version': 1,
-            'version_status': 1
+            'ver_status': 1
         }
         flow_node_design_oder_1 = {
             'id': None,
@@ -298,16 +289,15 @@ class Test_Flow(TestCase):
             'node_order': 4,
             'node_design': 4,
         }
-
         flow_design_2 = {
             'id': None,
             'code': 'fw4324535512',
-            'flow_name': 'flow_design_2',
-            'flow_type': 'serial',
-            'flow_result_rule_id': 1,
-            'flow_status_rule_id': 1,
+            'fw_name': 'flow_design_2',
+            'fw_type': 'serial',
+            'fw_result_rule': 1,
+            'fw_status_rule': 1,
             'version': 1,
-            'version_status': 1
+            'ver_status': 1
         }
         flow_node_design_oder_5 = {
             'id': None,
@@ -439,3 +429,4 @@ class Test_Flow(TestCase):
         for a in aaa:
             print(model_to_dict(a))
             print(a.__getattribute__(result))
+
