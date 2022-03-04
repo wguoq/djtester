@@ -28,7 +28,7 @@ class BaseDBHelper:
 
     def get_all(self, offset: int = 0, limit: int = 1000):
         if offset < 0 or limit < 0:
-            raise Exception('offset limit 不能小于0')
+            raise Exception('offset和limit不能小于0')
         elif limit == 0:
             return self.model.objects.all()
         else:
@@ -55,12 +55,19 @@ class BaseDBHelper:
         pk = new_model.pk
         if pk:
             # 有pk判断为修改
-            self.model.objects.filter(pk=pk).update(**data)
-            new_model = self.model.objects.get(pk=pk)
-            if self.m2m:
-                return self._save_m2m(new_model)
-            else:
-                return new_model
+            # 由于update不会自动更新时间字段，还是要改成用save
+            # self.model.objects.filter(pk=pk).update(**data)
+            # new_model = self.model.objects.get(pk=pk)
+            # if self.m2m:
+            #     return self._save_m2m(new_model)
+            # else:
+            #     return new_model
+            row = self.model.objects.get(pk=pk).__dict__
+            row.pop('_state')
+            row.update(data)
+            new_model = self.model(**row)
+            new_model.save()
+            return new_model
         else:
             new_model.save()
             if self.m2m:
