@@ -1,12 +1,8 @@
-import json
-import pickle
 import time
-
-from django.core.serializers import serialize
-from django.db.models import fields, CharField, JSONField
 from django.forms import model_to_dict
 from django.test import TestCase
 from djtester.all_app_service import TestCaseService
+from djtester.tools_man import get_field_info
 from .domain.flow_mgr import FlowMgr
 from .domain.node_mgr import NodeMgr
 from .repositories import *
@@ -429,4 +425,3 @@ class Test_Flow(TestCase):
         for a in aaa:
             print(model_to_dict(a))
             print(a.__getattribute__(result))
-
