@@ -171,7 +171,7 @@ class TestTestCase(TestCase):
                           "path": ""}
                       }
         a = TestCaseActionService().add(tc_action1)
-        print(model_to_dict(a))
+        print(a)
 
         print(f'tc_action 修改 =====')
         tc_action1_1 = {"id": 1,
@@ -179,7 +179,7 @@ class TestTestCase(TestCase):
                         "action_name": "get index_修改",
                         }
         a = TestCaseActionService().edit(tc_action1_1)
-        print(model_to_dict(a))
+        print(a)
 
         #############################################################
         print(f'tc_data new =====')
@@ -211,7 +211,7 @@ class TestTestCase(TestCase):
             }
         }
         a = TestCaseDataService().add(tc_data1)
-        print(model_to_dict(a))
+        print(a)
 
         print(f' tc_data 修改 =====')
         tc_data1_1 = {
@@ -219,7 +219,7 @@ class TestTestCase(TestCase):
             "data_name": "defApiParams_修改",
         }
         a = TestCaseDataService().edit(tc_data1_1)
-        print(model_to_dict(a))
+        print(a)
 
         #############################################################
         print(f'tc_check_point new =====')
@@ -237,7 +237,7 @@ class TestTestCase(TestCase):
             }
         }
         a = TestCaseCheckPointService().add(tc_check_point1)
-        print(model_to_dict(a))
+        print(a)
 
         print(f' tc_check_point 修改 =====')
         tc_check_point1_1 = {
@@ -245,7 +245,7 @@ class TestTestCase(TestCase):
             "check_point_name": "status_code == 200_修改",
         }
         a = TestCaseCheckPointService().edit(tc_check_point1_1)
-        print(model_to_dict(a))
+        print(a)
 
         #############################################################
         print(f'test_case new =====')
