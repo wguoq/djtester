@@ -1,14 +1,7 @@
 import importlib
-import json
-import time
 import traceback
-
-from django.core import serializers
-from django.forms import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse
-from django.views.decorators.http import require_http_methods
 from pydantic import BaseModel
-
 from flow.service import *
 
 
@@ -62,7 +55,9 @@ def query(request):
             elif action == 'getTemp':
                 result = service().get_temp()
                 context = dict(rows=result)
-            return JsonResponse(context, status=status)
+            elif action == 'getFieldInfo':
+                context = service().get_field_info()
+            return JsonResponse(context, status=status, safe=False)
 
 
 def commit(request):
@@ -84,38 +79,6 @@ def commit(request):
                 result = do_commit(service, action, d)
                 result_list.append(result)
             return JsonResponse(result_list, status=200)
-        # if action == "instance":
-        #     try:
-        #         inst = service().instance_flow(data.get('id'), data.get('flow_data'))
-        #         context = dict(instance_id=inst.id)
-        #     except Exception as e:
-        #         # 直接打印异常
-        #         traceback.print_exc()
-        #         # 返回字符串
-        #         # traceback.format_exc()
-        #         # 还可以将信息写入到文件
-        #         # traceback.print_exc(file=open(‘error.txt’, ’a +’))
-        #         return JsonResponse(dict(message=str(e)), status=500)
-        # elif action == "run":
-        #     try:
-        #         result = service().run_inst(data.get('id'))
-        #         context = dict(instance_id=result)
-        #     except Exception as e:
-        #         traceback.print_exc()
-        #         return JsonResponse(dict(message=str(e)), status=500)
-        # elif action == 'add':
-        #     try:
-        #         context = service().add(data)
-        #     except Exception as e:
-        #         traceback.print_exc()
-        #         return JsonResponse(dict(message=str(e)), status=500)
-        # elif action == 'edit':
-        #     try:
-        #         context = service().edit(data)
-        #     except Exception as e:
-        #         traceback.print_exc()
-        #         return JsonResponse(dict(message=str(e)), status=500)
-        # return JsonResponse(context, status=status)
 
 
 def do_commit(service, action, data):
