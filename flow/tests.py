@@ -241,15 +241,15 @@ class Test_Flow(TestCase):
         }
         flow_result_rule_1 = {
             'id': None,
-            'result_rule_type': 'default',
-            'result_rule_name': 'result_rule 1',
-            'result_rule_script': {},
+            'rule_type': 'default',
+            'rule_name': 'result_rule 1',
+            'rule_script': {},
         }
         flow_status_rule_1 = {
             'id': None,
-            'status_rule_type': 'default',
-            'status_rule_name': 'status_rule 1',
-            'status_rule_script': {},
+            'rule_type': 'default',
+            'rule_name': 'status_rule 1',
+            'rule_script': {},
         }
         flow_design_1 = {
             'id': None,
