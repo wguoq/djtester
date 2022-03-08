@@ -17,10 +17,6 @@ class FlowDesignService(BaseService):
     def __init__(self):
         super().__init__(FlowDesignDBHelper())
 
-    def get_model_fields(self):
-        pass
-
-
     @staticmethod
     def get_temp():
         a = model_to_dict(Flow_Design())

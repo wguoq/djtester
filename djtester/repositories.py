@@ -1,6 +1,7 @@
-import abc
 import importlib
 from django.db import transaction
+from django.db.models import ManyToOneRel, ManyToManyRel
+from pydantic import BaseModel
 
 
 def save_foreignkey(db_helper_path, db_helper_name, foreignkey_data):
@@ -24,6 +25,35 @@ class BaseDBHelper:
         # 由于model.objects必须用本来的model来调用,所以import对应的model
         models = importlib.import_module(model_path)
         self.model = getattr(models, model_name)
+
+    class FieldInfo(BaseModel):
+        name = ''
+        verbose_name = ''
+        type = ''
+        primary_key = False
+        max_length = ''
+        default = ''
+        help_text = ''
+
+    def get_field_info(self) -> list:
+        fields = self.model._meta.get_fields()
+        ll = []
+        for f in fields:
+            field_info = self.FieldInfo()
+            if isinstance(f, ManyToOneRel or ManyToManyRel):
+                continue
+            else:
+                field_info.name = f.name
+                field_info.primary_key = f.primary_key
+                field_info.verbose_name = f.verbose_name
+                field_info.default = None if isinstance(f.default, type) else f.default
+                field_info.help_text = f.help_text
+                x = str(type(f))
+                x = x.split('.')
+                field_info.type = x[-1][:-2]
+                # print(field_info)
+            ll.append(field_info.__dict__)
+        return ll
 
     def get_all(self, offset: int = 0, limit: int = 1000):
         if offset < 0 or limit < 0:

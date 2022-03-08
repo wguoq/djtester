@@ -2,6 +2,7 @@ import json
 from django.forms import model_to_dict
 from django.core import serializers
 from djtester.decorators import show_class_name
+from djtester.repositories import BaseDBHelper
 
 
 def query_set_dict_to_model_dict(query_set_dict: dict):
@@ -15,8 +16,11 @@ def query_set_dict_to_model_dict(query_set_dict: dict):
 
 class BaseService:
     @show_class_name('service')
-    def __init__(self, db_helper):
+    def __init__(self, db_helper: BaseDBHelper):
         self.DBHelper = db_helper
+
+    def get_field_info(self):
+        return self.DBHelper.get_field_info()
 
     def add(self, data: dict):
         a = self.DBHelper.save_this(data)
