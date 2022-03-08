@@ -1,26 +1,7 @@
 import importlib
 import traceback
 from django.http import HttpResponseNotFound, JsonResponse
-from pydantic import BaseModel
 from flow.service import *
-
-
-class QueryParams(BaseModel):
-    service: str
-    action: str
-    filters: dict
-    page: dict
-    # page: {
-    #     "pageSize": 10,
-    #     "pageNumber": 1,
-    #     "pageable": 'true'
-    # }
-
-
-class CommitParams(BaseModel):
-    action: str
-    params: dict
-
 
 flow_service = importlib.import_module('flow.service')
 
@@ -52,11 +33,15 @@ def query(request):
             elif action == 'filter':
                 result = service().filter_by(filters)
                 context = dict(rows=result, total=len(result))
+            elif action == 'get':
+                result = service().get_by_pk(filters.get('pk'))
+                context = dict(rows=result, total=len(result))
             elif action == 'getTemp':
                 result = service().get_temp()
                 context = dict(rows=result)
             elif action == 'getFieldInfo':
-                context = service().get_field_info()
+                result = service().get_field_info()
+                context = dict(fields=result)
             return JsonResponse(context, status=status, safe=False)
 
 
