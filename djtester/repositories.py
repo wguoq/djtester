@@ -51,7 +51,6 @@ class BaseDBHelper:
                 x = str(type(f))
                 x = x.split('.')
                 field_info.type = x[-1][:-2]
-                # print(field_info)
             ll.append(field_info.__dict__)
         return ll
 
@@ -69,10 +68,6 @@ class BaseDBHelper:
     def filter_by(self, kwargs: dict):
         return self.model.objects.filter(**kwargs)
 
-    def _set_m2m(self, new_model):
-        return new_model
-
-    @transaction.atomic
     def save_this(self, data: dict):
         """
         如果有外键要单独保存之后把对象放进data里
@@ -83,12 +78,13 @@ class BaseDBHelper:
         if pk:
             # 有pk判断为修改
             # 由于update不会自动更新时间字段，还是要改成用save
+            # 要先把要修改的那条数据查询出来，获取完整的模型字段
             row = self.model.objects.get(pk=pk).__dict__
             row.pop('_state')
             row.update(data)
             new_model = self.model(**row)
             new_model.save()
-            return self._set_m2m(new_model)
+            return new_model
         else:
             new_model.save()
-            return self._set_m2m(new_model)
+            return new_model
