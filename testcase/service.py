@@ -7,7 +7,6 @@ from djtester.decorators import show_class_name
 from djtester.enums import TestCaseType
 from djtester.service import query_set_dict_to_model_dict, BaseService
 from testcase.domain.models.tc_api_model import *
-from testcase.domain.test_case_mgr import TestCaseDBHelper
 from testcase.repositories import *
 
 
@@ -110,16 +109,6 @@ class TestCaseService(BaseService):
     def filter_by(self, kwargs: dict):
         a = TestCaseDBHelper().filter_by(kwargs)
         return _query_set_to_case_dict(a)
-
-    # @staticmethod
-    # def filter_by_case_id(test_case_id: str):
-    #     a = TestCaseDBHelper.filter_by_case_id(test_case_id)
-    #     return _query_set_to_case_dict(a)
-    #
-    # @staticmethod
-    # def filter_by_case_name(test_case_name: str):
-    #     a = TestCaseDBHelper.filter_by_case_name(test_case_name)
-    #     return _query_set_to_case_dict(a)
 
 
 def _get_check_point_pk(tc_check_list: list):
