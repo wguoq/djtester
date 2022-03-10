@@ -23,7 +23,6 @@ def query(request):
             filters = json.loads(filters)
             page = params.get('page')
             page = json.loads(page)
-            pageable = page.get('pageable')
             pageSize = page.get('pageSize')
             pageNumber = page.get('pageNumber')
             service = getattr(flow_service, service_name)
@@ -35,7 +34,7 @@ def query(request):
                 context = dict(rows=result, total=len(result))
             elif action == 'get':
                 result = service().get_by_pk(filters.get('pk'))
-                context = dict(rows=result, total=len(result))
+                context = dict(data=result, total=len(result))
             elif action == 'getTemp':
                 result = service().get_temp()
                 context = dict(rows=result)
