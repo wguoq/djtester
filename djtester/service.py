@@ -34,7 +34,7 @@ class BaseService:
         x.pop('_state')
         return x
 
-    def get_all(self, offset: int = 0, limit: int = 100) -> list[dict]:
+    def get_all(self, offset: int = 0, limit: int = 1000) -> list[dict]:
         # 切片和排序不能写一起
         # query_set = self.DBHelper.get_all(offset, limit).order_by(order)
         query_set = self.DBHelper.get_all(offset, limit)
@@ -46,13 +46,14 @@ class BaseService:
             res.append(x)
         return res
 
-    def get_by_pk(self, pk: int):
+    def get_by_pk(self, pk: int) -> dict:
         a = self.DBHelper.get_by({'pk': pk})
         x = a.__dict__
         x.pop('_state')
         return x
 
-    def filter_by(self, kwargs: dict):
+    def filter_by(self, kwargs: dict) -> list:
+        # todo
         query_set = self.DBHelper.filter_by(kwargs)
         ss = serializers.serialize('json', query_set)
         query_set_dicts = json.loads(ss)
