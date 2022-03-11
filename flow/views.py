@@ -12,36 +12,50 @@ def query(request):
         return HttpResponseNotFound
     else:
         context = {}
-        status = 200
         params = request.GET
         print(f"params= {params}")
         if params and len(params) >= 1:
-            # 这些取出来以后是str,可以用json.loads转一下，但是必须保证里面都是双引号
-            service_name = params.get('service')
-            action = params.get('action')
-            filters = params.get('filters')
-            filters = json.loads(filters)
-            page = params.get('page')
-            page = json.loads(page)
-            pageSize = page.get('pageSize')
-            pageNumber = page.get('pageNumber')
-            service = getattr(flow_service, service_name)
-            if action == 'all':
-                result = service().get_all()
-                context = dict(rows=result, total=len(result))
-            elif action == 'filter':
-                result = service().filter_by(filters)
-                context = dict(rows=result, total=len(result))
-            elif action == 'get':
-                result = service().get_by_pk(filters.get('pk'))
-                context = dict(data=result, total=len(result))
-            elif action == 'getTemp':
-                result = service().get_temp()
-                context = dict(rows=result)
-            elif action == 'getFieldInfo':
-                result = service().get_field_info()
-                context = dict(fields=result)
-            return JsonResponse(context, status=status, safe=False)
+            try:
+                # 这些取出来以后是str,可以用json.loads转一下，但是必须保证里面都是双引号
+                service_name = params.get('service')
+                action = params.get('action')
+                filters = params.get('filters')
+                if filters:
+                    filters = json.loads(filters)
+                else:
+                    filters = {}
+                pageSize = params.get('pageSize')
+                pageNumber = params.get('pageNumber')
+                service = getattr(flow_service, service_name)
+                context = do_query(service, action, filters, pageSize, pageNumber)
+                return JsonResponse(context, status=200, safe=False)
+            except Exception as e:
+                context = dict(message=str(e)),
+                return JsonResponse(context, status=500, safe=False)
+        else:
+            return JsonResponse(context, status=200, safe=False)
+
+
+def do_query(service, action, filters, pageSize, pageNumber):
+    if action == 'all':
+        offset = int(pageSize) * (int(pageNumber) - 1)
+        limit = int(pageSize) * int(pageNumber)
+        print(f"offset={offset}")
+        print(f"limit={limit}")
+        r = service().get_all(offset=offset, limit=limit)
+        return dict(rows=r.get("result"), total=r.get("count"))
+    elif action == 'filter':
+        result = service().filter_by(filters)
+        return dict(rows=result, total=len(result))
+    elif action == 'get':
+        result = service().get_by_pk(filters.get('pk'))
+        return dict(data=result, total=len(result))
+    elif action == 'getTemp':
+        result = service().get_temp()
+        return dict(rows=result)
+    elif action == 'getFieldInfo':
+        result = service().get_field_info()
+        return dict(fields=result)
 
 
 def commit(request):
@@ -101,4 +115,3 @@ def do_commit(service, action, data):
         except Exception as e:
             traceback.print_exc()
             return dict(context=dict(message=str(e)), status=500)
-
