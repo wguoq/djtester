@@ -101,7 +101,9 @@ class FlowNodeService(BaseService):
     def _check(data: dict):
         node_order = data.get('node_order')
         flow_design_id = data.get('flow_design')
-        node_func_data = json.loads(data.get('node_func_data'))
+        node_func_data = data.get('node_func_data')
+        if node_func_data:
+            node_func_data = json.loads(node_func_data)
         flow_id = node_func_data.get('flow_design_id')
         if node_order is None or len(str(node_order)) == 0:
             raise Exception(' node_order 不能为空并且要为数字')
@@ -114,19 +116,27 @@ class FlowNodeService(BaseService):
         self._check(data)
         flow_design = data.pop('flow_design')
         node_order = data.pop('node_order')
+        node_design = data.pop('node_design')
         node_func_data = data.pop('node_func_data')
-        data.update(dict(node_func_data=json.loads(node_func_data)))
-        node_design = Node_Design(**data)
+        if node_func_data:
+            data.update(dict(node_func_data=json.loads(node_func_data)))
         # 存node_design
-        node = NodeDesignService().add(model_to_dict(node_design))
+        if node_design is None:
+            node_design = NodeDesignService().add(data).get("id")
+        else:
+            pass
         flow_node_dict = dict(flow_design=flow_design,
                               node_order=node_order,
-                              node_design=node.get("id"))
+                              node_design=node_design)
         return super().add(flow_node_dict)
 
     # 需要同时修改关系表和node表
     def edit(self, data):
         self._check(data)
+
+
+
+
         return super().edit(data)
 
 

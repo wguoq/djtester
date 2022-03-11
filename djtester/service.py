@@ -34,17 +34,16 @@ class BaseService:
         x.pop('_state')
         return x
 
-    def get_all(self, offset: int = 0, limit: int = 1000) -> list[dict]:
+    def get_all(self, offset: int = 0, limit: int = 1000) -> dict:
         # 切片和排序不能写一起
         # query_set = self.DBHelper.get_all(offset, limit).order_by(order)
-        query_set = self.DBHelper.get_all(offset, limit)
-        res = []
-        for a in query_set:
-            # res.append(model_to_dict(a))
+        res = self.DBHelper.get_all(offset, limit)
+        ll = []
+        for a in res.get('result'):
             x = a.__dict__
             x.pop('_state')
-            res.append(x)
-        return res
+            ll.append(x)
+        return dict(count=res.get('count'), result=ll)
 
     def get_by_pk(self, pk: int) -> dict:
         a = self.DBHelper.get_by({'pk': pk})
