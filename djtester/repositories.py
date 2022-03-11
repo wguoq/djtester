@@ -54,13 +54,18 @@ class BaseDBHelper:
             ll.append(field_info.__dict__)
         return ll
 
-    def get_all(self, offset: int = 0, limit: int = 1000):
-        if offset < 0 or limit < 0:
-            raise Exception('offset和limit不能小于0')
-        elif limit == 0:
-            return self.model.objects.all()
+    def get_all(self, offset: int = 0, limit: int = 1000) -> dict:
+        if offset <= 0:
+            offset = 0
         else:
-            return self.model.objects.all()[offset: (offset + limit)]
+            pass
+        if limit <= 0:
+            limit = 1000
+        else:
+            pass
+        count = self.model.objects.all().count()
+        result = self.model.objects.all()[offset: limit]
+        return dict(count=count, result=result)
 
     def get_by(self, kwargs: dict):
         return self.model.objects.get(**kwargs)
