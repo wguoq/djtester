@@ -61,7 +61,7 @@ class FlowNodeService(BaseService):
         res = super().filter_by(kwargs=kwargs, offset=offset, limit=limit)
         ll = []
         for r in res:
-            node_design_id = r.node_design
+            node_design_id = r.get('node_design')
             r.update(NodeDesignService().get_by_pk(node_design_id))
             ll.append(r)
         return ll
