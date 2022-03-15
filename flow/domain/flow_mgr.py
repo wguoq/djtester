@@ -38,14 +38,15 @@ class FlowMgr:
     def run_flow_instance(flow_instance: Flow_Instance) -> Flow_Instance:
         # 先判断流程状态能不能运行
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value, FlowStatus.Cancelled.value]:
-            print(f'流程状态是 {flow_instance.flow_status} 不运行; flow_instance_id = {flow_instance.id}')
+            print(f'流程状态是 {flow_instance.flow_status} 不运行; pk = {flow_instance.pk}')
             return flow_instance
         else:
             flow_type = flow_instance.flow_design.fw_type
             if flow_type == FlowType.Serial.value:
                 flow_instance = SerialFlowRunner.run(flow_instance).flow_instance
             elif flow_type == FlowType.Parallel.value:
-                raise Exception(f'并行的没写')
+                # todo 并行没写
+                flow_instance = SerialFlowRunner.run(flow_instance).flow_instance
             else:
                 raise Exception(f'无法识别的 flow_type = {flow_type},serial=串行;parallel=并行')
             # 保存
@@ -66,7 +67,8 @@ class FlowMgr:
         # 查询出流程里所有节点,把当前节点之后的全部重置
         flow_instance_id = node_instance.flow_instance.id
         node_order_ = node_instance.node_order
-        node_ins_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance_id}).order_by('-node_order')
+        node_ins_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance_id})
+        sorted(node_ins_list, key=lambda item: item.node_order, reverse=True)
         for node_ins in node_ins_list:
             if node_ins.node_order > node_order_:
                 node_ins.node_result = None

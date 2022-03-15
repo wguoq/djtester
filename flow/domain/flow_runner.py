@@ -9,7 +9,8 @@ from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper, No
 
 def run_node_list(flow_instance: Flow_Instance) -> Flow_Instance:
     # 查询node_instance,并排序
-    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.id}).order_by('node_order')
+    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.pk})
+    node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=False)
     # 按顺序执行node
     for node_inst in node_inst_list:
         node_mgr = NodeMgr().run_node_instance(node_instance=node_inst, flow_data=flow_instance.flow_data)
@@ -38,11 +39,12 @@ def update_result_and_status(flow_instance: Flow_Instance) -> Flow_Instance:
 
 def get_last_node_inst_attr(flow_instance: Flow_Instance, attr_name):
     # 使用最后一个运行过的节点结果
-    node_instance_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.id}).order_by('-node_order')
-    for node_instance in node_instance_list:
+    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.pk})
+    node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=True)
+    for node_inst in node_inst_list:
         # 运行过的 node_instance 才检查
-        if node_instance.node_status != NodeStatus.Pending.value:
-            return node_instance.__getattribute__(attr_name)
+        if node_inst.node_status != NodeStatus.Pending.value:
+            return node_inst.__getattribute__(attr_name)
         else:
             continue
     return None
@@ -85,7 +87,6 @@ class SerialFlowRunner:
             flow_instance.flow_status = FlowStatus.Running.value
         flow_instance = update_result_and_status(flow_instance)
         return SerialFlowRunnerResult(flow_instance)
-
 
 # class FlowParallelRunner(FlowRunner):
 #
