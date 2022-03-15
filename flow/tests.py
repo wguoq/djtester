@@ -1,12 +1,13 @@
 import time
+
+from django.core import serializers
 from django.forms import model_to_dict
 from django.test import TestCase
 from djtester.all_app_service import TestCaseService
-from djtester.tools_man import get_field_info
 from .domain.flow_mgr import FlowMgr
 from .domain.node_mgr import NodeMgr
 from .repositories import *
-
+from .service import *
 
 class Test_Flow(TestCase):
     def test_flow_design(self):
@@ -376,15 +377,15 @@ class Test_Flow(TestCase):
         FlowMgr.instance_flow_design(fd1, flow_data)
 
         print(f'==== 查询初始化的 node_instance all  ====')
-        ni_all = NodeInstanceDBHelper().get_all()
+        ni_all = NodeInstanceDBHelper().filter_by({})
         for ni in ni_all:
             print(model_to_dict(ni))
 
         print(f'==== 查询初始化的 flow_instance all ====')
-        fi_all = FlowInstanceDBHelper().get_all()
+        fi_all = FlowInstanceDBHelper().filter_by({})
         for fi in fi_all:
-            print(model_to_dict(fi))
-            print(f'==== 运行 flow_instance {fi.flow_design.fw_name} ====')
+            print(fi)
+            print(f'==== 运行 flow_instance ====')
             s = time.time()
             print(s)
             run_flow = FlowMgr.run_flow_instance(fi)
@@ -395,12 +396,12 @@ class Test_Flow(TestCase):
             print(model_to_dict(run_flow))
 
         print(f'==== 查询运行的 node_instance all ====')
-        ni_all = NodeInstanceDBHelper().get_all()
+        ni_all = NodeInstanceDBHelper().filter_by()
         for ni in ni_all:
             print(model_to_dict(ni))
 
         print(f'==== 查询运行的 flow_instance all ====')
-        aaa = FlowInstanceDBHelper().get_all()
+        aaa = FlowInstanceDBHelper().filter_by()
         for a in aaa:
             print(model_to_dict(a))
 
@@ -412,16 +413,18 @@ class Test_Flow(TestCase):
         node_ins_2 = NodeInstanceDBHelper().get_by({'pk': 3})
         a = FlowMgr.rollback_to_node(node_ins_2)
         print(model_to_dict(a))
-        aaa = NodeInstanceDBHelper().get_all()
+        aaa = NodeInstanceDBHelper().filter_by()
         for a in aaa:
             print(model_to_dict(a))
         flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
         print(f'==== 重新运行flow_inst_1 ====')
         FlowMgr.run_flow_instance(flow_inst_1)
         flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
-        print(model_to_dict(flow_inst_1))
-        aaa = NodeInstanceDBHelper().get_all()
-        result = 'node_result'
+        print(flow_inst_1)
+        aaa = NodeInstanceDBHelper().filter_by()
         for a in aaa:
             print(model_to_dict(a))
-            print(a.__getattribute__(result))
+            # print(a.__getattribute__(result))
+
+
+
