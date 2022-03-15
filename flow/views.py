@@ -24,10 +24,10 @@ def query(request):
                     filters = json.loads(filters)
                 else:
                     filters = {}
-                pageSize = params.get('pageSize')
-                pageNumber = params.get('pageNumber')
+                page_size = params.get('pageSize')
+                page_number = params.get('pageNumber')
                 service = getattr(flow_service, service_name)
-                context = do_query(service, action, filters, pageSize, pageNumber)
+                context = do_query(service, action, filters, page_size, page_number)
                 return JsonResponse(context, status=200, safe=False)
             except Exception as e:
                 context = dict(message=str(e)),
@@ -36,23 +36,16 @@ def query(request):
             return JsonResponse(context, status=200, safe=False)
 
 
-def do_query(service, action, filters, pageSize, pageNumber):
-    if action == 'all':
-        offset = int(pageSize) * (int(pageNumber) - 1)
-        limit = int(pageSize) * int(pageNumber)
-        print(f"offset={offset}")
-        print(f"limit={limit}")
-        r = service().get_all(offset=offset, limit=limit)
-        return dict(rows=r.get("result"), total=r.get("count"))
-    elif action == 'filter':
-        result = service().filter_by(filters)
-        return dict(rows=result, total=len(result))
+def do_query(service, action, filters, page_size, page_number):
+    if action == 'filter':
+        offset = int(page_size) * (int(page_number) - 1)
+        limit = int(page_size) * int(page_number)
+        total = service().count_by(filters)
+        rows = service().filter_by(kwargs=filters, offset=offset, limit=limit)
+        return dict(rows=rows, total=total)
     elif action == 'get':
         result = service().get_by_pk(filters.get('pk'))
-        return dict(data=result, total=len(result))
-    elif action == 'getTemp':
-        result = service().get_temp()
-        return dict(rows=result)
+        return dict(data=result, total=1)
     elif action == 'getFieldInfo':
         result = service().get_field_info()
         return dict(fields=result)

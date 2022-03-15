@@ -5,13 +5,13 @@ from djtester.decorators import show_class_name
 from djtester.repositories import BaseDBHelper
 
 
-def query_set_dict_to_model_dict(query_set_dict: dict):
-    pk = query_set_dict.get('pk')
-    fields = query_set_dict.get('fields')
-    model_dict = {}
-    model_dict.update({'id': pk})
-    model_dict.update(fields)
-    return model_dict
+# def query_set_dict_to_model_dict(query_set_dict: dict):
+#     pk = query_set_dict.get('pk')
+#     fields = query_set_dict.get('fields')
+#     model_dict = {}
+#     model_dict.update({'id': pk})
+#     model_dict.update(fields)
+#     return model_dict
 
 
 class BaseService:
@@ -34,29 +34,35 @@ class BaseService:
         x.pop('_state')
         return x
 
-    def get_all(self, offset: int = 0, limit: int = 1000) -> dict:
-        # 切片和排序不能写一起
-        # query_set = self.DBHelper.get_all(offset, limit).order_by(order)
-        res = self.DBHelper.get_all(offset, limit)
-        ll = []
-        for a in res.get('result'):
-            x = a.__dict__
-            x.pop('_state')
-            ll.append(x)
-        return dict(count=res.get('count'), result=ll)
-
     def get_by_pk(self, pk: int) -> dict:
         a = self.DBHelper.get_by({'pk': pk})
         x = a.__dict__
         x.pop('_state')
         return x
 
-    def filter_by(self, kwargs: dict) -> list:
-        # todo
-        query_set = self.DBHelper.filter_by(kwargs)
-        ss = serializers.serialize('json', query_set)
-        query_set_dicts = json.loads(ss)
-        res = []
-        for d in query_set_dicts:
-            res.append(query_set_dict_to_model_dict(d))
-        return res
+    def count_by(self, kwargs: dict):
+        return self.DBHelper.count_by(kwargs)
+
+    def filter_by(self, kwargs: dict, offset: int = 0, limit: int = 1000) -> list:
+        res = self.DBHelper.filter_by(kwargs=kwargs, offset=offset, limit=limit)
+        ss = serializers.serialize('json', res)
+        res_dicts = json.loads(ss)
+        ll = []
+        for d in res_dicts:
+            ll.append(self._query_set_dict_to_model_dict(d))
+        return ll
+
+    def _query_set_dict_to_model_dict(self, query_set_dict: dict):
+        # 主键被显示成pk，需要把model字段的名字替换进来
+        pk = query_set_dict.get('pk')
+        fields = query_set_dict.get('fields')
+        field_info = self.get_field_info()
+        model_dict = {}
+        for f in field_info:
+            if f.get('primary_key'):
+                model_dict.update({f.get('name'): pk})
+                break
+            else:
+                model_dict.update({'id': pk})
+        model_dict.update(fields)
+        return model_dict

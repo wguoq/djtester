@@ -1,6 +1,6 @@
 import importlib
 from django.db import transaction
-from django.db.models import ManyToOneRel, ManyToManyRel
+from django.db.models import ManyToOneRel, ManyToManyRel, QuerySet
 from pydantic import BaseModel
 
 
@@ -54,7 +54,27 @@ class BaseDBHelper:
             ll.append(field_info.__dict__)
         return ll
 
-    def get_all(self, offset: int = 0, limit: int = 1000) -> dict:
+    # 可以用filter代替，并且all会导致外键字段名变化
+    # def get_all(self, offset: int = 0, limit: int = 1000) -> dict:
+    #     if offset <= 0:
+    #         offset = 0
+    #     else:
+    #         pass
+    #     if limit <= 0:
+    #         limit = 1000
+    #     else:
+    #         pass
+    #     count = self.model.objects.all().count()
+    #     result = self.model.objects.all()[offset: limit]
+    #     return dict(count=count, result=result)
+
+    def get_by(self, kwargs: dict):
+        return self.model.objects.get(**kwargs)
+
+    def count_by(self, kwargs: dict) -> int:
+        return self.model.objects.filter(**kwargs).count()
+
+    def filter_by(self, kwargs: dict = None, offset: int = 0, limit: int = 1000) -> QuerySet:
         if offset <= 0:
             offset = 0
         else:
@@ -63,15 +83,13 @@ class BaseDBHelper:
             limit = 1000
         else:
             pass
-        count = self.model.objects.all().count()
-        result = self.model.objects.all()[offset: limit]
-        return dict(count=count, result=result)
-
-    def get_by(self, kwargs: dict):
-        return self.model.objects.get(**kwargs)
-
-    def filter_by(self, kwargs: dict):
-        return self.model.objects.filter(**kwargs)
+        if limit - offset > 1000:
+            limit = offset + 1000
+        else:
+            pass
+        if kwargs is None:
+            kwargs = {}
+        return self.model.objects.filter(**kwargs)[offset: limit]
 
     def save_this(self, data: dict):
         """

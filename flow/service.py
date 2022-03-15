@@ -4,7 +4,6 @@
 import json
 import random
 import time
-from django.forms import model_to_dict
 from djtester.decorators import reg_node_func, show_class_name
 from djtester.service import BaseService
 from flow.domain.flow_mgr import *
@@ -16,13 +15,6 @@ class FlowDesignService(BaseService):
     @show_class_name('service')
     def __init__(self):
         super().__init__(FlowDesignDBHelper())
-
-    @staticmethod
-    def get_temp():
-        a = model_to_dict(Flow_Design())
-        a.pop("id")
-        a.pop("code")
-        return a
 
     def add(self, data: dict):
         # 新增时生成code
@@ -48,13 +40,6 @@ class NodeDesignService(BaseService):
     def __init__(self):
         super().__init__(NodeDesignDBHelper())
 
-    @staticmethod
-    def get_temp():
-        a = model_to_dict(Node_Design())
-        a.pop("id")
-        a.pop("code")
-        return a
-
     def add(self, data):
         code = 'nd' + str(round(time.time()) + random.randint(0, 99))
         data.update({"code": code})
@@ -72,27 +57,14 @@ class FlowNodeService(BaseService):
     def __init__(self):
         super().__init__(FlowNodeOderDBHelper())
 
-    @staticmethod
-    def get_temp():
-        a = model_to_dict(Flow_Node_Oder())
-        a.pop("id")
-        return a
-
-    def filter_by(self, kwargs: dict):
-        fn_list = super().filter_by(kwargs)
-        # fn_list = FlowNodeOderDBHelper().filter_by(kwargs)
-        a = []
-        for fn in fn_list:
-            # node_dict = dict(id=fn.id, flow_design_id=fn.flow_design.id, node_order=fn.node_order,
-            #                  node_design_id=fn.node_design.id)
-            # node_dict.update(model_to_dict(fn.node_design))
-            # a.append(node_dict)
-            node_design = NodeDesignService().get_by_pk(fn.get('node_design'))
-            node_design.pop('id')
-            # 就把fn的时间字段给覆盖进去
-            node_design.update(fn)
-            a.append(node_design)
-        return a
+    def filter_by(self, kwargs: dict, offset: int = 0, limit: int = 1000) -> dict:
+        res = super().filter_by(kwargs=kwargs, offset=offset, limit=limit)
+        ll = []
+        for r in res:
+            node_design_id = r.node_design
+            r.update(NodeDesignService().get_by_pk(node_design_id))
+            ll.append(r)
+        return ll
 
     # 新增和编辑要检查
     # 1.node_order不能为空
@@ -100,15 +72,15 @@ class FlowNodeService(BaseService):
     @staticmethod
     def _check(data: dict):
         node_order = data.get('node_order')
-        flow_design_id = data.get('flow_design')
+        if node_order is None or len(str(node_order)) == 0:
+            raise Exception(' node_order 不能为空并且要为数字')
+        flow_design = data.get('flow_design')
         node_func_data = data.get('node_func_data')
         if node_func_data:
             node_func_data = json.loads(node_func_data)
-        flow_id = node_func_data.get('flow_design_id')
-        if node_order is None or len(str(node_order)) == 0:
-            raise Exception(' node_order 不能为空并且要为数字')
-        elif flow_design_id == flow_id:
-            raise Exception(f'子流程的flow_design_id == 父流程的flow_design_id，会死循环')
+            flow_id = node_func_data.get('flow_design_id')
+            if flow_design == flow_id:
+                raise Exception(f'子流程的flow_design_id == 父流程的flow_design_id，会死循环')
 
     # 需要同时保存到关系表和node表
     @transaction.atomic
@@ -133,11 +105,21 @@ class FlowNodeService(BaseService):
     # 需要同时修改关系表和node表
     def edit(self, data):
         self._check(data)
-
-
-
-
-        return super().edit(data)
+        flow_design = data.pop('flow_design')
+        node_order = data.pop('node_order')
+        node_design = data.pop('node_design')
+        node_func_data = data.pop('node_func_data')
+        if node_func_data:
+            data.update(dict(node_func_data=json.loads(node_func_data)))
+        # 存node_design
+        if node_design is None:
+            node_design = NodeDesignService().edit(data).get("id")
+        else:
+            pass
+        flow_node_dict = dict(flow_design=flow_design,
+                              node_order=node_order,
+                              node_design=node_design)
+        return super().edit(flow_node_dict)
 
 
 class FlowService:
@@ -166,3 +148,9 @@ class NodeFuncRunFLow(NodeFuncBase):
         flow_instance = FlowMgr().instance_flow_design(flow_design, flow_data)
         new_flow_instance = FlowMgr().run_flow_instance(flow_instance)
         return self.NodeFuncResult(new_flow_instance.flow_result)
+
+
+class NodeStartRuleService(BaseService):
+    @show_class_name('service')
+    def __init__(self):
+        super().__init__(NodeStartRuleDBHelper())

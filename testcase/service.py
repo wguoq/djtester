@@ -5,7 +5,7 @@ from django.core import serializers
 from django.forms import model_to_dict
 from djtester.decorators import show_class_name
 from djtester.enums import TestCaseType
-from djtester.service import query_set_dict_to_model_dict, BaseService
+from djtester.service import BaseService
 from testcase.domain.models.tc_api_model import *
 from testcase.repositories import *
 
@@ -93,22 +93,10 @@ class TestCaseService(BaseService):
         case_dict['tc_check_list'] = _get_check_point_pk(case_dict.get('tc_check_list'))
         return case_dict
 
-    def get_all(self, offset=0, limit=1000):
-        get_all = TestCaseDBHelper().get_all(offset=offset, limit=limit)
-        all_case = []
-        for a in get_all:
-            case_dict = model_to_dict(a)
-            all_case.append(_get_full_case(case_dict))
-        return all_case
-
     def get_by_pk(self, pk) -> dict:
         case = TestCaseDBHelper().get_by({'pk': pk})
         case_dict = model_to_dict(case)
         return _get_full_case(case_dict)
-
-    def filter_by(self, kwargs: dict):
-        a = TestCaseDBHelper().filter_by(kwargs)
-        return _query_set_to_case_dict(a)
 
 
 def _get_check_point_pk(tc_check_list: list):
@@ -151,14 +139,3 @@ def _get_full_case(case_dict) -> dict:
         case_dict['tc_check_list'] = check_list
     return case_dict
 
-
-def _query_set_to_case_dict(query_set):
-    # 用serializers.serialize把QuerySet序列化成json,
-    s = serializers.serialize('json', query_set)
-    dd = json.loads(s)
-    case_dict_list = []
-    for d in dd:
-        model_dict = query_set_dict_to_model_dict(d)
-        case_dict = _get_full_case(model_dict)
-        case_dict_list.append(case_dict)
-    return case_dict_list
