@@ -1,5 +1,4 @@
 import importlib
-from django.db import transaction
 from django.db.models import ManyToOneRel, ManyToManyRel, QuerySet
 from pydantic import BaseModel
 
@@ -54,20 +53,6 @@ class BaseDBHelper:
             ll.append(field_info.__dict__)
         return ll
 
-    # 可以用filter代替，并且all会导致外键字段名变化
-    # def get_all(self, offset: int = 0, limit: int = 1000) -> dict:
-    #     if offset <= 0:
-    #         offset = 0
-    #     else:
-    #         pass
-    #     if limit <= 0:
-    #         limit = 1000
-    #     else:
-    #         pass
-    #     count = self.model.objects.all().count()
-    #     result = self.model.objects.all()[offset: limit]
-    #     return dict(count=count, result=result)
-
     def get_by(self, kwargs: dict):
         return self.model.objects.get(**kwargs)
 
@@ -94,7 +79,6 @@ class BaseDBHelper:
     def save_this(self, data: dict):
         """
         如果有外键要单独保存之后把对象放进data里
-        多对多的外键重写_set_m2m实现
         """
         new_model = self.model(**data)
         pk = new_model.pk
