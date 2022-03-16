@@ -1,9 +1,7 @@
 """
 这里只处理表外键相关的逻辑，不涉及业务逻辑
 """
-
 from django.db import transaction
-
 from djtester.repositories import BaseDBHelper, save_foreignkey
 from flow.models import *
 
