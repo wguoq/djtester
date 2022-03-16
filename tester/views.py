@@ -43,9 +43,10 @@ class TesterViews(BaseViews):
     def __init__(self):
         super().__init__('tester.service')
 
-    def _do_commit(self, action, data):
+    def _do_commit(self, service_name, action, data):
+        service = getattr(self.module, service_name)
         if action == "run":
             test_case_id = data.get('id')
-            return TesterService.run_testcase(test_case_id).__dict__
+            return service().run_testcase(test_case_id).__dict__
         else:
-            return super()._do_commit(action, data)
+            return super()._do_commit(service_name, action, data)

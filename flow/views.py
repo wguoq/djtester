@@ -5,11 +5,11 @@ class FlowViews(BaseViews):
     def __init__(self):
         super().__init__('flow.service')
 
-    def _do_commit(self, action, data):
+    def _do_commit(self, service_name, action, data):
+        service = getattr(self.module, service_name)
         if action == "instance":
-            return self.service().instance_flow(data.get('id'), data.get('flow_data'))
+            return service().instance_flow(data.get('id'), data.get('flow_data'))
         elif action == "run":
-            return self.service().run_inst(data.get('id'))
+            return service().run_inst(data.get('id'))
         else:
-            return super()._do_commit(action, data)
-
+            return super()._do_commit(service_name, action, data)
