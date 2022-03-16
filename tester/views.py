@@ -5,6 +5,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 
+from djtester.views import BaseViews
 from tester.service import TesterService
 
 
@@ -38,26 +39,13 @@ def run_test_case_list(request):
     return JsonResponse(status=200, data=context)
 
 
-tester_service = importlib.import_module('tester.service')
+class TesterViews(BaseViews):
+    def __init__(self):
+        super().__init__('tester.service')
 
-
-def commit(request):
-    if request.method != 'POST':
-        return HttpResponseNotFound
-    else:
-        context = {}
-        payload = json.loads(request.body)
-        print(request)
-        print(payload)
-        service_name = payload.get('service')
-        service = getattr(tester_service, service_name)
-        print(f"service= {service}")
-        action = payload.get('action')
-        data = payload.get('data')
+    def _do_commit(self, action, data):
         if action == "run":
             test_case_id = data.get('id')
-            result = TesterService.run_testcase(test_case_id)
-            context = dict(data=result.__dict__)
-            return JsonResponse(status=200, data=context)
+            return TesterService.run_testcase(test_case_id).__dict__
         else:
-            return JsonResponse(context, status=200)
+            return super()._do_commit(action, data)
