@@ -98,6 +98,13 @@ class TestCaseService(BaseService):
         case_dict = model_to_dict(case)
         return _get_full_case(case_dict)
 
+    def filter_by(self, kwargs: dict, offset: int = 0, limit: int = 1000) -> list:
+        res = super().filter_by(kwargs, offset, limit)
+        ll = []
+        for r in res:
+            ll.append(_get_full_case(r))
+        return ll
+
 
 def _get_check_point_pk(tc_check_list: list):
     if tc_check_list is None:
@@ -138,4 +145,3 @@ def _get_full_case(case_dict) -> dict:
                 check_list.append(c)
         case_dict['tc_check_list'] = check_list
     return case_dict
-
