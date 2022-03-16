@@ -1,17 +1,7 @@
 import json
-from django.forms import model_to_dict
 from django.core import serializers
 from djtester.decorators import show_class_name
 from djtester.repositories import BaseDBHelper
-
-
-# def query_set_dict_to_model_dict(query_set_dict: dict):
-#     pk = query_set_dict.get('pk')
-#     fields = query_set_dict.get('fields')
-#     model_dict = {}
-#     model_dict.update({'id': pk})
-#     model_dict.update(fields)
-#     return model_dict
 
 
 class BaseService:
