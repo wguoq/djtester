@@ -1,9 +1,14 @@
+"""
+复制处理前端传入的参数
+路由到对应接口
+返回json数据
+"""
 import importlib
 import traceback
 from django.http import HttpResponseNotFound, JsonResponse
 from flow.service import *
 
-flow_service = importlib.import_module('flow.service')
+FLOW_SERVICE = importlib.import_module('flow.service')
 
 
 def query(request):
@@ -25,13 +30,15 @@ def query(request):
                     filters = {}
                 page_size = params.get('pageSize')
                 page_number = params.get('pageNumber')
-                service = getattr(flow_service, service_name)
+                service = getattr(FLOW_SERVICE, service_name)
                 context = do_query(service, action, filters, page_size, page_number)
                 return JsonResponse(context, status=200, safe=False)
             except Exception as e:
                 traceback.print_exc()
                 context = dict(message=str(e)),
                 return JsonResponse(context, status=500)
+        else:
+            return JsonResponse({}, status=200)
 
 
 def do_query(service, action, filters, page_size, page_number):
@@ -47,6 +54,8 @@ def do_query(service, action, filters, page_size, page_number):
     elif action == 'getFieldInfo':
         result = service().get_field_info()
         return dict(fields=result)
+    else:
+        return {}
 
 
 def commit(request):
@@ -55,9 +64,10 @@ def commit(request):
     else:
         payload = json.loads(request.body)
         service_name = payload.get('service')
-        service = getattr(flow_service, service_name)
+        service = getattr(FLOW_SERVICE, service_name)
         print(f"payload = {payload}")
         try:
+            # 因为头信息表示传输的格式是json，所以data取出来就是dict格式
             action = payload.get('action')
             data = payload.get('data')
             context = do_commit(service, action, data)
@@ -70,17 +80,12 @@ def commit(request):
 
 def do_commit(service, action, data):
     if action == "instance":
-        inst = service().instance_flow(data.get('id'), data.get('flow_data'))
-        context = dict(instance_id=inst.id)
-        return dict(context=context, status=200)
+        return service().instance_flow(data.get('id'), data.get('flow_data'))
     elif action == "run":
-        result = service().run_inst(data.get('id'))
-        context = dict(instance_id=result)
-        return dict(context=context, status=200)
+        return service().run_inst(data.get('id'))
     elif action == 'add':
-        context = service().add(data)
-        return dict(context=context, status=200)
-
+        return service().add(data)
     elif action == 'edit':
-        context = service().edit(data)
-        return dict(context=context, status=200)
+        return service().edit(data)
+    else:
+        return {}

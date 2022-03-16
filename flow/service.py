@@ -1,5 +1,6 @@
 """
-这里和view对接接口，表的增删改查相关业务逻辑写在这里
+负责把业务实现方法的组装成各种接口
+返回值统一为dict或者list
 """
 import json
 import random
@@ -16,7 +17,7 @@ class FlowDesignService(BaseService):
     def __init__(self):
         super().__init__(FlowDesignDBHelper())
 
-    def add(self, data: dict):
+    def add(self, data: dict) -> dict:
         # 新增时生成code
         code = 'fw' + str(round(time.time()) + random.randint(0, 99))
         data.update({"code": code})
@@ -29,10 +30,9 @@ class FlowInstService(BaseService):
         super().__init__(FlowInstanceDBHelper())
 
     @staticmethod
-    def run_inst(pk):
-        flow_instance = FlowInstanceDBHelper().get_by(dict(pk=pk))
-        a = FlowMgr.run_flow_instance(flow_instance)
-        return model_to_dict(a)
+    def run_inst(flow_instance_pk) -> dict:
+        flow_instance = FlowInstanceDBHelper().get_by(dict(pk=flow_instance_pk))
+        return model_to_dict(FlowMgr.run_flow_instance(flow_instance))
 
 
 class NodeDesignService(BaseService):
@@ -40,7 +40,7 @@ class NodeDesignService(BaseService):
     def __init__(self):
         super().__init__(NodeDesignDBHelper())
 
-    def add(self, data):
+    def add(self, data) -> dict:
         code = 'nd' + str(round(time.time()) + random.randint(0, 99))
         data.update({"code": code})
         return super().add(data)
@@ -57,7 +57,7 @@ class FlowNodeService(BaseService):
     def __init__(self):
         super().__init__(FlowNodeOderDBHelper())
 
-    def filter_by(self, kwargs: dict, offset: int = 0, limit: int = 1000) -> dict:
+    def filter_by(self, kwargs: dict, offset: int = 0, limit: int = 1000) -> list:
         res = super().filter_by(kwargs=kwargs, offset=offset, limit=limit)
         ll = []
         for r in res:
@@ -84,7 +84,7 @@ class FlowNodeService(BaseService):
 
     # 需要同时保存到关系表和node表
     @transaction.atomic
-    def add(self, data: dict):
+    def add(self, data: dict) -> dict:
         self._check(data)
         flow_design = data.pop('flow_design')
         node_order = data.pop('node_order')
@@ -103,7 +103,7 @@ class FlowNodeService(BaseService):
         return super().add(flow_node_dict)
 
     # 需要同时修改关系表和node表
-    def edit(self, data):
+    def edit(self, data) -> dict:
         self._check(data)
         flow_design = data.pop('flow_design')
         node_order = data.pop('node_order')
@@ -124,8 +124,8 @@ class FlowNodeService(BaseService):
 
 class FlowService:
     @staticmethod
-    def instance_flow(flow_design_id, flow_data):
-        return FlowMgr.instance_flow_design(flow_design_id, flow_data)
+    def instance_flow(flow_design_id, flow_data) -> dict:
+        return model_to_dict(FlowMgr.instance_flow(flow_design_id, flow_data))
 
 
 class NodeFuncRunFLow(NodeFuncBase):
@@ -145,7 +145,7 @@ class NodeFuncRunFLow(NodeFuncBase):
     def do_func(self, node_func_param: dict, flow_data: dict):
         flow_design_id = node_func_param.get('flow_design_id')
         flow_design = FlowDesignDBHelper().get_by({'pk': flow_design_id})
-        flow_instance = FlowMgr().instance_flow_design(flow_design, flow_data)
+        flow_instance = FlowMgr().instance_flow(flow_design, flow_data)
         new_flow_instance = FlowMgr().run_flow_instance(flow_instance)
         return self.NodeFuncResult(new_flow_instance.flow_result)
 

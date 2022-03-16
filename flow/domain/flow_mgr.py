@@ -7,10 +7,9 @@ from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNo
 
 
 class FlowMgr:
-
     @staticmethod
     @transaction.atomic
-    def instance_flow_design(flow_design_id, flow_data: dict = None) -> Flow_Instance:
+    def instance_flow(flow_design_id, flow_data: dict = None) -> Flow_Instance:
         node_list = FlowNodeOderDBHelper().filter_by({'flow_design_id': flow_design_id})
         if node_list is None or node_list.count() == 0:
             raise Exception("node_list 为空，不能实例化")

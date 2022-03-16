@@ -23,22 +23,19 @@ class BaseService:
         return self.DBHelper.get_field_info()
 
     def add(self, data: dict):
-        a = self.DBHelper.save_this(data)
-        x = a.__dict__
-        x.pop('_state')
-        return x
+        a = self.DBHelper.save_this(data).__dict__
+        a.pop('_state')
+        return a
 
     def edit(self, data: dict):
-        a = self.DBHelper.save_this(data)
-        x = a.__dict__
-        x.pop('_state')
-        return x
+        a = self.DBHelper.save_this(data).__dict__
+        a.pop('_state')
+        return a
 
     def get_by_pk(self, pk: int) -> dict:
-        a = self.DBHelper.get_by({'pk': pk})
-        x = a.__dict__
-        x.pop('_state')
-        return x
+        a = self.DBHelper.get_by({'pk': pk}).__dict__
+        a.pop('_state')
+        return a
 
     def count_by(self, kwargs: dict):
         return self.DBHelper.count_by(kwargs)

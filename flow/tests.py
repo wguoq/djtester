@@ -374,7 +374,7 @@ class Test_Flow(TestCase):
         print(f'==== instance_flow_design fd1 ====')
         fd1 = FlowDesignDBHelper().get_by({'pk': 1})
         flow_data = {'flag': 'ok'}
-        FlowMgr.instance_flow_design(fd1, flow_data)
+        FlowMgr.instance_flow(fd1, flow_data)
 
         print(f'==== 查询初始化的 node_instance all  ====')
         ni_all = NodeInstanceDBHelper().filter_by({})
