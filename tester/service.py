@@ -1,14 +1,38 @@
+import random
+import time
+
 from djtester.decorators import reg_node_func, show_class_name
+from djtester.service import BaseService
 from flow.domain.node_func import NodeFuncBase
 from tester.domain.api_tester import ApiTestConfig
-from djtester.all_app_service import TestCaseService
+# from djtester.all_app_service import TestCaseService
 from tester.domain.tester import RunTestResult
 from tester.domain.tester_mgr import TesterMgr
+from .repositories import *
 
 
 def _get_test_case_by_pk(pk):
-    test_case_service = TestCaseService.test_case_service()
-    return test_case_service().get_by_pk(pk)
+    return TestCaseService().get_by_pk(pk)
+
+
+class TestCaseService(BaseService):
+    def __init__(self):
+        super().__init__(TestCaseDBHelper())
+
+    def add(self, data: dict):
+        code = 'tc' + str(round(time.time()) + random.randint(0, 99))
+        data.update({"code": code})
+        return super().add(data)
+
+
+class TcDataService(BaseService):
+    def __init__(self):
+        super().__init__(TcDataDBHelper())
+
+
+class TcCheckPointService(BaseService):
+    def __init__(self):
+        super().__init__(TcCheckPointDBHelper())
 
 
 class TesterService:

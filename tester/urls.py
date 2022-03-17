@@ -8,4 +8,5 @@ urlpatterns = [
     path('run_test_case/', views.run_test_case, name='run_test_case'),
     path('run/', views.run, name='run'),
     path('commit/', views.TesterViews().commit, name='commit'),
+    path('query/', views.TesterViews().query, name='query'),
 ]
