@@ -56,9 +56,6 @@ class Test_Case(CodeFields, TimeFields):
     class Meta:
         ordering = ['-created_time']
 
-    def __str__(self):
-        return self.tc_name
-
 
 class Tc_Data(TimeFields):
     test_case = models.ForeignKey(to=Test_Case,
@@ -79,12 +76,9 @@ class Tc_Data(TimeFields):
     class Meta:
         ordering = ['-created_time']
 
-    def __str__(self):
-        return self.data_name
-
 
 class Tc_CheckPoint(TimeFields):
-    tc_data = models.ForeignKey(to=Test_Case,
+    tc_data = models.ForeignKey(to=Tc_Data,
                                 null=True,
                                 on_delete=models.SET_NULL,
                                 blank=True,
@@ -101,6 +95,3 @@ class Tc_CheckPoint(TimeFields):
 
     class Meta:
         ordering = ['-created_time']
-
-    def __str__(self):
-        return self.check_name
