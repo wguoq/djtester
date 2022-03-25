@@ -25,6 +25,16 @@ class TestCaseService(BaseService):
         return super().add(data)
 
 
+class TcApiService(BaseService):
+    def __init__(self):
+        super().__init__(TcAPiDBHelper())
+
+
+class TcApiDataService(BaseService):
+    def __init__(self):
+        super().__init__(TcApiDataDBHelper())
+
+
 class TcDataService(BaseService):
     def __init__(self):
         super().__init__(TcDataDBHelper())

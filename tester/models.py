@@ -38,23 +38,93 @@ class CodeFields(models.Model):
 
 
 class Test_Case(CodeFields, TimeFields):
-    tc_name = models.CharField(max_length=256,
+    tc_name = models.CharField(max_length=128,
                                null=True,
                                verbose_name="测试名称")
 
     tc_type = models.CharField(max_length=64,
                                null=True,
                                blank=True,
-                               verbose_name="测试类型")
+                               default="api",
+                               verbose_name="测试类型",
+                               help_text="api")
 
-    tc_action = models.JSONField(null=True,
-                                 blank=True,
-                                 verbose_name="测试行为")
+    tc_action_id = models.CharField(max_length=64,
+                                    null=True,
+                                    blank=True,
+                                    verbose_name="测试行为id")
 
     objects = models.Manager()
 
     class Meta:
         ordering = ['-created_time']
+
+
+class Tc_Api(TimeFields):
+    api_name = models.CharField(max_length=128,
+                                null=True,
+                                verbose_name="api名称")
+
+    api_type = models.CharField(max_length=64,
+                                null=True,
+                                default="RESTful",
+                                verbose_name="api类型")
+
+    protocol = models.CharField(max_length=32,
+                                null=True,
+                                blank=True,
+                                default='http',
+                                verbose_name='协议',
+                                help_text='http | https')
+
+    method = models.CharField(max_length=32,
+                              null=True,
+                              blank=True,
+                              verbose_name='方法',
+                              help_text='get | post')
+
+    path = models.CharField(max_length=256,
+                            null=True,
+                            blank=True,
+                            verbose_name="api路径")
+
+    param_script = models.JSONField(null=True,
+                                    blank=True,
+                                    verbose_name="api参数脚本")
+
+    objects = models.Manager()
+
+    class Meta:
+        ordering = ['-created_time']
+
+
+class Tc_Api_Data(TimeFields):
+    test_case = models.ForeignKey(to=Test_Case,
+                                  null=True,
+                                  on_delete=models.SET_NULL,
+                                  blank=True,
+                                  verbose_name="测试用例id")
+
+    host = models.CharField(max_length=256,
+                            null=True,
+                            blank=True,
+                            verbose_name="域名")
+
+    port = models.IntegerField(null=True,
+                               blank=True,
+                               verbose_name="端口号", )
+    headers = models.JSONField(null=True,
+
+                               blank=True,
+                               verbose_name="头信息")
+
+    cookies = models.JSONField(null=True,
+                               blank=True,
+                               verbose_name="cookies")
+
+    data = models.JSONField(null=True,
+                            blank=True,
+                            verbose_name="数据")
 
 
 class Tc_Data(TimeFields):
@@ -78,11 +148,10 @@ class Tc_Data(TimeFields):
 
 
 class Tc_CheckPoint(TimeFields):
-    tc_data = models.ForeignKey(to=Tc_Data,
-                                null=True,
-                                on_delete=models.SET_NULL,
-                                blank=True,
-                                verbose_name="测试数据id")
+    tc_data_id = models.CharField(max_length=64,
+                                  null=True,
+                                  blank=True,
+                                  verbose_name="测试数据id")
     check_name = models.CharField(max_length=128,
                                   blank=True,
                                   null=True,

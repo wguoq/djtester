@@ -15,5 +15,7 @@ class TC_CheckPoint_Admin(admin.ModelAdmin):
 
 
 admin.site.register(Test_Case, Test_Case_Admin)
+admin.site.register(Tc_Api,)
+admin.site.register(Tc_Api_Data,)
 admin.site.register(Tc_Data, TC_Data_Admin)
 admin.site.register(Tc_CheckPoint, TC_CheckPoint_Admin)
