@@ -44,12 +44,10 @@ class BaseService:
         pk = query_set_dict.get('pk')
         fields = query_set_dict.get('fields')
         field_info = self.get_field_info()
-        model_dict = {}
         for f in field_info:
             if f.get('primary_key'):
-                model_dict.update({f.get('name'): pk})
+                fields.update({f.get('name'): pk})
                 break
             else:
-                model_dict.update({'id': pk})
-        model_dict.update(fields)
-        return model_dict
+                continue
+        return fields
