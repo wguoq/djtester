@@ -47,6 +47,6 @@ class TesterViews(BaseViews):
         service = getattr(self.module, service_name)
         if action == "run":
             test_case_id = data.get('id')
-            return service().run_testcase(test_case_id).__dict__
+            return service().run_testcase(test_case_id)
         else:
             return super()._do_commit(service_name, action, data)
