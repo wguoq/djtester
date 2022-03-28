@@ -105,6 +105,11 @@ class Tc_Api_Data(TimeFields):
                                   blank=True,
                                   verbose_name="测试用例id")
 
+    data_name = models.CharField(max_length=256,
+                                 null=True,
+                                 blank=True,
+                                 verbose_name="数据名称")
+
     host = models.CharField(max_length=256,
                             null=True,
                             blank=True,
@@ -113,8 +118,13 @@ class Tc_Api_Data(TimeFields):
     port = models.IntegerField(null=True,
                                blank=True,
                                verbose_name="端口号", )
-    headers = models.JSONField(null=True,
 
+    timeout = models.IntegerField(null=True,
+                                  blank=True,
+                                  default=30000,
+                                  verbose_name="超时时间")
+
+    headers = models.JSONField(null=True,
                                blank=True,
                                verbose_name="头信息")
 
@@ -152,13 +162,35 @@ class Tc_CheckPoint(TimeFields):
                                   null=True,
                                   blank=True,
                                   verbose_name="测试数据id")
+
     check_name = models.CharField(max_length=128,
                                   blank=True,
                                   null=True,
                                   verbose_name="验证点名称")
-    check_point = models.JSONField(null=True,
-                                   blank=True,
-                                   verbose_name="验证点脚本")
+
+    target = models.CharField(max_length=32,
+                              blank=True,
+                              null=True,
+                              verbose_name="验证目标",
+                              help_text='status_code | json')
+
+    rule = models.CharField(max_length=256,
+                            blank=True,
+                            null=True,
+                            verbose_name="json获取规则",
+                            help_text='data__rows__[2] | data__rows__{customerName=abc}__businessName')
+
+    operator = models.CharField(max_length=32,
+                                blank=True,
+                                default='eq',
+                                null=True,
+                                verbose_name="比较方式",
+                                help_text='eq | ne')
+
+    expect = models.CharField(max_length=256,
+                              blank=True,
+                              null=True,
+                              verbose_name="期望值")
 
     objects = models.Manager()
 

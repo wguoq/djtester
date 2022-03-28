@@ -11,7 +11,7 @@ class TC_Data_Admin(admin.ModelAdmin):
 
 
 class TC_CheckPoint_Admin(admin.ModelAdmin):
-    list_display = ('id', 'tc_data_id', 'check_name', 'check_point', 'created_time', 'modified_time')
+    list_display = ('id', 'tc_data_id', 'check_name', 'created_time', 'modified_time')
 
 
 admin.site.register(Test_Case, Test_Case_Admin)
