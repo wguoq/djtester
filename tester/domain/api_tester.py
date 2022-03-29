@@ -68,7 +68,7 @@ class ApiTester:
             # 一条数据可以对应多条验证点
             if TcCheckPointDBHelper().count_by({'tc_data_id': data.pk}) == 0:
                 # 如果没有检查点，默认通过
-                test_verify_list.append(dict(data_name=data.data_name, check_name="", result=True))
+                test_verify_list.append(dict(data_name=data.data_name, check_name=None, result=True))
             else:
                 check_list = TcCheckPointDBHelper().filter_by({'tc_data_id': data.pk})
                 for check in check_list:
