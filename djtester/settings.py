@@ -40,11 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hello.apps.HelloConfig',
-    'flow.apps.FlowConfig',
-    'testcase.apps.TestcaseConfig',
     'tester.apps.TesterConfig',
+    'flow.apps.FlowConfig',
     'mock.apps.MockConfig'
-
 ]
 # https://docs.djangoproject.com/zh-hans/4.0/ref/csrf/
 MIDDLEWARE = [
