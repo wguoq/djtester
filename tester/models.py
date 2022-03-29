@@ -136,6 +136,9 @@ class Tc_Api_Data(TimeFields):
                             blank=True,
                             verbose_name="数据")
 
+    class Meta:
+        ordering = ['-created_time']
+
 
 class Tc_Data(TimeFields):
     test_case = models.ForeignKey(to=Test_Case,
