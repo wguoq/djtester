@@ -53,5 +53,8 @@ class BaseService:
         return fields
 
     def del_item(self, filters: dict):
-        return self.DBHelper.del_item(filters)
+        if filters is None or len(filters) == 0:
+            raise Exception('del 的filters参数不能为空')
+        else:
+            return self.DBHelper.del_item(filters)
 

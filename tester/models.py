@@ -126,7 +126,7 @@ class Tc_Api_Data(TimeFields):
 
     headers = models.JSONField(null=True,
                                blank=True,
-                               verbose_name="头信息")
+                               verbose_name="headers")
 
     cookies = models.JSONField(null=True,
                                blank=True,
@@ -134,7 +134,7 @@ class Tc_Api_Data(TimeFields):
 
     data = models.JSONField(null=True,
                             blank=True,
-                            verbose_name="数据")
+                            verbose_name="data")
 
     class Meta:
         ordering = ['-created_time']
