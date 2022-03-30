@@ -22,10 +22,11 @@ class BaseService:
         a.pop('_state')
         return a
 
-    def get_by_pk(self, pk: int) -> dict:
-        a = self.DBHelper.get_by({'pk': pk}).__dict__
-        a.pop('_state')
-        return a
+    # def get_by_pk(self, pk: int) -> dict:
+    #     a = self.DBHelper.get_by({'pk': pk}).__dict__
+    #     a.pop('_state')
+    #     print(f'aaaaaaaaaaaaaaaa=== {a}')
+    #     return a
 
     def count_by(self, kwargs: dict):
         return self.DBHelper.count_by(kwargs)
@@ -52,9 +53,11 @@ class BaseService:
                 continue
         return fields
 
+    def get_by_pk(self, pk):
+        return self.filter_by({'pk': pk})[0]
+
     def del_item(self, filters: dict):
         if filters is None or len(filters) == 0:
             raise Exception('del 的filters参数不能为空')
         else:
             return self.DBHelper.del_item(filters)
-

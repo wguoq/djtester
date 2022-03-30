@@ -53,8 +53,8 @@ class BaseDBHelper:
             ll.append(field_info.__dict__)
         return ll
 
-    def get_by(self, kwargs: dict):
-        return self.model.objects.get(**kwargs)
+    # def get_by(self, kwargs: dict):
+    #     return self.model.objects.get(**kwargs)
 
     def count_by(self, kwargs: dict) -> int:
         return self.model.objects.filter(**kwargs).count()
