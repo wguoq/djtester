@@ -47,8 +47,8 @@ class TesterService:
         pass
 
     @staticmethod
-    def run_testcase(test_case_pk):
-        return TesterMgr().run_case(test_case_pk)
+    def run_testcase(test_case_pk, data_config: dict = None):
+        return TesterMgr().run_case(test_case_pk, data_config)
 
 
 class NodeFuncRunApiTestCase(NodeFuncBase):
@@ -61,10 +61,9 @@ class NodeFuncRunApiTestCase(NodeFuncBase):
         return {'test_case_id': ''}
 
     def node_func_result_list(self) -> list[str]:
-        pass
+        return ['pass', 'fail']
 
-    def do_func(self, node_func_param: dict, flow_data):
+    def do_func(self, node_func_param: dict, flow_data: dict):
         test_case_id = node_func_param.get('test_case_id')
-        a = TesterService.run_testcase(test_case_id)
-        return self.NodeFuncResult(a.test_case_result, {'test_case_id': test_case_id})
-
+        a = TesterService.run_testcase(test_case_id, flow_data)
+        return self.NodeFuncResult(a.test_case_result)

@@ -5,6 +5,16 @@ from tester.repositories import *
 
 class ApiTester:
     @staticmethod
+    def _set_data_config(data: Tc_Api_Data, data_config: dict):
+        data.host = data_config.get('host') or data.host
+        data.port = data_config.get('port') if data_config.get('port') is not None else data.port
+        data.timeout = data_config.get('timeout') if data_config.get('timeout') is not None else data.timeout
+        data.headers = data_config.get('headers') or data.headers
+        data.cookies = data_config.get('cookies') or data.cookies
+        data.data = data_config.get('data') or data.data
+        return data
+
+    @staticmethod
     def _request_send(api: Tc_Api, data: Tc_Api_Data):
         url = api.protocol + '://' + data.host
         if data.port:
@@ -48,7 +58,7 @@ class ApiTester:
         else:
             raise Exception(f'无法识别的 check.operator {check.operator}')
 
-    def run(self, test_case_pk) -> dict:
+    def run(self, test_case_pk, data_config: dict = None) -> dict:
         test_case: Test_Case = TestCaseDBHelper().get_by({'pk': test_case_pk})
         # 一条用例对应一个接口
         if TcAPiDBHelper().count_by({'pk': test_case.tc_action_id}) == 0:
@@ -61,8 +71,11 @@ class ApiTester:
         else:
             tc_data_list = TcApiDataDBHelper().filter_by({'test_case': test_case.pk})
         test_verify_list = []
-        data: Tc_Api_Data
         for data in tc_data_list:
+            if data_config:
+                data = self._set_data_config(data, data_config)
+            else:
+                pass
             # 发包
             res = self._request_send(tc_api, data)
             # 一条数据可以对应多条验证点
