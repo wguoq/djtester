@@ -95,3 +95,7 @@ class BaseDBHelper:
         else:
             new_model.save()
             return new_model
+
+    def del_item(self, filters: dict):
+        return self.model.objects.filter(**filters).delete()
+

@@ -65,6 +65,8 @@ class BaseViews:
             return service().add(data)
         elif action == 'edit':
             return service().edit(data)
+        elif action == 'del':
+            return service().del_item(data)
         else:
             return {}
 

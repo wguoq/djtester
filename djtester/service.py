@@ -51,3 +51,7 @@ class BaseService:
             else:
                 continue
         return fields
+
+    def del_item(self, filters: dict):
+        return self.DBHelper.del_item(filters)
+
