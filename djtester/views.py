@@ -35,9 +35,12 @@ class BaseViews:
                 ll.append(fields)
             return dict(rows=ll, total=total)
         elif action == 'get':
-            res = helper().get_by_pk(filters.get('pk')).__dict__
-            res.pop('_state')
-            return dict(data=res, total=1)
+            res = helper().get_by_pk(filters.get('pk'))
+            ss = serializers.serialize('json', res)
+            r = json.loads(ss)[0]
+            fields = r.get('fields')
+            fields.update({pk_name: r.get('pk')})
+            return dict(data=fields, total=1)
         elif action == 'getFieldInfo':
             result = helper().get_field_info()
             return dict(fields=result)
