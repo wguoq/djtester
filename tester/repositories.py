@@ -1,3 +1,6 @@
+import random
+import time
+
 from django.db import transaction
 
 from djtester.repositories import BaseDBHelper, save_foreignkey
@@ -11,8 +14,17 @@ class TestCaseDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, Test_Case.__name__)
 
+    def save_this(self, data: dict):
+        code = data.get('code')
+        if code is None or len(code) == 0:
+            code = 'tc' + str(round(time.time()) + random.randint(0, 99))
+            data.update({"code": code})
+        else:
+            pass
+        return super().save_this(data)
 
-class TcAPiDBHelper(BaseDBHelper):
+
+class TcApiDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, Tc_Api.__name__)
 

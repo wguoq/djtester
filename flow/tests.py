@@ -301,7 +301,7 @@ class Test_Flow(TestCase):
         flow_design_list = [flow_design_1, flow_design_2]
         for flow_design in flow_design_list:
             FlowDesignDBHelper().save_this(flow_design)
-        fd1 = FlowDesignDBHelper().get_by({'pk': 1})
+        fd1 = FlowDesignDBHelper().filter_by({'pk': 1})[0]
         print(model_to_dict(fd1))
 
         print(f'==== 新增 node_design ==== ')

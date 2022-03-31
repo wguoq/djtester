@@ -13,7 +13,7 @@ def save_foreignkey(db_helper_path, db_helper_name, foreignkey_data):
         return db_helper().save_this(foreignkey_data)
     # 如果是int或者str就认为是pk,去查询出来
     elif isinstance(foreignkey_data, int or str):
-        return db_helper().get_by(dict(pk=foreignkey_data))
+        return db_helper().get_by_pk(foreignkey_data)
     # 其他情况不处理
     else:
         return foreignkey_data
@@ -53,8 +53,14 @@ class BaseDBHelper:
             ll.append(field_info.__dict__)
         return ll
 
-    # def get_by(self, kwargs: dict):
-    #     return self.model.objects.get(**kwargs)
+    def get_pk_name(self):
+        field_info = self.get_field_info()
+        for field in field_info:
+            if field.get('primary_key'):
+                return field.get('name')
+            else:
+                continue
+        return None
 
     def count_by(self, kwargs: dict) -> int:
         return self.model.objects.filter(**kwargs).count()
@@ -76,6 +82,9 @@ class BaseDBHelper:
             kwargs = {}
         return self.model.objects.filter(**kwargs)[offset: limit]
 
+    def get_by_pk(self, pk):
+        return self.filter_by({'pk': pk})[0]
+
     def save_this(self, data: dict):
         """
         如果有外键要单独保存之后把对象放进data里
@@ -96,6 +105,8 @@ class BaseDBHelper:
             new_model.save()
             return new_model
 
-    def del_item(self, filters: dict):
-        return self.model.objects.filter(**filters).delete()
-
+    def del_(self, filters: dict):
+        if filters is None or len(filters) == 0:
+            raise Exception('del 的filters参数不能为空')
+        else:
+            return self.model.objects.filter(**filters).delete()

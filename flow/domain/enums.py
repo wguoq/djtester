@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class FlowType(Enum):
-    Serial = 'serial'
-    Parallel = 'parallel'
+    Single = 'single'
+    Multiple = 'multiple'
 
 
 class FlowStatus(Enum):

@@ -1,6 +1,5 @@
-"""
-这里只处理表外键相关的逻辑，不涉及业务逻辑
-"""
+import random
+import time
 from django.db import transaction
 from djtester.repositories import BaseDBHelper, save_foreignkey
 from flow.models import *
@@ -12,6 +11,15 @@ REPOSITORIES_PATH = 'flow.repositories'
 class FlowDesignDBHelper(BaseDBHelper):
     def __init__(self):
         super().__init__(MODELS_PATH, Flow_Design.__name__)
+
+    def save_this(self, data: dict):
+        code = data.get('code')
+        if code is None or len(code) == 0:
+            code = 'fw' + str(round(time.time()) + random.randint(0, 99))
+            data.update({"code": code})
+        else:
+            pass
+        return super().save_this(data)
 
 
 class FlowStatusRuleDBHelper(BaseDBHelper):
@@ -67,6 +75,9 @@ class FlowNodeOderDBHelper(BaseDBHelper):
 
     @transaction.atomic
     def save_this(self, data: dict):
+        node_order = data.get('node_order')
+        if node_order is None or len(str(node_order)) == 0:
+            raise Exception(' node_order 不能为空并且要为数字')
         node_design = save_foreignkey(REPOSITORIES_PATH,
                                       NodeDesignDBHelper.__name__, data.get('node_design'))
         flow_design = save_foreignkey(REPOSITORIES_PATH, FlowDesignDBHelper.__name__, data.get('flow_design'))

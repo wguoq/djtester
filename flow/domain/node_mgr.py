@@ -17,22 +17,20 @@ def _check_rule(start_rule: Node_Start_Rule, flow_data: dict, node_instance: Nod
         return verify_str(data, rule_operator, rule_value)
     elif rule_target == NodeStartRuleTarget.NodeResult.value:
         # 约定 rule_where 填的是 node_design_id
-        # 因为 flow_instance_id 和 node_design_id 联合查询应该只会有一条数据,所有用get
-        node_instance_target = NodeInstanceDBHelper().get_by({'flow_instance_id': node_instance.flow_instance.id,
-                                                              'node_design_id': rule_where})
+        node_instance_target = NodeInstanceDBHelper().filter_by({'flow_instance_id': node_instance.flow_instance.id,
+                                                                 'node_design_id': rule_where})[0]
         return verify_str(node_instance_target.node_result, rule_operator, rule_value)
     elif rule_target == NodeStartRuleTarget.NodeStatus.value:
         # 约定 rule_where 填的是 node_design_id
-        # 因为 flow_instance_id 和 node_design_id 联合查询应该只会有一条数据,所有用get
-        node_instance_target = NodeInstanceDBHelper().get_by({'flow_instance_id': node_instance.flow_instance.id,
-                                                              'node_design_id': rule_where})
+        node_instance_target = NodeInstanceDBHelper().filter_by({'flow_instance_id': node_instance.flow_instance.id,
+                                                                 'node_design_id': rule_where})[0]
         return verify_str(node_instance_target.node_status, rule_operator, rule_value)
     else:
         raise Exception(f' 无法识别的 rule_target = {rule_target} 只能是 flow_data | node_result | node_status')
 
 
 def check_node_start_rule(node_instance: Node_Instance, flow_data: dict):
-    start_rule_list = NodeStartRuleDBHelper().filter_by({'node_design': node_instance.node_design_id})
+    start_rule_list = NodeStartRuleDBHelper().filter_by({'node_design': node_instance.node_design.id})
     # 如果没有配置start_rule就默认通过
     if start_rule_list.count() == 0:
         return True
@@ -82,17 +80,15 @@ class NodeMgr:
                 NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
                 return RunNodeInstResult(node_instance, return_data)
             else:
-                print(f'NodeMgr:节点不满足运行状态 node_instance_id = {node_instance.id}')
+                print(f'NodeMgr:节点不满足运行状态 node_instance_id = {node_instance.pk}')
                 return RunNodeInstResult(node_instance)
         else:
             return RunNodeInstResult(node_instance)
 
     @staticmethod
     def reset_node_status(new_result: str, node_instance_id) -> Node_Instance:
-        node_instance = NodeInstanceDBHelper().get_by({'pk': node_instance_id})
+        node_instance = NodeInstanceDBHelper().get_by_pk(node_instance_id)
         node_instance.node_result = new_result
         node_instance.node_status = check_node_status(new_result, node_instance)
         NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
         return node_instance
-
-

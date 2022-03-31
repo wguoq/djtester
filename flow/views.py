@@ -1,15 +1,17 @@
 from djtester.views import BaseViews
+from flow.domain.flow_mgr import FlowMgr
 
 
 class FlowViews(BaseViews):
     def __init__(self):
-        super().__init__('flow.service')
+        super().__init__('flow.repositories')
 
-    def _do_commit(self, service_name, action, data):
-        service = getattr(self.module, service_name)
+    def _do_commit(self, repo_name, action, data):
         if action == "instance":
-            return service().instance_flow(data.get('id'), data.get('flow_data'))
+            FlowMgr().instance_flow(data.get('pk'), data.get('flow_data'))
+            return {}
         elif action == "run":
-            return service().run_inst(data.get('id'))
+            FlowMgr().run_flow_instance(data.get('pk'))
+            return {}
         else:
-            return super()._do_commit(service_name, action, data)
+            return super()._do_commit(repo_name, action, data)

@@ -1,9 +1,6 @@
 api_tester:
-  class_path: tester.service
+  class_path: tester.domain.tester_mgr
   class_name: NodeFuncRunApiTestCase
-api_list_tester:
-  class_path: tester.service
-  class_name: NodeFuncRunApiTestCaseList
 flow_runner:
-  class_path: flow.service
-  class_name: NodeFuncRunFLow
+  class_path: flow.domain.flow_mgr
+  class_name: NodeFuncRunFLowDesign
