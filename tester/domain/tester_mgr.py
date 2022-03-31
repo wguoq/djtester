@@ -8,7 +8,7 @@ class TesterMgr:
 
     @staticmethod
     def run_case(test_case_pk, data_config: dict = None):
-        test_case: Test_Case = TestCaseDBHelper().get_by_pk(test_case_pk)
+        test_case: Test_Case = TestCaseDBHelper().get_by_pk(test_case_pk)[0]
         if test_case.tc_type == 'api':
             r = ApiTester().run(test_case_pk, data_config)
             return dict(id=test_case.pk,

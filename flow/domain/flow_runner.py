@@ -1,6 +1,3 @@
-import abc
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from flow.domain.enums import NodeStatus, FlowRuleType, FlowStatus
 from flow.domain.node_mgr import NodeMgr
 from flow.models import Flow_Instance
@@ -52,7 +49,7 @@ def get_last_node_inst_attr(flow_instance: Flow_Instance, attr_name):
 
 def check_flow_result(flow_instance: Flow_Instance):
     # 查出对应的 flow_result_rules
-    result_rule = FlowResultRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_result_rule)
+    result_rule = FlowResultRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_result_rule)[0]
     if result_rule.rule_type == FlowRuleType.Default.value:
         return get_last_node_inst_attr(flow_instance, 'node_result')
     elif result_rule.rule_type == FlowRuleType.Script.value:
@@ -63,7 +60,7 @@ def check_flow_result(flow_instance: Flow_Instance):
 
 
 def check_flow_status(flow_instance: Flow_Instance):
-    status_rule = FlowStatusRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_status_rule)
+    status_rule = FlowStatusRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_status_rule)[0]
     if status_rule.rule_type == FlowRuleType.Default.value:
         return get_last_node_inst_attr(flow_instance, 'node_status')
     elif status_rule.rule_type == FlowRuleType.Script.value:

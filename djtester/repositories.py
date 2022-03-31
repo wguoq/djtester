@@ -82,8 +82,8 @@ class BaseDBHelper:
             kwargs = {}
         return self.model.objects.filter(**kwargs)[offset: limit]
 
-    def get_by_pk(self, pk):
-        return self.filter_by({'pk': pk})[0]
+    def get_by_pk(self, pk) -> QuerySet:
+        return self.filter_by({'pk': pk})
 
     def save_this(self, data: dict):
         """

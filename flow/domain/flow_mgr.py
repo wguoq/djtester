@@ -1,11 +1,10 @@
 from django.db import transaction
 from django.forms import model_to_dict
-
 from djtester.decorators import reg_node_func
-from flow.domain.enums import FlowStatus, NodeStatus, FlowType
+from flow.domain.enums import FlowType
 from flow.domain.flow_runner import *
 from flow.domain.node_func import NodeFuncBase
-from flow.models import Flow_Instance, Flow_Design, Node_Instance
+from flow.models import Flow_Instance, Node_Instance
 from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNodeOderDBHelper, FlowDesignDBHelper
 
 
@@ -39,7 +38,7 @@ class FlowMgr:
     @staticmethod
     def run_flow_instance(flow_instance_pk) -> Flow_Instance:
         # 先判断流程状态能不能运行
-        flow_instance = FlowInstanceDBHelper().get_by_pk(flow_instance_pk)
+        flow_instance = FlowInstanceDBHelper().get_by_pk(flow_instance_pk)[0]
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value, FlowStatus.Cancelled.value]:
             print(f'流程状态是 {flow_instance.flow_status} 不运行; pk = {flow_instance.pk}')
             return flow_instance
