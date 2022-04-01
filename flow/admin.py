@@ -30,7 +30,7 @@ class Flow_Instance_Admin(admin.ModelAdmin):
 
 class Node_Instance_Admin(admin.ModelAdmin):
     list_display = (
-        'id', 'node_design', 'node_func_name', 'node_func_data', 'node_order', 'node_status', 'node_result',
+        'id', 'node_design', 'node_func_code', 'node_func_data', 'node_order', 'node_status', 'node_result',
         'flow_instance', 'created_time', 'modified_time')
 
 

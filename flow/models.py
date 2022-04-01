@@ -50,8 +50,9 @@ class Flow_Design(Time_Field, Code_Field):
     fw_type = models.CharField(max_length=64,
                                blank=True,
                                null=True,
-                               default='serial',
-                               verbose_name="流程类型")
+                               default='single',
+                               verbose_name="流程类型",
+                               help_text='single | multiple')
 
     fw_result_rule = models.CharField(max_length=64,
                                       blank=True,
@@ -184,7 +185,7 @@ class Node_Start_Rule(Time_Field):
                                      blank=True,
                                      null=True,
                                      verbose_name="操作",
-                                     help_text='eq | nq | lt | le | gt | ge')
+                                     help_text='eq | ne')
 
     rule_value = models.CharField(max_length=64,
                                   blank=True,
@@ -310,10 +311,10 @@ class Node_Instance(Time_Field):
                                     null=True,
                                     verbose_name="节点设计id")
 
-    node_func_name = models.CharField(max_length=64,
+    node_func_code = models.CharField(max_length=64,
                                       blank=True,
                                       null=True,
-                                      verbose_name="节点方法名称")
+                                      verbose_name="节点方法编码")
 
     node_func_data = models.JSONField(null=True,
                                       blank=True,
