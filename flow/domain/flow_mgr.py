@@ -1,38 +1,37 @@
-from django.db import transaction
 from django.forms import model_to_dict
 from djtester.decorators import reg_node_func
 from flow.domain.enums import FlowType
 from flow.domain.flow_runner import *
 from flow.domain.node_func import NodeFuncBase
-from flow.models import Flow_Instance, Node_Instance
-from flow.repositories import FlowInstanceDBHelper, NodeInstanceDBHelper, FlowNodeOderDBHelper, FlowDesignDBHelper
+from flow.repositories import *
 
 
 class FlowMgr:
     @staticmethod
     @transaction.atomic
     def instance_flow(flow_design_pk, flow_data: dict = None) -> Flow_Instance:
-        node_list = FlowNodeOderDBHelper().filter_by({'flow_design_id': flow_design_pk})
-        if node_list is None or node_list.count() == 0:
-            raise Exception("node_list 为空，不能实例化")
-        # 保存 flow_instance
-        if flow_data is None:
-            flow_data = {}
-        fi = {'flow_design': flow_design_pk,
-              'flow_data': flow_data}
-        flow_instance = FlowInstanceDBHelper().save_this(fi)
-        # 查询出 node_list 保存 node_instance
-        for node in node_list:
-            node_design = node.node_design
-            node_func_name = node_design.node_func_code
-            node_func_data = node_design.node_func_data
-            node_order = node.node_order
-            ni = {'node_design': node_design,
-                  'node_func_name': node_func_name,
-                  'node_func_data': node_func_data,
-                  'node_order': node_order,
-                  'flow_instance': flow_instance}
-            NodeInstanceDBHelper().save_this(ni)
+        if FlowNodeOderDBHelper().count_by({'flow_design': flow_design_pk}) == 0:
+            raise Exception("node_order_list 为空，不能实例化")
+        else:
+            # 保存 flow_instance
+            flow_data = flow_data or {}
+            fi = {'flow_design': flow_design_pk,
+                  'flow_data': flow_data}
+            flow_instance = FlowInstanceDBHelper().save_this(fi)
+            # 查询出 node_list 保存 node_instance
+            order_list = FlowNodeOderDBHelper().filter_by({'flow_design': flow_design_pk})
+            order: Flow_Node_Oder
+            for order in order_list:
+                node_design = order.node_design
+                node_func_code = node_design.node_func_code
+                node_func_data = node_design.node_func_data
+                node_order = order.node_order
+                ni = {'node_design': node_design,
+                      'node_func_code': node_func_code,
+                      'node_func_data': node_func_data,
+                      'node_order': node_order,
+                      'flow_instance': flow_instance}
+                NodeInstanceDBHelper().save_this(ni)
         return flow_instance
 
     @staticmethod
