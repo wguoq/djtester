@@ -1,4 +1,9 @@
+import json
+
 import requests
+from django.forms import model_to_dict
+from django.http import response
+
 from tester.utils import *
 from tester.repositories import *
 
@@ -20,21 +25,24 @@ class ApiTester:
         if data.host is None:
             raise Exception(f'host 不能为空')
         else:
-            url = protocol + '://' + data.host
+            url = protocol + '://' + str(data.host)
         if data.port:
             url = url + ':' + str(data.port)
-        elif api.path and len(api.path) > 0:
+        if api.path and len(api.path) > 0:
             url = url + api.path
-        else:
-            pass
+        timeout = data.timeout or 3000
+        headers = json.loads(data.headers) if data.headers else None
+        cookies = json.loads(data.cookies) if data.cookies else None
+        data_ = json.loads(data.data) if data.data else None
         payload = dict(url=url,
-                       timeout=data.timeout,
-                       headers=data.headers,
-                       cookies=data.cookies,
-                       json=data.data, )
+                       timeout=timeout,
+                       headers=headers,
+                       cookies=cookies)
         if api.method == 'get':
+            payload.update(dict(params=data_))
             return requests.get(**payload)
         elif api.method == 'post':
+            payload.update(dict(json=data_))
             return requests.post(**payload)
         else:
             raise Exception(f'不支持的 api.method {api.method}')
