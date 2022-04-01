@@ -13,7 +13,7 @@ def save_foreignkey(db_helper_path, db_helper_name, foreignkey_data):
         return db_helper().save_this(foreignkey_data)
     # 如果是int或者str就认为是pk,去查询出来
     elif isinstance(foreignkey_data, int or str):
-        return db_helper().get_by_pk(foreignkey_data)
+        return db_helper().get_by_pk(foreignkey_data)[0]
     # 其他情况不处理
     else:
         return foreignkey_data
