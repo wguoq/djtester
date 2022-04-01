@@ -180,7 +180,7 @@ class Tc_CheckPoint(TimeFields):
     rule = models.CharField(max_length=256,
                             blank=True,
                             null=True,
-                            verbose_name="json获取规则",
+                            verbose_name="json取值规则",
                             help_text='data__rows__[2] | data__rows__{customerName=abc}__businessName')
 
     operator = models.CharField(max_length=32,
