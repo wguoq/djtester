@@ -48,6 +48,11 @@ def get_last_node_inst_attr(flow_instance: Flow_Instance, attr_name):
 
 
 def check_flow_result(flow_instance: Flow_Instance):
+    result_rule = flow_instance.flow_design.fw_result_rule
+    if result_rule is None \
+            or len(result_rule) == 0 \
+            or FlowResultRuleDBHelper().count_by({'pk': flow_instance.flow_design.fw_result_rule}) == 0:
+        return None
     # 查出对应的 flow_result_rules
     result_rule = FlowResultRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_result_rule)[0]
     if result_rule.rule_type == FlowRuleType.Default.value:
@@ -60,6 +65,11 @@ def check_flow_result(flow_instance: Flow_Instance):
 
 
 def check_flow_status(flow_instance: Flow_Instance):
+    status_rule = flow_instance.flow_design.fw_status_rule
+    if status_rule is None \
+            or len(status_rule) == 0 \
+            or FlowStatusRuleDBHelper().count_by({"pk": status_rule}) == 0:
+        return None
     status_rule = FlowStatusRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_status_rule)[0]
     if status_rule.rule_type == FlowRuleType.Default.value:
         return get_last_node_inst_attr(flow_instance, 'node_status')
