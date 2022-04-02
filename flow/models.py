@@ -245,7 +245,7 @@ class Flow_Node_Oder(Time_Field):
     """
 
     flow_design = models.ForeignKey(to=Flow_Design,
-                                    on_delete=models.SET_NULL,
+                                    on_delete=models.CASCADE,
                                     blank=True,
                                     null=True,
                                     verbose_name="流程设计id")
@@ -255,7 +255,7 @@ class Flow_Node_Oder(Time_Field):
                                      verbose_name="节点顺序")
 
     node_design = models.ForeignKey(to=Node_Design,
-                                    on_delete=models.SET_NULL,
+                                    on_delete=models.CASCADE,
                                     blank=True,
                                     null=True,
                                     verbose_name="节点设计id")
