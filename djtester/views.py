@@ -58,12 +58,8 @@ class BaseViews:
                     repo = params.get('repo')
                     repo_name = str(repo) + 'DBHelper'
                     action = params.get('action')
-                    filters = params.get('filters')
-                    if filters:
-                        # filters取出来是str，要转成dict
-                        filters = json.loads(filters)
-                    else:
-                        filters = {}
+                    # filters取出来是str，要转成dict
+                    filters = json.loads(params.get('filters')) if params.get('filters') else {}
                     page_size = params.get('pageSize')
                     page_number = params.get('pageNumber')
                     context = self._do_query(repo_name, action, filters, page_size, page_number)
@@ -80,11 +76,11 @@ class BaseViews:
     def _do_commit(self, repo_name, action, data):
         helper = getattr(self.module, repo_name)
         if action == 'save':
-            helper().save_this(data)
-            return {}
+            res = helper().save_this(data)
+            return model_to_dict(res)
         elif action == 'del':
-            helper().del_(data)
-            return {}
+            res = helper().del_(data)
+            return res
         else:
             raise Exception(f'不支持的action {action}')
 
