@@ -8,10 +8,10 @@ class FlowViews(BaseViews):
 
     def _do_commit(self, repo_name, action, data):
         if action == "instance":
-            FlowMgr().instance_flow(data.get('pk'), data.get('flow_data'))
-            return {}
+            a = FlowMgr().instance_flow(data.get('pk'), data.get('flow_data'))
+            return dict(pk=a.pk)
         elif action == "run":
-            FlowMgr().run_flow_instance(data.get('pk'))
-            return {}
+            a = FlowMgr().run_flow_instance(data.get('pk'))
+            return dict(pk=a.pk)
         else:
             return super()._do_commit(repo_name, action, data)
