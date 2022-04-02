@@ -6,9 +6,9 @@ from flow.models import Node_Instance, Node_Status_Rule
 from flow.repositories import NodeStatusRuleDBHelper
 
 
-def get_node_func_class(node_func_name: str):
+def get_node_func_class(node_func_code: str):
     node_func_list = get_node_func_list()
-    node_func = node_func_list.get(node_func_name)
+    node_func = node_func_list.get(node_func_code)
     module = importlib.import_module(node_func.get('class_path'))
     return getattr(module, node_func.get('class_name'))
 
@@ -54,16 +54,16 @@ class NodeInstanceRunner:
         if flow_data is None:
             flow_data = {}
         # 根据 node_func_name 去载入对应执行类
-        node_func_name = node_instance.node_func_name
+        node_func_code = node_instance.node_func_code
         node_func_data = node_instance.node_func_data
-        func_class = get_node_func_class(node_func_name)
+        func_class = get_node_func_class(node_func_code)
         if func_class:
             try:
                 node_func_result = func_class().do_func(node_func_data, flow_data)
             except Exception as e:
                 raise Exception(f'运行 {func_class.__name__} 时报错 {e}')
         else:
-            raise Exception(f'根据 node_func_name = {node_func_name} import 对应的class,结果为 None')
+            raise Exception(f'根据 node_func_name = {node_func_code} import 对应的class,结果为 None')
         # 运行完了就更新数据
         node_instance.node_result = node_func_result.result
         node_instance.node_status = check_node_status(node_func_result.result, node_instance)
