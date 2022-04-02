@@ -113,6 +113,7 @@ class Tc_Api_Data(TimeFields):
     host = models.CharField(max_length=256,
                             null=True,
                             blank=True,
+                            default='127.0.0.1',
                             verbose_name="域名")
 
     port = models.IntegerField(null=True,
