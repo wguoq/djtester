@@ -79,6 +79,7 @@ class Flow_Result_Rule(Time_Field):
     rule_type = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
+                                 default='default',
                                  verbose_name="规则类型",
                                  help_text='default | script')
 
@@ -107,6 +108,7 @@ class Flow_Status_Rule(Time_Field):
     rule_type = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
+                                 default='default',
                                  verbose_name="规则类型",
                                  help_text='default | script')
 
@@ -223,7 +225,9 @@ class Node_Status_Rule(Time_Field):
     node_status = models.CharField(max_length=64,
                                    blank=True,
                                    null=True,
-                                   verbose_name="节点状态")
+                                   default='finish',
+                                   verbose_name="节点状态",
+                                   help_text='running | finish | cancelled | stop | skip')
 
     node_design = models.ForeignKey(to=Node_Design,
                                     on_delete=models.SET_NULL,
@@ -336,7 +340,7 @@ class Node_Instance(Time_Field):
                                    verbose_name="节点结果")
 
     flow_instance = models.ForeignKey(to=Flow_Instance,
-                                      on_delete=models.SET_NULL,
+                                      on_delete=models.CASCADE,
                                       blank=True,
                                       null=True,
                                       verbose_name="流程实例id")
