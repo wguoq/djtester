@@ -1,4 +1,6 @@
 import importlib
+import json
+from django.core import serializers
 from django.db.models import ManyToOneRel, ManyToManyRel, QuerySet
 from pydantic import BaseModel
 
@@ -11,12 +13,12 @@ def save_foreignkey(db_helper_path, db_helper_name, foreignkey_data):
     # 如果传入的是dict就保存
     elif isinstance(foreignkey_data, dict):
         return db_helper().save_this(foreignkey_data)
-    # 如果是int或者str就认为是pk,去查询出来
-    elif isinstance(foreignkey_data, int or str):
-        return db_helper().get_by_pk(foreignkey_data)[0]
-    # 其他情况不处理
+    # 否则认为是pk,去查询出来
     else:
-        return foreignkey_data
+        if db_helper().count_by({'pk': foreignkey_data}) == 0:
+            return None
+        else:
+            return db_helper().get_by_pk(foreignkey_data)[0]
 
 
 class BaseDBHelper:
@@ -95,10 +97,15 @@ class BaseDBHelper:
             # 有pk判断为修改
             # 由于update不会自动更新时间字段，还是要改成用save
             # 要先把要修改的那条数据查询出来，获取完整的模型字段
-            row = self.model.objects.get(pk=pk).__dict__
-            row.pop('_state')
-            row.update(data)
-            new_model = self.model(**row)
+            # 有外键不能用  row = self.model.objects.get(pk=pk).__dict__
+            res = self.filter_by({'pk': pk})
+            print(f'ffffffffffffffff==={type(res[0])}')
+            ss = serializers.serialize('json', res)
+            r = json.loads(ss)[0]
+
+            fields = r.get('fields')
+            fields.update(data)
+            new_model = self.model(**fields)
             new_model.save()
             return new_model
         else:
