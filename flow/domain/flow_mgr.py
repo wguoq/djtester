@@ -26,11 +26,11 @@ class FlowMgr:
                 node_func_code = node_design.node_func_code
                 node_func_data = node_design.node_func_data
                 node_order = order.node_order
-                ni = {'node_design': node_design,
+                ni = {'node_design': node_design.pk,
                       'node_func_code': node_func_code,
                       'node_func_data': node_func_data,
                       'node_order': node_order,
-                      'flow_instance': flow_instance}
+                      'flow_instance': flow_instance.pk}
                 NodeInstanceDBHelper().save_this(ni)
         return flow_instance
 
