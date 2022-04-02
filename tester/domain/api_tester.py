@@ -31,17 +31,24 @@ class ApiTester:
         if api.path and len(api.path) > 0:
             url = url + api.path
         timeout = data.timeout or 3000
-        headers = json.loads(data.headers) if data.headers else None
-        cookies = json.loads(data.cookies) if data.cookies else None
-        data_ = json.loads(data.data) if data.data else None
+        headers = data.headers or {}
+        cookies = data.cookies or {}
+        data_ = data.data or {}
         payload = dict(url=url,
                        timeout=timeout,
                        headers=headers,
                        cookies=cookies)
         if api.method == 'get':
+            # 由于get发送的是string，data如果是多层结构的json就需要把第二层以后的的dict全部转成string
+            for (k, v) in data_.items():
+                if isinstance(v, dict):
+                    data_[k] = json.dumps(v)
+                else:
+                    continue
             payload.update(dict(params=data_))
             return requests.get(**payload)
         elif api.method == 'post':
+            # post发送的是对象，所以保持完整的json结构不用管
             payload.update(dict(json=data_))
             return requests.post(**payload)
         else:
