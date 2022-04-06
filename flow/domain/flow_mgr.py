@@ -46,7 +46,7 @@ class FlowMgr:
             if flow_type == FlowType.Single.value:
                 flow_instance = SingleFlowRunner.run(flow_instance).flow_instance
             elif flow_type == FlowType.Multiple.value:
-                # todo 并行没写
+                # todo 没写
                 raise Exception(f'Multiple 还没写')
             else:
                 raise Exception(f'无法识别的 flow_type = {flow_type},serial=串行;parallel=并行')

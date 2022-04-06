@@ -20,10 +20,11 @@ def _check_rule(start_rule: Node_Start_Rule, flow_data: dict, node_instance: Nod
             # 如果没有node_order比当前小的那就说明这是第一条
             return True
         else:
-            node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance': flow_instance.pk, 'node_order__lt': node_order})
+            node_inst_list = NodeInstanceDBHelper().filter_by(
+                {'flow_instance': flow_instance.pk, 'node_order__lt': node_order})
             node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=False)
-            last:Node_Instance = node_inst_list[-1]
-            if last.node_status == NodeStatus.Finish:
+            last: Node_Instance = node_inst_list[-1]
+            if last.node_status == NodeStatus.Finish.value:
                 return True
             else:
                 return False
