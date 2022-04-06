@@ -146,11 +146,11 @@ class Node_Design(Time_Field, Code_Field):
                                  null=True,
                                  verbose_name="节点名称")
 
-    start_rule_type = models.CharField(max_length=64,
+    start_rule_mode = models.CharField(max_length=64,
                                        blank=True,
                                        null=True,
                                        default='and',
-                                       verbose_name="启动条件类型",
+                                       verbose_name="启动条件判断",
                                        help_text='and | or')
 
     node_func_code = models.CharField(max_length=64,
@@ -171,6 +171,19 @@ class Node_Design(Time_Field, Code_Field):
 
 
 class Node_Start_Rule(Time_Field):
+    rule_type = models.CharField(max_length=64,
+                                 blank=True,
+                                 null=True,
+                                 default='default',
+                                 verbose_name="规则类型",
+                                 help_text='default | custom')
+
+    rule_name = models.CharField(max_length=256,
+                                 blank=True,
+                                 null=True,
+                                 default='默认上一个节点finish',
+                                 verbose_name="规则名称")
+
     rule_target = models.CharField(max_length=64,
                                    blank=True,
                                    null=True,
@@ -214,6 +227,7 @@ class Node_Status_Rule(Time_Field):
     status_operator = models.CharField(max_length=64,
                                        blank=True,
                                        null=True,
+                                       default='eq',
                                        verbose_name="操作",
                                        help_text='eq | ne')
 

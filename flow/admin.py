@@ -14,7 +14,7 @@ class Flow_Design_Admin(admin.ModelAdmin):
 
 class Node_Design_Admin(admin.ModelAdmin):
     list_display = (
-        'id', 'code', 'node_name', 'node_type', 'start_rule_type', 'node_func_code', 'node_func_data', 'version',
+        'id', 'code', 'node_name', 'node_type', 'start_rule_mode', 'node_func_code', 'node_func_data', 'version',
         'ver_status', 'created_time', 'modified_time')
 
 
