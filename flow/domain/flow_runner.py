@@ -37,61 +37,21 @@ def update_result_and_status(flow_instance: Flow_Instance) -> Flow_Instance:
 
 
 def get_last_node_inst_attr(flow_instance: Flow_Instance, attr_name):
-    # 使用最后一个运行过的节点结果
-    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.pk})
-    node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=False)
-    last: Node_Instance = node_inst_list[-1]
-    if last.node_status == NodeStatus.Pending.value:
-        return None
-    else:
-        return last.__getattribute__(attr_name)
-
-    # for node_inst in node_inst_list:
-    #     # 运行过的 node_instance 才检查
-    #     if node_inst.node_status != NodeStatus.Pending.value:
-    #         return node_inst.__getattribute__(attr_name)
-    #     else:
-    #         continue
-    # return None
-
-
-def get_last_node_inst_status(flow_instance: Flow_Instance):
     # 倒叙遍历Node_Instance，如果最后一个节点运行过有状态了，就返回这个
-    # 如果最后一个节点没有运行过，就继续看上一个节点是不是stop和cancelled，是就返回
-    # 如果最后一个节点没有运行过，并且其他所有节点都没有stop和cancelled，则返回None
+    # 如果最后一个节点没有运行过，就继续看上一个节点是不是stop和cancelled，是就返回，否则返回None
     node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.pk})
     node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=True)
-    node_inst: Node_Instance
-    for node_inst in node_inst_list:
-        if node_inst.node_status != NodeStatus.Pending.value:
-            return node_inst.node_status
-        elif node_inst.node_status in [NodeStatus.Stop.value, NodeStatus.Cancelled.value]:
-            return node_inst.node_status
-        else:
-            continue
-    return None
-    # last: Node_Instance = node_inst_list[0]
-    # if last.node_status == NodeStatus.Pending.value:
-    #     return None
-    # else:
-    #     return last.__getattribute__(attr_name)
-
-
-def get_last_node_inst_result(flow_instance: Flow_Instance):
-    # 倒叙遍历Node_Instance，如果最后一个节点运行过有状态了，就返回这个的结果
-    # 如果最后一个节点没有运行过，就继续看上一个节点是不是stop和cancelled，是就返回结果
-    # 如果最后一个节点没有运行过，并且其他所有节点都没有stop和cancelled，则返回None
-    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.pk})
-    node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=True)
-    node_inst: Node_Instance
-    for node_inst in node_inst_list:
-        if node_inst.node_status != NodeStatus.Pending.value:
-            return node_inst.node_result
-        elif node_inst.node_status in [NodeStatus.Stop.value, NodeStatus.Cancelled.value]:
-            return node_inst.node_result
-        else:
-            continue
-    return None
+    last: Node_Instance = node_inst_list[0]
+    if last.node_status != NodeStatus.Pending.value:
+        return last.__getattribute__(attr_name)
+    else:
+        node_inst: Node_Instance
+        for node_inst in node_inst_list:
+            if node_inst.node_status in [NodeStatus.Stop.value, NodeStatus.Cancelled.value]:
+                return node_inst.__getattribute__(attr_name)
+            else:
+                continue
+        return None
 
 
 def check_flow_result(flow_instance: Flow_Instance):
@@ -103,7 +63,7 @@ def check_flow_result(flow_instance: Flow_Instance):
     # 查出对应的 flow_result_rules
     result_rule = FlowResultRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_result_rule)[0]
     if result_rule.rule_type == FlowRuleType.Default.value:
-        return get_last_node_inst_result(flow_instance)
+        return get_last_node_inst_attr(flow_instance, 'node_result')
     elif result_rule.rule_type == FlowRuleType.Script.value:
         # todo
         return None
@@ -119,7 +79,7 @@ def check_flow_status(flow_instance: Flow_Instance):
         return None
     status_rule = FlowStatusRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_status_rule)[0]
     if status_rule.rule_type == FlowRuleType.Default.value:
-        last_node_status = get_last_node_inst_status(flow_instance)
+        last_node_status = get_last_node_inst_attr(flow_instance, 'node_status')
         if last_node_status:
             return last_node_status
         else:

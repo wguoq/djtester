@@ -36,7 +36,7 @@ class FlowMgr:
 
     @staticmethod
     def run_flow_instance(flow_instance_pk) -> Flow_Instance:
-        # 先判断流程状态能不能运行
+        # 先判断流程状态 Finish Stop Cancelled 不运行
         flow_instance = FlowInstanceDBHelper().get_by_pk(flow_instance_pk)[0]
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value, FlowStatus.Cancelled.value]:
             print(f'流程状态是 {flow_instance.flow_status} 不运行; pk = {flow_instance.pk}')

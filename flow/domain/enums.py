@@ -21,7 +21,6 @@ class NodeStatus(Enum):
     Finish = 'finish'
     Cancelled = 'cancelled'
     Stop = 'stop'
-    Skip = 'skip'
     Unknown = 'unknown'
 
 
