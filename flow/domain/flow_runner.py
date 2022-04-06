@@ -8,7 +8,7 @@ def run_node_list(flow_instance: Flow_Instance) -> Flow_Instance:
     if NodeInstanceDBHelper().count_by({'flow_instance_id': flow_instance.pk}) == 0:
         raise Exception(f'没有查询到 flow_instance_pk = {flow_instance.pk} 对应的 node_inst ')
     # 查询node_instance,并排序
-    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.pk})
+    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance': flow_instance.pk})
     node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=False)
     # 按顺序执行node
     for node_inst in node_inst_list:
