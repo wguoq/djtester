@@ -99,10 +99,8 @@ class BaseDBHelper:
             # 要先把要修改的那条数据查询出来，获取完整的模型字段
             # 有外键不能用  row = self.model.objects.get(pk=pk).__dict__
             res = self.filter_by({'pk': pk})
-            print(f'ffffffffffffffff==={type(res[0])}')
             ss = serializers.serialize('json', res)
             r = json.loads(ss)[0]
-
             fields = r.get('fields')
             fields.update(data)
             new_model = self.model(**fields)
