@@ -1,43 +1,9 @@
 from django.db import models
 
-
-class TimeFields(models.Model):
-    created_time = models.DateTimeField(null=True,
-                                        auto_now_add=True,
-                                        verbose_name="创建时间")
-
-    modified_time = models.DateTimeField(null=True,
-                                         auto_now=True,
-                                         verbose_name="修改时间")
-
-    # 定义为抽象类,不会创建表
-    class Meta:
-        abstract = True
+from djtester.models import Time_Field, Code_Field
 
 
-class CodeFields(models.Model):
-    code = models.CharField(max_length=64,
-                            blank=True,
-                            null=True,
-                            verbose_name="编码")
-
-    version = models.IntegerField(blank=True,
-                                  default=1,
-                                  null=True,
-                                  verbose_name="版本")
-
-    ver_status = models.CharField(max_length=64,
-                                  default="ENABLED",
-                                  blank=True,
-                                  null=True,
-                                  verbose_name="版本状态",
-                                  help_text='ENABLED | DISABLED')
-
-    class Meta:
-        abstract = True
-
-
-class Test_Case(CodeFields, TimeFields):
+class Test_Case(Code_Field, Time_Field):
     tc_name = models.CharField(max_length=128,
                                null=True,
                                verbose_name="测试名称")
@@ -60,7 +26,7 @@ class Test_Case(CodeFields, TimeFields):
         ordering = ['-created_time']
 
 
-class Tc_Api(TimeFields):
+class Tc_Api(Time_Field):
     api_name = models.CharField(max_length=128,
                                 null=True,
                                 verbose_name="api名称")
@@ -98,7 +64,7 @@ class Tc_Api(TimeFields):
         ordering = ['-created_time']
 
 
-class Tc_Api_Data(TimeFields):
+class Tc_Api_Data(Time_Field):
     test_case = models.ForeignKey(to=Test_Case,
                                   null=True,
                                   on_delete=models.SET_NULL,
@@ -141,7 +107,7 @@ class Tc_Api_Data(TimeFields):
         ordering = ['-created_time']
 
 
-class Tc_Data(TimeFields):
+class Tc_Data(Time_Field):
     test_case = models.ForeignKey(to=Test_Case,
                                   null=True,
                                   on_delete=models.SET_NULL,
@@ -161,7 +127,7 @@ class Tc_Data(TimeFields):
         ordering = ['-created_time']
 
 
-class Tc_CheckPoint(TimeFields):
+class Tc_CheckPoint(Time_Field):
     tc_data_id = models.CharField(max_length=64,
                                   null=True,
                                   blank=True,
