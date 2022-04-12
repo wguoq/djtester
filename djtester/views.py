@@ -33,6 +33,9 @@ class BaseViews:
                 fields = r.get('fields')
                 fields.update({pk_name: pk})
                 ll.append(fields)
+                for l in ll:
+                    l['created_time'] = l.get('created_time').replace('T', ' ')
+                    l['modified_time'] = l.get('modified_time').replace('T', ' ')
             return dict(rows=ll, total=total)
         elif action == 'get':
             res = helper().get_by_pk(filters.get('pk'))
@@ -40,6 +43,8 @@ class BaseViews:
             r = json.loads(ss)[0]
             fields = r.get('fields')
             fields.update({pk_name: r.get('pk')})
+            fields['created_time'] = fields.get('created_time').replace('T', ' ')
+            fields['modified_time'] = fields.get('modified_time').replace('T', ' ')
             return dict(data=fields, total=1)
         elif action == 'getFieldInfo':
             result = helper().get_field_info()
@@ -78,6 +83,12 @@ class BaseViews:
         if action == 'save':
             res = helper().save_this(data)
             return model_to_dict(res)
+        elif action == 'saves':
+            ll = []
+            for d in data:
+                res = helper().save_this(d)
+                ll.append(model_to_dict(res))
+            return ll
         elif action == 'del':
             res = helper().del_(data)
             return res
@@ -101,5 +112,3 @@ class BaseViews:
                 traceback.print_exc()
                 context = dict(message=str(e))
                 return JsonResponse(context, status=500, safe=False)
-
-
