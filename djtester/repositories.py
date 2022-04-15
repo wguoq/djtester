@@ -25,6 +25,7 @@ class BaseDBHelper:
     def __init__(self, model_path: str, model_name: str):
         # 由于model.objects必须用本来的model来调用,所以import对应的model
         models = importlib.import_module(model_path)
+        self.model_name = model_name
         self.model = getattr(models, model_name)
 
     class FieldInfo(BaseModel):
@@ -34,6 +35,7 @@ class BaseDBHelper:
         primary_key = False
         max_length = ''
         default = ''
+        allow_null = True
         help_text = ''
 
     def get_field_info(self) -> list:
@@ -48,6 +50,27 @@ class BaseDBHelper:
                 field_info.primary_key = f.primary_key
                 field_info.verbose_name = f.verbose_name
                 field_info.default = None if isinstance(f.default, type) else f.default
+                field_info.allow_null = f.null
+                field_info.help_text = f.help_text
+                x = str(type(f))
+                x = x.split('.')
+                field_info.type = x[-1][:-2]
+            ll.append(field_info.__dict__)
+        return ll
+
+    def get_field_info_t(self) -> list:
+        fields = self.model._meta.get_fields()
+        ll = []
+        for f in fields:
+            field_info = self.FieldInfo()
+            if isinstance(f, ManyToOneRel or ManyToManyRel):
+                continue
+            else:
+                field_info.name = self.model_name + '@' + f.name
+                field_info.primary_key = f.primary_key
+                field_info.verbose_name = f.verbose_name
+                field_info.default = None if isinstance(f.default, type) else f.default
+                field_info.allow_null = f.null
                 field_info.help_text = f.help_text
                 x = str(type(f))
                 x = x.split('.')
