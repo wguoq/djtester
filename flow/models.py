@@ -235,7 +235,7 @@ class Flow_Node_Oder(Time_Field):
                                     verbose_name="流程设计id")
 
     node_order = models.IntegerField(blank=True,
-                                     null=True,
+                                     null=False,
                                      verbose_name="节点顺序")
 
     node_design = models.ForeignKey(to=Node_Design,
