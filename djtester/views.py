@@ -7,6 +7,7 @@ import importlib
 import json
 import traceback
 
+from django.db import transaction
 from django.forms import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse
 from django.core import serializers
@@ -81,7 +82,74 @@ class BaseViews:
             else:
                 return JsonResponse({}, status=200)
 
-    def _do_commit(self, repo_name, action, data):
+    @staticmethod
+    def _format_data(data: dict):
+        # 把 {'t1@name': '1name','t2@name': '2name'}
+        # 转成 {'t1': {'name': '1name'}, 't2': {'name': '2name'}}
+        res = {}
+        for k, v in data.items():
+            x = k.split('@')
+            y = res.get(x[0]) or {}
+            y.update({x[1]: v})
+            res.update({x[0]: y})
+        return res
+
+    @transaction.atomic
+    def _group_save(self, data: dict, condition: list = None):
+        # data = {'t1@name': '1name',
+        #         't1@code': '1code',
+        #         't2@name': '2name',
+        #         't2@code': '2code',
+        #         't3@name': '3name',
+        #         't3@t1code': '1code',
+        #         't3@t2code': '2code',
+        #         }
+        # constraint = ['t3@t1code=t1@code', 't3@t2code=t2@code']
+
+        if data is None or len(data) == 0:
+            return {}
+        data = self._format_data(data)
+        repos = data.keys()
+        res = {}
+        # 把所有表都保存一遍，把结果保存下来
+        for repo in repos:
+            repo__name = repo.replace('_', '') + 'DBHelper'
+            helper = getattr(self.module, repo__name)
+            r = helper().save_this(data.get(repo))
+            res.update({repo: model_to_dict(r)})
+        # 根据关联关系检查一遍结果，如果有值对不上的就要赋值
+        if condition is None or len(condition) == 0:
+            pass
+        else:
+            flag = []
+            for c in condition:
+                c = c.split('=')
+                left = c[0].split('@')
+                left_repo_name = left[0]
+                left_key = left[1]
+                left_value = res.get(left_repo_name).get(left_key)
+                right = c[1].split('@')
+                right_repo_name = right[0]
+                right_key = right[1]
+                right_value = res.get(right_repo_name).get(right_key)
+                if left_value == right_value:
+                    continue
+                else:
+                    res[left_repo_name][left_key] = right_value
+                    flag.append(left_repo_name)
+
+            flag = set(flag)
+            print(f'flag================== {flag}')
+            print(f'res================== {res}')
+            for f in flag:
+                repo_name = f.replace('_', '') + 'DBHelper'
+                data = res.get(f)
+                self._do_commit(repo_name, 'save', data, None)
+        return {}
+
+    def _do_commit(self, repo_name: str, action: str, data: dict, condition: list = None) -> dict or list:
+        if action == 'gsave':
+            return self._group_save(data, condition)
         helper = getattr(self.module, repo_name)
         if action == 'save':
             res = helper().save_this(data)
@@ -109,7 +177,10 @@ class BaseViews:
                 repo_name = str(repo) + 'DBHelper'
                 action = payload.get('action')
                 data = payload.get('data')
-                context = self._do_commit(repo_name, action, data)
+                print(f'data============ {data}')
+                condition = payload.get('condition')
+                print(f'condition============ {condition}')
+                context = self._do_commit(repo_name=repo_name, action=action, data=data, condition=condition)
                 return JsonResponse(context, status=200, safe=False)
             except Exception as e:
                 traceback.print_exc()

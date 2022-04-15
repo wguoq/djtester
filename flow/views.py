@@ -6,7 +6,7 @@ class FlowViews(BaseViews):
     def __init__(self):
         super().__init__('flow.repositories')
 
-    def _do_commit(self, repo_name, action, data):
+    def _do_commit(self, repo_name, action, data, condition):
         if action == "instance":
             a = FlowMgr().instance_flow(data.get('pk'), data.get('flow_data'))
             return dict(pk=a.pk)
@@ -14,4 +14,4 @@ class FlowViews(BaseViews):
             a = FlowMgr().run_flow_instance(data.get('pk'))
             return dict(pk=a.pk)
         else:
-            return super()._do_commit(repo_name, action, data)
+            return super()._do_commit(repo_name, action, data, condition)
