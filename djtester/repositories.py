@@ -66,6 +66,7 @@ class BaseDBHelper:
             if isinstance(f, ManyToOneRel or ManyToManyRel):
                 continue
             else:
+                # 给组合表单用，把表名拼接到字段名之前
                 field_info.name = self.model_name + '@' + f.name
                 field_info.primary_key = f.primary_key
                 field_info.verbose_name = f.verbose_name
