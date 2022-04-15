@@ -49,6 +49,9 @@ class BaseViews:
         elif action == 'getFieldInfo':
             result = helper().get_field_info()
             return dict(fields=result)
+        elif action == 'getFieldInfoT':
+            result = helper().get_field_info_t()
+            return dict(fields=result)
         else:
             return {}
 
