@@ -1,9 +1,9 @@
 from django.db import models
 
-from djtester.models import Time_Field, Code_Field
+from djtester.models import TimeField, CodeField
 
 
-class Test_Case(Code_Field, Time_Field):
+class TestCase(CodeField, TimeField):
     tc_name = models.CharField(max_length=128,
                                null=True,
                                verbose_name="测试名称")
@@ -26,7 +26,7 @@ class Test_Case(Code_Field, Time_Field):
         ordering = ['-created_time']
 
 
-class Tc_Api(Time_Field):
+class TcApi(TimeField):
     api_name = models.CharField(max_length=128,
                                 null=True,
                                 verbose_name="api名称")
@@ -64,8 +64,8 @@ class Tc_Api(Time_Field):
         ordering = ['-created_time']
 
 
-class Tc_Api_Data(Time_Field):
-    test_case = models.ForeignKey(to=Test_Case,
+class TcApiData(TimeField):
+    test_case = models.ForeignKey(to=TestCase,
                                   null=True,
                                   on_delete=models.SET_NULL,
                                   blank=True,
@@ -107,8 +107,8 @@ class Tc_Api_Data(Time_Field):
         ordering = ['-created_time']
 
 
-class Tc_Data(Time_Field):
-    test_case = models.ForeignKey(to=Test_Case,
+class TcData(TimeField):
+    test_case = models.ForeignKey(to=TestCase,
                                   null=True,
                                   on_delete=models.SET_NULL,
                                   blank=True,
@@ -127,7 +127,7 @@ class Tc_Data(Time_Field):
         ordering = ['-created_time']
 
 
-class Tc_CheckPoint(Time_Field):
+class TcCheckPoint(TimeField):
     tc_data_id = models.CharField(max_length=64,
                                   null=True,
                                   blank=True,

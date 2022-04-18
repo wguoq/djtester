@@ -2,7 +2,7 @@ import importlib
 import operator
 from djtester.tools_man import get_node_func_list
 from flow.domain.enums import NodeStatus
-from flow.models import Node_Instance, Node_Status_Rule
+from flow.models import NodeInstance, NodeStatusRule
 from flow.repositories import NodeStatusRuleDBHelper
 
 
@@ -13,7 +13,7 @@ def get_node_func_class(node_func_code: str):
     return getattr(module, node_func.get('class_name'))
 
 
-def check_node_status(result: str, node_instance: Node_Instance):
+def check_node_status(result: str, node_instance: NodeInstance):
     # 状态规则不应该重复也不应该同时满足多条，所以只匹配一次
     rule_list = NodeStatusRuleDBHelper().filter_by({'node_design': node_instance.node_design.id})
     for rule in rule_list:
@@ -25,7 +25,7 @@ def check_node_status(result: str, node_instance: Node_Instance):
     return NodeStatus.Unknown.value
 
 
-def _get_node_status_by_rule(rule: Node_Status_Rule, result: str):
+def _get_node_status_by_rule(rule: NodeStatusRule, result: str):
     status_operator = rule.status_operator
     expect_result = rule.expect_result
     if status_operator == 'eq':
@@ -43,14 +43,14 @@ def _get_node_status_by_rule(rule: Node_Status_Rule, result: str):
 
 
 class NodeInstanceRunnerResult:
-    def __init__(self, node_instance: Node_Instance, return_data: dict = None):
+    def __init__(self, node_instance: NodeInstance, return_data: dict = None):
         self.node_instance = node_instance
         self.return_data: dict = return_data if return_data else {}
 
 
 class NodeInstanceRunner:
     @staticmethod
-    def run(node_instance: Node_Instance, flow_data: dict = None) -> NodeInstanceRunnerResult:
+    def run(node_instance: NodeInstance, flow_data: dict = None) -> NodeInstanceRunnerResult:
         if flow_data is None:
             flow_data = {}
         # 根据 node_func_name 去载入对应执行类

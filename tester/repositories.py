@@ -12,7 +12,7 @@ REPOSITORIES_PATH = 'tester.repositories'
 
 class TestCaseDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Test_Case.__name__)
+        super().__init__(MODELS_PATH, TestCase.__name__)
 
     def save_this(self, data: dict):
         code = data.get('code')
@@ -26,12 +26,12 @@ class TestCaseDBHelper(BaseDBHelper):
 
 class TcApiDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Tc_Api.__name__)
+        super().__init__(MODELS_PATH, TcApi.__name__)
 
 
 class TcApiDataDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Tc_Api_Data.__name__)
+        super().__init__(MODELS_PATH, TcApiData.__name__)
 
     def save_this(self, data: dict):
         data['test_case'] = save_foreignkey(REPOSITORIES_PATH, TestCaseDBHelper.__name__, data.get('test_case'))
@@ -40,7 +40,7 @@ class TcApiDataDBHelper(BaseDBHelper):
 
 class TcDataDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Tc_Data.__name__)
+        super().__init__(MODELS_PATH, TcData.__name__)
 
     @transaction.atomic
     def save_this(self, data: dict):
@@ -50,4 +50,4 @@ class TcDataDBHelper(BaseDBHelper):
 
 class TcCheckPointDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Tc_CheckPoint.__name__)
+        super().__init__(MODELS_PATH, TcCheckPoint.__name__)

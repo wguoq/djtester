@@ -34,6 +34,7 @@ class BaseViews:
                 fields = r.get('fields')
                 fields.update({pk_name: pk})
                 ll.append(fields)
+                # 处理时间字段里面那个T
                 for l in ll:
                     l['created_time'] = l.get('created_time').replace('T', ' ')
                     l['modified_time'] = l.get('modified_time').replace('T', ' ')

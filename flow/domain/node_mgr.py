@@ -2,11 +2,11 @@ from django.forms import model_to_dict
 from djtester.tools_man import verify_str
 from flow.domain.enums import NodeStatus, NodeStartRuleTarget, NodeStartRuleType
 from flow.domain.node_runner import NodeInstanceRunner, check_node_status
-from flow.models import Node_Instance, Node_Start_Rule
+from flow.models import NodeInstance, NodeStartRule
 from flow.repositories import NodeInstanceDBHelper, NodeStartRuleDBHelper
 
 
-def _check_rule(start_rule: Node_Start_Rule, flow_data: dict, node_instance: Node_Instance):
+def _check_rule(start_rule: NodeStartRule, flow_data: dict, node_instance: NodeInstance):
     rule_type = start_rule.rule_type
     rule_target = start_rule.rule_target
     rule_where = start_rule.rule_where
@@ -23,7 +23,7 @@ def _check_rule(start_rule: Node_Start_Rule, flow_data: dict, node_instance: Nod
             node_inst_list = NodeInstanceDBHelper().filter_by(
                 {'flow_instance': flow_instance.pk, 'node_order__lt': node_order})
             node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=False)
-            last: Node_Instance = node_inst_list[-1]
+            last: NodeInstance = node_inst_list[-1]
             if last.node_status == NodeStatus.Finish.value:
                 return True
             else:
@@ -49,7 +49,7 @@ def _check_rule(start_rule: Node_Start_Rule, flow_data: dict, node_instance: Nod
         raise Exception(f' 无法识别的 rule_type = {rule_type} 只能是 default | custom')
 
 
-def check_node_start_rule(node_instance: Node_Instance, flow_data: dict):
+def check_node_start_rule(node_instance: NodeInstance, flow_data: dict):
     # 没有查询到启动条件就不运行
     if NodeStartRuleDBHelper().count_by({'node_design': node_instance.node_design.pk}) == 0:
         return False
@@ -77,7 +77,7 @@ def check_node_start_rule(node_instance: Node_Instance, flow_data: dict):
 
 
 class RunNodeInstResult:
-    def __init__(self, node_instance: Node_Instance, return_data: dict = None):
+    def __init__(self, node_instance: NodeInstance, return_data: dict = None):
         self.node_instance = node_instance
         self.return_data = return_data if return_data else {}
 
@@ -85,7 +85,7 @@ class RunNodeInstResult:
 class NodeMgr:
 
     @staticmethod
-    def run_node_instance(node_instance: Node_Instance, flow_data: dict) -> RunNodeInstResult:
+    def run_node_instance(node_instance: NodeInstance, flow_data: dict) -> RunNodeInstResult:
         # 1.只运行 node 状态是 Pending 和 Unknown 的,不运行 Running 状态的避免重复提交
         if node_instance.node_status in [NodeStatus.Pending.value, NodeStatus.Unknown.value]:
             # 判断是否满足节点运行条件
@@ -104,7 +104,7 @@ class NodeMgr:
             return RunNodeInstResult(node_instance)
 
     @staticmethod
-    def reset_node_status(new_result: str, node_instance_id) -> Node_Instance:
+    def reset_node_status(new_result: str, node_instance_id) -> NodeInstance:
         node_instance = NodeInstanceDBHelper().get_by_pk(node_instance_id)[0]
         node_instance.node_result = new_result
         node_instance.node_status = check_node_status(new_result, node_instance)

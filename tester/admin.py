@@ -39,8 +39,8 @@ class Tc_CheckPoint_Admin(admin.ModelAdmin):
     list_display = get_field_name(field_info)
 
 
-admin.site.register(Test_Case, Test_Case_Admin)
-admin.site.register(Tc_Api, Tc_Api_Admin)
-admin.site.register(Tc_Api_Data, Tc_Api_DataAdmin)
-admin.site.register(Tc_Data, Tc_Data_DataAdmin)
-admin.site.register(Tc_CheckPoint, Tc_CheckPoint_Admin)
+admin.site.register(TestCase, Test_Case_Admin)
+admin.site.register(TcApi, Tc_Api_Admin)
+admin.site.register(TcApiData, Tc_Api_DataAdmin)
+admin.site.register(TcData, Tc_Data_DataAdmin)
+admin.site.register(TcCheckPoint, Tc_CheckPoint_Admin)

@@ -10,7 +10,7 @@ REPOSITORIES_PATH = 'flow.repositories'
 
 class FlowDesignDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Flow_Design.__name__)
+        super().__init__(MODELS_PATH, FlowDesign.__name__)
 
     def save_this(self, data: dict):
         code = data.get('code')
@@ -24,17 +24,17 @@ class FlowDesignDBHelper(BaseDBHelper):
 
 class FlowStatusRuleDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Flow_Status_Rule.__name__)
+        super().__init__(MODELS_PATH, FlowStatusRule.__name__)
 
 
 class FlowResultRuleDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Flow_Result_Rule.__name__)
+        super().__init__(MODELS_PATH, FlowResultRule.__name__)
 
 
 class NodeDesignDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Node_Design.__name__)
+        super().__init__(MODELS_PATH, NodeDesign.__name__)
 
     def save_this(self, data: dict):
         code = data.get('code')
@@ -48,7 +48,7 @@ class NodeDesignDBHelper(BaseDBHelper):
 
 class NodeStatusRuleDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Node_Status_Rule.__name__)
+        super().__init__(MODELS_PATH, NodeStatusRule.__name__)
 
     @transaction.atomic
     def save_this(self, data: dict):
@@ -58,7 +58,7 @@ class NodeStatusRuleDBHelper(BaseDBHelper):
 
 class FlowInstanceDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Flow_Instance.__name__)
+        super().__init__(MODELS_PATH, FlowInstance.__name__)
 
     @transaction.atomic
     def save_this(self, data: dict):
@@ -68,7 +68,7 @@ class FlowInstanceDBHelper(BaseDBHelper):
 
 class NodeInstanceDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Node_Instance.__name__)
+        super().__init__(MODELS_PATH, NodeInstance.__name__)
 
     @transaction.atomic
     def save_this(self, data: dict):
@@ -80,7 +80,7 @@ class NodeInstanceDBHelper(BaseDBHelper):
 
 class FlowNodeOderDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Flow_Node_Oder.__name__)
+        super().__init__(MODELS_PATH, FlowNodeOder.__name__)
 
     @transaction.atomic
     def save_this(self, data: dict):
@@ -111,7 +111,7 @@ class FlowNodeOderDBHelper(BaseDBHelper):
 
 class NodeStartRuleDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, Node_Start_Rule.__name__)
+        super().__init__(MODELS_PATH, NodeStartRule.__name__)
 
     @transaction.atomic
     def save_this(self, data: dict):

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Time_Field(models.Model):
+class TimeField(models.Model):
     created_time = models.DateTimeField(null=True,
                                         auto_now_add=True,
                                         verbose_name="创建时间")
@@ -15,7 +15,7 @@ class Time_Field(models.Model):
         abstract = True
 
 
-class Code_Field(models.Model):
+class CodeField(models.Model):
     code = models.CharField(max_length=64,
                             blank=True,
                             null=True,

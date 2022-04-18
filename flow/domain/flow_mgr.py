@@ -9,7 +9,7 @@ from flow.repositories import *
 class FlowMgr:
     @staticmethod
     @transaction.atomic
-    def instance_flow(flow_design_pk, flow_data: dict = None) -> Flow_Instance:
+    def instance_flow(flow_design_pk, flow_data: dict = None) -> FlowInstance:
         if FlowNodeOderDBHelper().count_by({'flow_design': flow_design_pk}) == 0:
             raise Exception("node_order_list 为空，不能实例化")
         else:
@@ -20,7 +20,7 @@ class FlowMgr:
             flow_instance = FlowInstanceDBHelper().save_this(fi)
             # 查询出 node_list 保存 node_instance
             order_list = FlowNodeOderDBHelper().filter_by({'flow_design': flow_design_pk})
-            order: Flow_Node_Oder
+            order: FlowNodeOder
             for order in order_list:
                 node_design = order.node_design
                 node_func_code = node_design.node_func_code
@@ -35,7 +35,7 @@ class FlowMgr:
         return flow_instance
 
     @staticmethod
-    def run_flow_instance(flow_instance_pk) -> Flow_Instance:
+    def run_flow_instance(flow_instance_pk) -> FlowInstance:
         # 先判断流程状态 Finish Stop Cancelled 不运行
         flow_instance = FlowInstanceDBHelper().get_by_pk(flow_instance_pk)[0]
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value, FlowStatus.Cancelled.value]:
@@ -56,7 +56,7 @@ class FlowMgr:
 
     @staticmethod
     @transaction.atomic
-    def rollback_to_node(node_instance: Node_Instance) -> Flow_Instance:
+    def rollback_to_node(node_instance: NodeInstance) -> FlowInstance:
         """
         只能回滚流程和节点的执行结果和状态,不能回滚flow_data和node_data
         也无法回滚子流程,对于子流程会重新跑一条新的flow_inst出来

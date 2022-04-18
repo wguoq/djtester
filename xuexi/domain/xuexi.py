@@ -175,3 +175,12 @@ a = 123
 b = '-asd113'
 print(a/10)
 print(int(b))
+
+
+a = "a"
+b = a or None
+print(b)
+
+a = 0
+b = a or None
+print(b)

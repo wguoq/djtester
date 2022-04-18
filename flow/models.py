@@ -1,9 +1,9 @@
 from django.db import models
 
-from djtester.models import Time_Field, Code_Field
+from djtester.models import TimeField, CodeField
 
 
-class Flow_Design(Time_Field, Code_Field):
+class FlowDesign(TimeField, CodeField):
     """
     流程设计表
     """
@@ -38,7 +38,7 @@ class Flow_Design(Time_Field, Code_Field):
         ordering = ['-id']
 
 
-class Flow_Result_Rule(Time_Field):
+class FlowResultRule(TimeField):
     """
     流程结果规则表
     """
@@ -66,7 +66,7 @@ class Flow_Result_Rule(Time_Field):
         ordering = ['-id']
 
 
-class Flow_Status_Rule(Time_Field):
+class FlowStatusRule(TimeField):
     """
     流程状态规则表
     """
@@ -95,7 +95,7 @@ class Flow_Status_Rule(Time_Field):
         ordering = ['-id']
 
 
-class Node_Design(Time_Field, Code_Field):
+class NodeDesign(TimeField, CodeField):
     """
     流程节点设计表
     """
@@ -136,7 +136,7 @@ class Node_Design(Time_Field, Code_Field):
         ordering = ['-id']
 
 
-class Node_Start_Rule(Time_Field):
+class NodeStartRule(TimeField):
     rule_type = models.CharField(max_length=64,
                                  blank=True,
                                  null=True,
@@ -173,7 +173,7 @@ class Node_Start_Rule(Time_Field):
                                   null=True,
                                   verbose_name="匹配值")
 
-    node_design = models.ForeignKey(to=Node_Design,
+    node_design = models.ForeignKey(to=NodeDesign,
                                     on_delete=models.SET_NULL,
                                     blank=True,
                                     null=True,
@@ -185,7 +185,7 @@ class Node_Start_Rule(Time_Field):
         ordering = ['-id']
 
 
-class Node_Status_Rule(Time_Field):
+class NodeStatusRule(TimeField):
     """
     节点状态规则表
     """
@@ -209,7 +209,7 @@ class Node_Status_Rule(Time_Field):
                                    verbose_name="节点状态",
                                    help_text='running | finish | cancelled | stop | skip')
 
-    node_design = models.ForeignKey(to=Node_Design,
+    node_design = models.ForeignKey(to=NodeDesign,
                                     on_delete=models.SET_NULL,
                                     blank=True,
                                     null=True,
@@ -223,12 +223,12 @@ class Node_Status_Rule(Time_Field):
         ordering = ['-id']
 
 
-class Flow_Node_Oder(Time_Field):
+class FlowNodeOder(TimeField):
     """
     流程设计,节点顺序,节点设计关联表
     """
 
-    flow_design = models.ForeignKey(to=Flow_Design,
+    flow_design = models.ForeignKey(to=FlowDesign,
                                     on_delete=models.CASCADE,
                                     blank=True,
                                     null=True,
@@ -238,7 +238,7 @@ class Flow_Node_Oder(Time_Field):
                                      null=False,
                                      verbose_name="节点顺序")
 
-    node_design = models.ForeignKey(to=Node_Design,
+    node_design = models.ForeignKey(to=NodeDesign,
                                     on_delete=models.CASCADE,
                                     blank=True,
                                     null=True,
@@ -250,12 +250,12 @@ class Flow_Node_Oder(Time_Field):
         ordering = ['-id']
 
 
-class Flow_Instance(Time_Field):
+class FlowInstance(TimeField):
     """
     流程实例表
     """
 
-    flow_design = models.ForeignKey(to=Flow_Design,
+    flow_design = models.ForeignKey(to=FlowDesign,
                                     on_delete=models.SET_NULL,
                                     blank=True,
                                     null=True,
@@ -284,12 +284,12 @@ class Flow_Instance(Time_Field):
         ordering = ['-id']
 
 
-class Node_Instance(Time_Field):
+class NodeInstance(TimeField):
     """
     流程节点实例表
     """
 
-    node_design = models.ForeignKey(to=Node_Design,
+    node_design = models.ForeignKey(to=NodeDesign,
                                     on_delete=models.SET_NULL,
                                     blank=True,
                                     null=True,
@@ -319,7 +319,7 @@ class Node_Instance(Time_Field):
                                    null=True,
                                    verbose_name="节点结果")
 
-    flow_instance = models.ForeignKey(to=Flow_Instance,
+    flow_instance = models.ForeignKey(to=FlowInstance,
                                       on_delete=models.CASCADE,
                                       blank=True,
                                       null=True,

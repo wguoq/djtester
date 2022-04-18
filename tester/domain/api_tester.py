@@ -10,7 +10,7 @@ from tester.repositories import *
 
 class ApiTester:
     @staticmethod
-    def _set_data_config(data: Tc_Api_Data, data_config: dict):
+    def _set_data_config(data: TcApiData, data_config: dict):
         data.host = data_config.get('host') or data.host
         data.port = data_config.get('port') if data_config.get('port') is not None else data.port
         data.timeout = data_config.get('timeout') if data_config.get('timeout') is not None else data.timeout
@@ -20,7 +20,7 @@ class ApiTester:
         return data
 
     @staticmethod
-    def _request_send(api: Tc_Api, data: Tc_Api_Data):
+    def _request_send(api: TcApi, data: TcApiData):
         protocol = api.protocol or 'http'
         if data.host is None:
             raise Exception(f'host 不能为空')
@@ -55,7 +55,7 @@ class ApiTester:
             raise Exception(f'不支持的 api.method {api.method}')
 
     @staticmethod
-    def _get_target(res, check: Tc_CheckPoint):
+    def _get_target(res, check: TcCheckPoint):
         if check.target == 'status_code':
             data = res.status_code
         elif check.target == 'json':
@@ -68,7 +68,7 @@ class ApiTester:
             return data
 
     def _verify_check_point(self, res, check):
-        check: Tc_CheckPoint
+        check: TcCheckPoint
         target = self._get_target(res, check)
         if check.operator == 'eq':
             return operator.eq(str(target), str(check.expect))
@@ -78,12 +78,12 @@ class ApiTester:
             raise Exception(f'不支持的 check.operator {check.operator}')
 
     def run(self, test_case_pk, data_config: dict = None) -> dict:
-        test_case: Test_Case = TestCaseDBHelper().get_by_pk(test_case_pk)[0]
+        test_case: TestCase = TestCaseDBHelper().get_by_pk(test_case_pk)[0]
         # 一条用例对应一个接口
         if TcApiDBHelper().count_by({'pk': test_case.tc_action_id}) == 0:
             raise Exception(f'没有查询到对应的tc_api')
         else:
-            tc_api: Tc_Api = TcApiDBHelper().get_by_pk(test_case.tc_action_id)[0]
+            tc_api: TcApi = TcApiDBHelper().get_by_pk(test_case.tc_action_id)[0]
         # 一条用例可以有多条数据
         if TcApiDataDBHelper().count_by({'test_case': test_case.pk}) == 0:
             raise Exception(f'没有查询到对应的tc_data')
