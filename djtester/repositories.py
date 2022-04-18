@@ -59,25 +59,10 @@ class BaseDBHelper:
         return ll
 
     def get_field_info_t(self) -> list:
-        fields = self.model._meta.get_fields()
-        ll = []
-        for f in fields:
-            field_info = self.FieldInfo()
-            if isinstance(f, ManyToOneRel or ManyToManyRel):
-                continue
-            else:
-                # 给组合表单用，把表名拼接到字段名之前
-                field_info.name = self.model_name + '@' + f.name
-                field_info.primary_key = f.primary_key
-                field_info.verbose_name = f.verbose_name
-                field_info.default = None if isinstance(f.default, type) else f.default
-                field_info.allow_null = f.null
-                field_info.help_text = f.help_text
-                x = str(type(f))
-                x = x.split('.')
-                field_info.type = x[-1][:-2]
-            ll.append(field_info.__dict__)
-        return ll
+        aa = self.get_field_info()
+        for a in aa:
+            a['name'] = self.model_name + '@' + a.get('name')
+        return aa
 
     def get_pk_name(self):
         field_info = self.get_field_info()
