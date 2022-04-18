@@ -35,7 +35,7 @@ class BaseDBHelper:
         primary_key = False
         max_length = ''
         default = ''
-        allow_null = True
+        required = True
         help_text = ''
 
     def get_field_info(self) -> list:
@@ -50,7 +50,7 @@ class BaseDBHelper:
                 field_info.primary_key = f.primary_key
                 field_info.verbose_name = f.verbose_name
                 field_info.default = None if isinstance(f.default, type) else f.default
-                field_info.allow_null = f.null
+                field_info.required = False if f.null else True
                 field_info.help_text = f.help_text
                 x = str(type(f))
                 x = x.split('.')
@@ -61,7 +61,7 @@ class BaseDBHelper:
     def get_table_info(self) -> list:
         aa = self.get_field_info()
         for a in aa:
-            a['name'] = self.model_name + '@' + a.get('name')
+            a['name'] = self.model_name + '__' + a.get('name')
         return aa
 
     def get_pk_name(self):
