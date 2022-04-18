@@ -87,8 +87,8 @@ class FlowNodeOderDBHelper(BaseDBHelper):
         flow_design = data.get('flow_design')
         node_design = data.get('node_design')
         node_order = data.get('node_order')
-        # if node_order is None or len(str(node_order)) == 0:
-        #     raise Exception(' node_order 不能为空并且要为数字')
+        if node_order is None or len(str(node_order)) == 0:
+            raise Exception(' node_order 不能为空并且要为正整数')
         # elif int(node_order) <= 0:
         #     raise Exception(' node_order 需要是大于0的正整数')
         # if flow_design is None or len(str(flow_design)) == 0:
