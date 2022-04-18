@@ -163,10 +163,10 @@ class BaseViews:
                 self._do_commit(repo_name, 'save', data, None)
         return {}
 
-    def _do_commit(self, repo_name: str, action: str, data: dict, condition: list = None) -> dict or list:
+    def _do_commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == 'save_group':
             return self._group_save(data, condition)
-        helper = getattr(self.module, repo_name)
+        helper = getattr(self.module, repo + 'DBHelper')
         if action == 'save':
             res = helper().save_this(data)
             return model_to_dict(res)
@@ -190,13 +190,10 @@ class BaseViews:
             print(f"payload = {payload}")
             try:
                 repo = payload.get('repo')
-                repo_name = str(repo) + 'DBHelper'
                 action = payload.get('action')
                 data = payload.get('data')
-                print(f'data============ {data}')
                 condition = payload.get('condition')
-                print(f'condition============ {condition}')
-                context = self._do_commit(repo_name=repo_name, action=action, data=data, condition=condition)
+                context = self._do_commit(repo=repo, action=action, data=data, condition=condition)
                 return JsonResponse(context, status=200, safe=False)
             except Exception as e:
                 traceback.print_exc()

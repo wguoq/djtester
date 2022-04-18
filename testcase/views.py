@@ -6,10 +6,10 @@ class TestCaseViews(BaseViews):
     def __init__(self):
         super().__init__('testcase.repositories')
 
-    def _do_commit(self, repo_name: str, action: str, data: dict, condition: list = None) -> dict or list:
+    def _do_commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == "run":
             test_case_pk = data.get('pk')
             test_config = data.get('config') or {}
             return TesterMgr().run_case(test_case_pk, test_config)
         else:
-            return super()._do_commit(repo_name, action, data, condition)
+            return super()._do_commit(repo, action, data, condition)
