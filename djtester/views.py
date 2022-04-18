@@ -41,7 +41,8 @@ class BaseViews:
                 L['modified_time'] = L.get('modified_time').replace('T', ' ')
         return ll
 
-    def _do_query(self, repo_name, action, filters, page_size, page_number):
+    def _do_query(self, repo, action, filters, page_size, page_number):
+        repo_name = str(repo) + 'DBHelper'
         helper = getattr(self.module, repo_name)
         if action == 'filter':
             total = helper().count_by(filters)
@@ -56,6 +57,22 @@ class BaseViews:
         elif action == 'getTableInfo':
             result = helper().get_table_info()
             return dict(fields=result)
+        elif action == 'table_filter':
+            total = helper().count_by(filters)
+            res = self._do_filter(helper, filters, page_size, page_number)
+            a = {}
+            for r in res:
+                for k, v in r.items():
+                    new_k = repo + '__' + k
+                    a.update({new_k: v})
+            return dict(rows=a, total=total)
+        elif action == 'table_get':
+            res = self._do_filter(helper, filters, page_size, page_number)[0]
+            a = {}
+            for k, v in res.items():
+                new_k = repo + '__' + k
+                a.update({new_k: v})
+            return dict(data=a, total=1)
         else:
             return {}
 
@@ -68,13 +85,12 @@ class BaseViews:
             if params and len(params) >= 1:
                 try:
                     repo = params.get('repo')
-                    repo_name = str(repo) + 'DBHelper'
                     action = params.get('action')
                     # filters取出来是str，要转成dict
                     filters = json.loads(params.get('filters')) if params.get('filters') else {}
                     page_size = params.get('pageSize')
                     page_number = params.get('pageNumber')
-                    context = self._do_query(repo_name, action, filters, page_size, page_number)
+                    context = self._do_query(repo, action, filters, page_size, page_number)
                     # safe=False 关闭safe模式才能序列化list数据
                     return JsonResponse(context, status=200, safe=False)
                 except Exception as e:
@@ -91,7 +107,7 @@ class BaseViews:
         # 转成 {'t1': {'name': '1name'}, 't2': {'name': '2name'}}
         res = {}
         for k, v in data.items():
-            x = k.split('@')
+            x = k.split('__')
             y = res.get(x[0]) or {}
             y.update({x[1]: v})
             res.update({x[0]: y})
@@ -108,7 +124,6 @@ class BaseViews:
         #         't3@t2code': '2code',
         #         }
         # constraint = ['t3@t1code=t1@code', 't3@t2code=t2@code']
-
         if data is None or len(data) == 0:
             return {}
         data = self._format_data(data)
@@ -127,11 +142,11 @@ class BaseViews:
             flag = []
             for c in condition:
                 c = c.split('=')
-                left = c[0].split('@')
+                left = c[0].split('__')
                 left_repo_name = left[0]
                 left_key = left[1]
                 left_value = res.get(left_repo_name).get(left_key)
-                right = c[1].split('@')
+                right = c[1].split('__')
                 right_repo_name = right[0]
                 right_key = right[1]
                 right_value = res.get(right_repo_name).get(right_key)
