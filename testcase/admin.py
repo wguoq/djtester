@@ -14,11 +14,6 @@ class Test_Case_Admin(admin.ModelAdmin):
     list_display = get_field_name(field_info)
 
 
-class Test_Case_Admin(admin.ModelAdmin):
-    field_info = TestCaseDBHelper().get_field_info()
-    list_display = get_field_name(field_info)
-
-
 class Tc_Api_Admin(admin.ModelAdmin):
     field_info = TcApiDBHelper().get_field_info()
     list_display = get_field_name(field_info)

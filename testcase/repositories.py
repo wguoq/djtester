@@ -6,8 +6,8 @@ from django.db import transaction
 from djtester.repositories import BaseDBHelper, save_foreignkey
 from .models import *
 
-MODELS_PATH = 'tester.models'
-REPOSITORIES_PATH = 'tester.repositories'
+MODELS_PATH = 'testcase.models'
+REPOSITORIES_PATH = 'testcase.repositories'
 
 
 class TestCaseDBHelper(BaseDBHelper):

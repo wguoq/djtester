@@ -1,5 +1,5 @@
 from django.test import TestCase
-from tester.service import TesterService
+from testcase.service import TesterService
 
 case1 = {
     "test_case_code": "tc1622690409",

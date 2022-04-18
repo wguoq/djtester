@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hello.apps.HelloConfig',
-    'tester.apps.TesterConfig',
+    'testcase.apps.TestcaseConfig',
     'flow.apps.FlowConfig',
     'mock.apps.MockConfig'
 ]

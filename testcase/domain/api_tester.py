@@ -4,8 +4,8 @@ import requests
 from django.forms import model_to_dict
 from django.http import response
 
-from tester.utils import *
-from tester.repositories import *
+from testcase.utils import *
+from testcase.repositories import *
 
 
 class ApiTester:

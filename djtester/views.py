@@ -140,8 +140,6 @@ class BaseViews:
                     flag.append(left_repo_name)
 
             flag = set(flag)
-            print(f'flag================== {flag}')
-            print(f'res================== {res}')
             for f in flag:
                 repo_name = f.replace('_', '') + 'DBHelper'
                 data = res.get(f)

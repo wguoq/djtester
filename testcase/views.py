@@ -1,12 +1,12 @@
 from djtester.views import BaseViews
-from tester.domain.tester_mgr import TesterMgr
+from testcase.domain.tester_mgr import TesterMgr
 
 
-class TesterViews(BaseViews):
+class TestCaseViews(BaseViews):
     def __init__(self):
-        super().__init__('tester.repositories')
+        super().__init__('testcase.repositories')
 
-    def _do_commit(self, repo_name, action, data, condition):
+    def _do_commit(self, repo_name: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == "run":
             test_case_pk = data.get('pk')
             test_config = data.get('config') or {}

@@ -1,7 +1,7 @@
 from djtester.decorators import reg_node_func
 from flow.domain.node_func import NodeFuncBase
-from tester.domain.api_tester import ApiTester
-from tester.repositories import *
+from testcase.domain.api_tester import ApiTester
+from testcase.repositories import *
 
 
 class TesterMgr:
@@ -23,7 +23,7 @@ class TesterMgr:
 
 
 class RunTestCase(NodeFuncBase):
-    @reg_node_func(node_type='api_tester', class_path='tester.domain.tester_mgr')
+    @reg_node_func(node_type='api_tester', class_path='testcase.domain.tester_mgr')
     def __init__(self):
         pass
 
