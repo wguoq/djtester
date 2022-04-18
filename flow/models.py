@@ -33,9 +33,7 @@ class FlowDesign(TimeField, CodeField):
     objects = models.Manager()
 
     class Meta:
-        # 自定义表名
-        db_table = "flow_design"
-        ordering = ['-id']
+        ordering = ['-created_time']
 
 
 class FlowResultRule(TimeField):
@@ -61,9 +59,7 @@ class FlowResultRule(TimeField):
     objects = models.Manager()
 
     class Meta:
-        # 自定义表名
-        db_table = "flow_result_rule"
-        ordering = ['-id']
+        ordering = ['-created_time']
 
 
 class FlowStatusRule(TimeField):
@@ -90,9 +86,7 @@ class FlowStatusRule(TimeField):
     objects = models.Manager()
 
     class Meta:
-        # 自定义表名
-        db_table = "flow_status_rule"
-        ordering = ['-id']
+        ordering = ['-created_time']
 
 
 class NodeDesign(TimeField, CodeField):
@@ -131,9 +125,7 @@ class NodeDesign(TimeField, CodeField):
     objects = models.Manager()
 
     class Meta:
-        # 自定义表名
-        db_table = "flow_node_design"
-        ordering = ['-id']
+        ordering = ['-created_time']
 
 
 class NodeStartRule(TimeField):
@@ -180,9 +172,7 @@ class NodeStartRule(TimeField):
                                     verbose_name="节点设计id")
 
     class Meta:
-        # 自定义表名
-        db_table = "node_start_rule"
-        ordering = ['-id']
+        ordering = ['-created_time']
 
 
 class NodeStatusRule(TimeField):
@@ -219,8 +209,8 @@ class NodeStatusRule(TimeField):
 
     class Meta:
         # 自定义表名
-        db_table = "flow_node_status_rule"
-        ordering = ['-id']
+        # db_table = "flow_node_status_rule"
+        ordering = ['-created_time']
 
 
 class FlowNodeOder(TimeField):
@@ -245,9 +235,7 @@ class FlowNodeOder(TimeField):
                                     verbose_name="节点设计id")
 
     class Meta:
-        # 自定义表名
-        db_table = "flow_node_design_oder"
-        ordering = ['-id']
+        ordering = ['-created_time']
 
 
 class FlowInstance(TimeField):
@@ -279,9 +267,7 @@ class FlowInstance(TimeField):
     objects = models.Manager()
 
     class Meta:
-        # 自定义表名
-        db_table = "flow_instance"
-        ordering = ['-id']
+        ordering = ['-created_time']
 
 
 class NodeInstance(TimeField):
@@ -328,6 +314,4 @@ class NodeInstance(TimeField):
     objects = models.Manager()
 
     class Meta:
-        # 自定义表名
-        db_table = "flow_node_instance"
-        ordering = ['-id']
+        ordering = ['-created_time']
