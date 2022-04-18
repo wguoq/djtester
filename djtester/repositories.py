@@ -58,7 +58,7 @@ class BaseDBHelper:
             ll.append(field_info.__dict__)
         return ll
 
-    def get_field_info_t(self) -> list:
+    def get_table_info(self) -> list:
         aa = self.get_field_info()
         for a in aa:
             a['name'] = self.model_name + '@' + a.get('name')

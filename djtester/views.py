@@ -17,42 +17,44 @@ class BaseViews:
     def __init__(self, module_path: str):
         self.module = importlib.import_module(module_path)
 
-    def _do_query(self, repo_name, action, filters, page_size, page_number):
-        helper = getattr(self.module, repo_name)
-        pk_name = helper().get_pk_name()
-        if action == 'filter':
+    @staticmethod
+    def _do_filter(helper, filters, page_size, page_number):
+        if page_size and page_number:
             offset = int(page_size) * (int(page_number) - 1)
             limit = int(page_size) * int(page_number)
-            total = helper().count_by(filters)
-            res = helper().filter_by(kwargs=filters, offset=offset, limit=limit)
-            # res是QuerySet，需要转成dict才能以json格式返回，并且主键名字被显示成pk，需要把model字段的名字替换进来
-            ss = serializers.serialize('json', res)
-            res_list = json.loads(ss)
-            ll = []
-            for r in res_list:
-                pk = r.pop('pk')
-                fields = r.get('fields')
-                fields.update({pk_name: pk})
-                ll.append(fields)
-                # 处理时间字段里面那个T
-                for l in ll:
-                    l['created_time'] = l.get('created_time').replace('T', ' ')
-                    l['modified_time'] = l.get('modified_time').replace('T', ' ')
-            return dict(rows=ll, total=total)
-        elif action == 'get':
-            res = helper().get_by_pk(filters.get('pk'))
-            ss = serializers.serialize('json', res)
-            r = json.loads(ss)[0]
+        else:
+            offset = None
+            limit = None
+        res = helper().filter_by(kwargs=filters, offset=offset, limit=limit)
+        # res是QuerySet，需要转成dict才能以json格式返回，并且主键名字被显示成pk，需要把model字段的名字替换进来
+        ss = serializers.serialize('json', res)
+        res_list = json.loads(ss)
+        ll = []
+        for r in res_list:
+            pk = r.pop('pk')
             fields = r.get('fields')
-            fields.update({pk_name: r.get('pk')})
-            fields['created_time'] = fields.get('created_time').replace('T', ' ')
-            fields['modified_time'] = fields.get('modified_time').replace('T', ' ')
-            return dict(data=fields, total=1)
+            fields.update({helper().get_pk_name(): pk})
+            ll.append(fields)
+            # 处理时间字段里面那个T
+            for L in ll:
+                L['created_time'] = L.get('created_time').replace('T', ' ')
+                L['modified_time'] = L.get('modified_time').replace('T', ' ')
+        return ll
+
+    def _do_query(self, repo_name, action, filters, page_size, page_number):
+        helper = getattr(self.module, repo_name)
+        if action == 'filter':
+            total = helper().count_by(filters)
+            a = self._do_filter(helper, filters, page_size, page_number)
+            return dict(rows=a, total=total)
+        elif action == 'get':
+            a = self._do_filter(helper, filters, page_size, page_number)
+            return dict(data=a[0], total=1)
         elif action == 'getFieldInfo':
             result = helper().get_field_info()
             return dict(fields=result)
-        elif action == 'getFieldInfoT':
-            result = helper().get_field_info_t()
+        elif action == 'getTableInfo':
+            result = helper().get_table_info()
             return dict(fields=result)
         else:
             return {}
@@ -114,7 +116,7 @@ class BaseViews:
         res = {}
         # 把所有表都保存一遍，把结果保存下来
         for repo in repos:
-            repo__name = repo.replace('_', '') + 'DBHelper'
+            repo__name = repo + 'DBHelper'
             helper = getattr(self.module, repo__name)
             r = helper().save_this(data.get(repo))
             res.update({repo: model_to_dict(r)})
@@ -138,16 +140,16 @@ class BaseViews:
                 else:
                     res[left_repo_name][left_key] = right_value
                     flag.append(left_repo_name)
-
+            # 用set方法去重
             flag = set(flag)
             for f in flag:
-                repo_name = f.replace('_', '') + 'DBHelper'
+                repo_name = f + 'DBHelper'
                 data = res.get(f)
                 self._do_commit(repo_name, 'save', data, None)
         return {}
 
     def _do_commit(self, repo_name: str, action: str, data: dict, condition: list = None) -> dict or list:
-        if action == 'gsave':
+        if action == 'save_group':
             return self._group_save(data, condition)
         helper = getattr(self.module, repo_name)
         if action == 'save':
