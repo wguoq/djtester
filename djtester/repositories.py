@@ -1,12 +1,13 @@
 import importlib
 import json
 from django.core import serializers
-from django.db.models import ManyToOneRel, ManyToManyRel, QuerySet
+from django.db.models import ManyToOneRel, ManyToManyRel, QuerySet, ForeignKey
 from pydantic import BaseModel
 
 
-def save_foreignkey(db_helper_path, db_helper_name, foreignkey_data):
-    models_ = importlib.import_module(db_helper_path)
+def save_foreignkey(app_name, db_helper_name, foreignkey_data):
+    repo_path = app_name + '.repositories'
+    models_ = importlib.import_module(repo_path)
     db_helper = getattr(models_, db_helper_name)
     if foreignkey_data is None:
         return None
@@ -22,11 +23,12 @@ def save_foreignkey(db_helper_path, db_helper_name, foreignkey_data):
 
 
 class BaseDBHelper:
-    def __init__(self, model_path: str, model_name: str):
+    def __init__(self, app_name: str, model_name: str):
         # 由于model.objects必须用本来的model来调用,所以import对应的model
-        models = importlib.import_module(model_path)
+        model_path = app_name + '.models'
+        self.models = importlib.import_module(model_path)
         self.model_name = model_name
-        self.model = getattr(models, model_name)
+        self.model = getattr(self.models, model_name)
 
     class FieldInfo(BaseModel):
         name = ''
@@ -96,10 +98,27 @@ class BaseDBHelper:
     def get_by_pk(self, pk) -> QuerySet:
         return self.filter_by({'pk': pk})
 
+    def _get_fk_inst(self, data: dict):
+        """
+        如果要自己处理外键就重写这个方法
+        """
+        # 尝试去读取外键数据，并替换进data
+        for field in self.model._meta.get_fields():
+            if isinstance(field, ForeignKey):
+                field_name = field.name
+                related_model = field.related_model
+                try:
+                    fk_data = related_model.objects.get(pk=data.get(field_name))
+                    data.update({field_name: fk_data})
+                except Exception as e:
+                    # 如果没有get到数据那就赋值为None
+                    data.update({field_name: None})
+            else:
+                continue
+        return data
+
     def save_this(self, data: dict):
-        """
-        如果有外键要单独保存之后把对象放进data里
-        """
+        data = self._get_fk_inst(data)
         new_model = self.model(**data)
         pk = new_model.pk
         if pk:

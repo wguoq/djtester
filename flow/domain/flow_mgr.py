@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.forms import model_to_dict
 from djtester.decorators import reg_node_func
 from flow.domain.enums import FlowType

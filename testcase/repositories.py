@@ -1,18 +1,14 @@
 import random
 import time
-
-from django.db import transaction
-
-from djtester.repositories import BaseDBHelper, save_foreignkey
+from djtester.repositories import BaseDBHelper
 from .models import *
 
-MODELS_PATH = 'testcase.models'
-REPOSITORIES_PATH = 'testcase.repositories'
+APP_NAME = 'testcase'
 
 
 class TestCaseDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, TestCase.__name__)
+        super().__init__(APP_NAME, TestCase.__name__)
 
     def save_this(self, data: dict):
         code = data.get('code')
@@ -26,28 +22,19 @@ class TestCaseDBHelper(BaseDBHelper):
 
 class TcApiDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, TcApi.__name__)
+        super().__init__(APP_NAME, TcApi.__name__)
 
 
 class TcApiDataDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, TcApiData.__name__)
-
-    def save_this(self, data: dict):
-        data['test_case'] = save_foreignkey(REPOSITORIES_PATH, TestCaseDBHelper.__name__, data.get('test_case'))
-        return super().save_this(data)
+        super().__init__(APP_NAME, TcApiData.__name__)
 
 
 class TcDataDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, TcData.__name__)
-
-    @transaction.atomic
-    def save_this(self, data: dict):
-        data['test_case'] = save_foreignkey(REPOSITORIES_PATH, TestCaseDBHelper.__name__, data.get('test_case'))
-        return super().save_this(data)
+        super().__init__(APP_NAME, TcData.__name__)
 
 
 class TcCheckPointDBHelper(BaseDBHelper):
     def __init__(self):
-        super().__init__(MODELS_PATH, TcCheckPoint.__name__)
+        super().__init__(APP_NAME, TcCheckPoint.__name__)
