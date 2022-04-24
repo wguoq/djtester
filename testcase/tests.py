@@ -1,5 +1,6 @@
 from django.test import TestCase
-from testcase.service import TesterService
+
+from testcase.domain.tester_mgr import TesterMgr
 
 case1 = {
     "test_case_code": "tc1622690409",
@@ -55,15 +56,11 @@ case1 = {
     ],
 }
 
-
-class TestTester(TestCase):
-    def test(self):
-        # print(f'===== new_test_config ======')
-        # config = TesterServicer.new_test_config()
-        # print(config)
-        print(f'===== run_testcase case1 ======')
-        aaa = TesterService().run_testcase(case1)
-        print(aaa.__dict__)
-        print(aaa.test_case_result)
+#
+# class TestTester(TestCase):
+#     def test(self):
+#         aaa = TesterMgr().run_case(case1)
+#         print(aaa.__dict__)
+#         print(aaa.test_case_result)
 
 

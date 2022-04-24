@@ -1,6 +1,9 @@
+from django.forms import model_to_dict
 from django.test import TestCase
-from djtester.all_app_service import TestCaseService
-from .service import *
+
+from flow.domain.flow_mgr import FlowMgr
+from flow.domain.node_mgr import NodeMgr
+from flow.repositories import *
 
 
 class Test_Flow(TestCase):
@@ -300,14 +303,14 @@ class Test_Flow(TestCase):
         print(f'==== 新增 flow_design ==== ')
         flow_design_list = [flow_design_1, flow_design_2]
         for flow_design in flow_design_list:
-            FlowDesignDBHelper().save_this(flow_design)
-        fd1 = FlowDesignDBHelper().filter_by({'pk': 1})[0]
+            FlowDesignRepository().save_this(flow_design)
+        fd1 = FlowDesignRepository().filter_by({'pk': 1})[0]
         print(model_to_dict(fd1))
 
         print(f'==== 新增 node_design ==== ')
         node_design_list = [node_design_1, node_design_2, node_design_3, node_design_4, ]
         for node_design in node_design_list:
-            a = NodeDesignDBHelper().save_this(node_design)
+            a = NodeDesignRepository().save_this(node_design)
             print(model_to_dict(a))
 
         print(f'==== 新增 node_status_rule ==== ')
@@ -316,25 +319,25 @@ class Test_Flow(TestCase):
                                  ]
 
         for node_status_rule in node_status_rule_list:
-            a = NodeStatusRuleDBHelper().save_this(node_status_rule)
+            a = NodeStatusRuleRepository().save_this(node_status_rule)
             print(model_to_dict(a))
 
         print(f'==== 新增 node_start_rule_design ==== ')
         node_start_rule_list = [node_start_rule_1, node_start_rule_2, node_start_rule_3, node_start_rule_4]
 
         for node_start_rule in node_start_rule_list:
-            a = NodeStartRuleDBHelper().save_this(node_start_rule)
+            a = NodeStartRuleRepository().save_this(node_start_rule)
             print(model_to_dict(a))
 
         print(f'==== 新增 node_start_rule ==== ')
         node_start_rule_list = [node_start_rule_1, node_start_rule_2, node_start_rule_3, node_start_rule_4, ]
 
         for node_start_rule in node_start_rule_list:
-            a = NodeStartRuleDBHelper().save_this(node_start_rule)
+            a = NodeStartRuleRepository().save_this(node_start_rule)
             print(model_to_dict(a))
 
         print(f'==== 查询 nd1 by pk ==== ')
-        query_nd1 = NodeDesignDBHelper().get_by({'pk': 1})
+        query_nd1 = NodeDesignRepository().get_by_pk(1)[0]
         print(model_to_dict(query_nd1))
 
         print(f'==== 查询 nd1 node_status_rule_set.all ==== ')
@@ -342,41 +345,41 @@ class Test_Flow(TestCase):
         for a in nd1_node_status_rule_set_all:
             print(model_to_dict(a))
 
-        test_case_servicer = TestCaseService().test_case_service()
-        test_case_servicer().add(case1)
-        test_case_servicer().add(case2)
+        # test_case_servicer = TestCaseService().test_case_service()
+        # test_case_servicer().add(case1)
+        # test_case_servicer().add(case2)
 
         print(f'==== 新增 flow_node_design_oder ====')
         flow_node_design_oder_list = [flow_node_design_oder_1, flow_node_design_oder_2, flow_node_design_oder_3,
                                       flow_node_design_oder_4, flow_node_design_oder_5, ]
         for flow_node_design_oder in flow_node_design_oder_list:
-            a = FlowNodeOderDBHelper().save_this(flow_node_design_oder)
+            a = FlowNodeOderRepository().save_this(flow_node_design_oder)
             print(model_to_dict(a))
 
         print(f'==== 新增 flow_result_rule ====')
         flow_result_rule_list = [flow_result_rule_1, ]
         for flow_result_rule in flow_result_rule_list:
-            a = FlowResultRuleDBHelper().save_this(flow_result_rule)
+            a = FlowResultRuleRepository().save_this(flow_result_rule)
             print(model_to_dict(a))
 
         print(f'==== 新增 flow_status_rule ====')
         flow_status_rule_list = [flow_status_rule_1, ]
         for flow_status_rule in flow_status_rule_list:
-            a = FlowStatusRuleDBHelper().save_this(flow_status_rule)
+            a = FlowStatusRuleRepository().save_this(flow_status_rule)
             print(model_to_dict(a))
 
         print(f'==== instance_flow_design fd1 ====')
-        fd1 = FlowDesignDBHelper().get_by({'pk': 1})
+        fd1 = FlowDesignRepository().get_by_pk(1)[0]
         flow_data = {'flag': 'ok'}
         FlowMgr.instance_flow(fd1, flow_data)
 
         print(f'==== 查询初始化的 node_instance all  ====')
-        ni_all = NodeInstanceDBHelper().filter_by({})
+        ni_all = NodeInstanceRepository().filter_by({})
         for ni in ni_all:
             print(model_to_dict(ni))
 
         print(f'==== 查询初始化的 flow_instance all ====')
-        fi_all = FlowInstanceDBHelper().filter_by({})
+        fi_all = FlowInstanceRepository().filter_by({})
         for fi in fi_all:
             print(fi)
             print(f'==== 运行 flow_instance ====')
@@ -390,12 +393,12 @@ class Test_Flow(TestCase):
             print(model_to_dict(run_flow))
 
         print(f'==== 查询运行的 node_instance all ====')
-        ni_all = NodeInstanceDBHelper().filter_by()
+        ni_all = NodeInstanceRepository().filter_by()
         for ni in ni_all:
             print(model_to_dict(ni))
 
         print(f'==== 查询运行的 flow_instance all ====')
-        aaa = FlowInstanceDBHelper().filter_by()
+        aaa = FlowInstanceRepository().filter_by()
         for a in aaa:
             print(model_to_dict(a))
 
@@ -404,18 +407,18 @@ class Test_Flow(TestCase):
         print(model_to_dict(a))
 
         print(f'==== 回滚到3号节点 rollback_to_node  ====')
-        node_ins_2 = NodeInstanceDBHelper().get_by({'pk': 3})
+        node_ins_2 = NodeInstanceRepository().get_by_pk(3)[0]
         a = FlowMgr.rollback_to_node(node_ins_2)
         print(model_to_dict(a))
-        aaa = NodeInstanceDBHelper().filter_by()
+        aaa = NodeInstanceRepository().filter_by()
         for a in aaa:
             print(model_to_dict(a))
-        flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
+        flow_inst_1 = FlowInstanceRepository().get_by_pk(1)[0]
         print(f'==== 重新运行flow_inst_1 ====')
         FlowMgr.run_flow_instance(flow_inst_1)
-        flow_inst_1 = FlowInstanceDBHelper().get_by({'pk': 1})
+        flow_inst_1 = FlowInstanceRepository().get_by_pk(1)[0]
         print(flow_inst_1)
-        aaa = NodeInstanceDBHelper().filter_by()
+        aaa = NodeInstanceRepository().filter_by()
         for a in aaa:
             print(model_to_dict(a))
             # print(a.__getattribute__(result))

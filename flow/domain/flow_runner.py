@@ -1,14 +1,14 @@
 from flow.domain.enums import NodeStatus, FlowRuleType, FlowStatus
 from flow.domain.node_mgr import NodeMgr
 from flow.models import FlowInstance, NodeInstance
-from flow.repositories import FlowStatusRuleDBHelper, FlowResultRuleDBHelper, NodeInstanceDBHelper
+from flow.repositories import FlowStatusRuleRepository, FlowResultRuleRepository, NodeInstanceRepository
 
 
 def run_node_list(flow_instance: FlowInstance) -> FlowInstance:
-    if NodeInstanceDBHelper().count_by({'flow_instance_id': flow_instance.pk}) == 0:
+    if NodeInstanceRepository().count_by({'flow_instance_id': flow_instance.pk}) == 0:
         raise Exception(f'没有查询到 flow_instance_pk = {flow_instance.pk} 对应的 node_inst ')
     # 查询node_instance,并排序
-    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance': flow_instance.pk})
+    node_inst_list = NodeInstanceRepository().filter_by({'flow_instance': flow_instance.pk})
     node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=False)
     # 按顺序执行node
     for node_inst in node_inst_list:
@@ -39,7 +39,7 @@ def update_result_and_status(flow_instance: FlowInstance) -> FlowInstance:
 def get_last_node_inst_attr(flow_instance: FlowInstance, attr_name):
     # 倒叙遍历Node_Instance，如果最后一个节点运行过有状态了，就返回这个
     # 如果最后一个节点没有运行过，就继续看上一个节点是不是stop和cancelled，是就返回，否则返回None
-    node_inst_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance.pk})
+    node_inst_list = NodeInstanceRepository().filter_by({'flow_instance_id': flow_instance.pk})
     node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=True)
     last: NodeInstance = node_inst_list[0]
     if last.node_status != NodeStatus.Pending.value:
@@ -58,10 +58,10 @@ def check_flow_result(flow_instance: FlowInstance):
     result_rule = flow_instance.flow_design.fw_result_rule
     if result_rule is None \
             or len(result_rule) == 0 \
-            or FlowResultRuleDBHelper().count_by({'pk': flow_instance.flow_design.fw_result_rule}) == 0:
+            or FlowResultRuleRepository().count_by({'pk': flow_instance.flow_design.fw_result_rule}) == 0:
         return None
     # 查出对应的 flow_result_rules
-    result_rule = FlowResultRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_result_rule)[0]
+    result_rule = FlowResultRuleRepository().get_by_pk(flow_instance.flow_design.fw_result_rule)[0]
     if result_rule.rule_type == FlowRuleType.Default.value:
         return get_last_node_inst_attr(flow_instance, 'node_result')
     elif result_rule.rule_type == FlowRuleType.Script.value:
@@ -75,9 +75,9 @@ def check_flow_status(flow_instance: FlowInstance):
     status_rule = flow_instance.flow_design.fw_status_rule
     if status_rule is None \
             or len(status_rule) == 0 \
-            or FlowStatusRuleDBHelper().count_by({"pk": status_rule}) == 0:
+            or FlowStatusRuleRepository().count_by({"pk": status_rule}) == 0:
         return None
-    status_rule = FlowStatusRuleDBHelper().get_by_pk(flow_instance.flow_design.fw_status_rule)[0]
+    status_rule = FlowStatusRuleRepository().get_by_pk(flow_instance.flow_design.fw_status_rule)[0]
     if status_rule.rule_type == FlowRuleType.Default.value:
         last_node_status = get_last_node_inst_attr(flow_instance, 'node_status')
         if last_node_status:

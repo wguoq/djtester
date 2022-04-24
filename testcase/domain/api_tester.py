@@ -78,17 +78,17 @@ class ApiTester:
             raise Exception(f'不支持的 check.operator {check.operator}')
 
     def run(self, test_case_pk, data_config: dict = None) -> dict:
-        test_case: TestCase = TestCaseDBHelper().get_by_pk(test_case_pk)[0]
+        test_case: TestCase = TestCaseRepository().get_by_pk(test_case_pk)[0]
         # 一条用例对应一个接口
-        if TcApiDBHelper().count_by({'pk': test_case.tc_action_id}) == 0:
+        if TcApiRepository().count_by({'pk': test_case.tc_action_id}) == 0:
             raise Exception(f'没有查询到对应的tc_api')
         else:
-            tc_api: TcApi = TcApiDBHelper().get_by_pk(test_case.tc_action_id)[0]
+            tc_api: TcApi = TcApiRepository().get_by_pk(test_case.tc_action_id)[0]
         # 一条用例可以有多条数据
-        if TcApiDataDBHelper().count_by({'test_case': test_case.pk}) == 0:
+        if TcApiDataRepository().count_by({'test_case': test_case.pk}) == 0:
             raise Exception(f'没有查询到对应的tc_data')
         else:
-            tc_data_list = TcApiDataDBHelper().filter_by({'test_case': test_case.pk})
+            tc_data_list = TcApiDataRepository().filter_by({'test_case': test_case.pk})
         test_verify_list = []
         for data in tc_data_list:
             if data_config:
@@ -98,11 +98,11 @@ class ApiTester:
             # 发包
             res = self._request_send(tc_api, data)
             # 一条数据可以对应多条验证点
-            if TcCheckPointDBHelper().count_by({'tc_data_id': data.pk}) == 0:
+            if TcCheckPointRepository().count_by({'tc_data_id': data.pk}) == 0:
                 # 如果没有检查点，默认通过
                 test_verify_list.append(dict(data_name=data.data_name, check_name=None, result=True))
             else:
-                check_list = TcCheckPointDBHelper().filter_by({'tc_data_id': data.pk})
+                check_list = TcCheckPointRepository().filter_by({'tc_data_id': data.pk})
                 for check in check_list:
                     test_verify_list.append(dict(data_name=data.data_name,
                                                  check_name=check.check_name,

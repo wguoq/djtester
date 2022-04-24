@@ -11,16 +11,16 @@ class FlowMgr:
     @staticmethod
     @transaction.atomic
     def instance_flow(flow_design_pk, flow_data: dict = None) -> FlowInstance:
-        if FlowNodeOderDBHelper().count_by({'flow_design': flow_design_pk}) == 0:
+        if FlowNodeOderRepository().count_by({'flow_design': flow_design_pk}) == 0:
             raise Exception("node_order_list 为空，不能实例化")
         else:
             # 保存 flow_instance
             flow_data = flow_data or {}
             fi = {'flow_design': flow_design_pk,
                   'flow_data': flow_data}
-            flow_instance = FlowInstanceDBHelper().save_this(fi)
+            flow_instance = FlowInstanceRepository().save_this(fi)
             # 查询出 node_list 保存 node_instance
-            order_list = FlowNodeOderDBHelper().filter_by({'flow_design': flow_design_pk})
+            order_list = FlowNodeOderRepository().filter_by({'flow_design': flow_design_pk})
             order: FlowNodeOder
             for order in order_list:
                 node_design = order.node_design
@@ -32,13 +32,13 @@ class FlowMgr:
                       'node_func_data': node_func_data,
                       'node_order': node_order,
                       'flow_instance': flow_instance.pk}
-                NodeInstanceDBHelper().save_this(ni)
+                NodeInstanceRepository().save_this(ni)
         return flow_instance
 
     @staticmethod
     def run_flow_instance(flow_instance_pk) -> FlowInstance:
         # 先判断流程状态 Finish Stop Cancelled 不运行
-        flow_instance = FlowInstanceDBHelper().get_by_pk(flow_instance_pk)[0]
+        flow_instance = FlowInstanceRepository().get_by_pk(flow_instance_pk)[0]
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value, FlowStatus.Cancelled.value]:
             print(f'流程状态是 {flow_instance.flow_status} 不运行; pk = {flow_instance.pk}')
             return flow_instance
@@ -52,7 +52,7 @@ class FlowMgr:
             else:
                 raise Exception(f'无法识别的 flow_type = {flow_type},serial=串行;parallel=并行')
             # 保存
-            FlowInstanceDBHelper().save_this(model_to_dict(flow_instance))
+            FlowInstanceRepository().save_this(model_to_dict(flow_instance))
             return flow_instance
 
     @staticmethod
@@ -65,24 +65,24 @@ class FlowMgr:
         # 把这条node的状态和结果都重置并保存
         node_instance.node_result = None
         node_instance.node_status = NodeStatus.Pending.value
-        NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
+        NodeInstanceRepository().save_this(model_to_dict(node_instance))
         # 查询出流程里所有节点,把当前节点之后的全部重置
         flow_instance_id = node_instance.flow_instance.id
         node_order_ = node_instance.node_order
-        node_ins_list = NodeInstanceDBHelper().filter_by({'flow_instance_id': flow_instance_id})
+        node_ins_list = NodeInstanceRepository().filter_by({'flow_instance_id': flow_instance_id})
         sorted(node_ins_list, key=lambda item: item.node_order, reverse=True)
         for node_ins in node_ins_list:
             if node_ins.node_order > node_order_:
                 node_ins.node_result = None
                 node_ins.node_status = NodeStatus.Pending.value
-                NodeInstanceDBHelper().save_this(model_to_dict(node_ins))
+                NodeInstanceRepository().save_this(model_to_dict(node_ins))
             else:
                 continue
         # 把对应的flow_instance的状态也要重置并保存
         flow_instance_ = node_instance.flow_instance
         flow_instance_.flow_result = None
         flow_instance_.flow_status = FlowStatus.Running.value
-        FlowInstanceDBHelper().save_this(model_to_dict(flow_instance_))
+        FlowInstanceRepository().save_this(model_to_dict(flow_instance_))
         return flow_instance_
 
 
@@ -102,7 +102,7 @@ class NodeFuncRunFLowDesign(NodeFuncBase):
 
     def do_func(self, node_func_param: dict, flow_data: dict):
         flow_design_id = node_func_param.get('pk')
-        flow_design = FlowDesignDBHelper().get_by_pk(flow_design_id)
+        flow_design = FlowDesignRepository().get_by_pk(flow_design_id)
         flow_instance = FlowMgr().instance_flow(flow_design, flow_data)
         new_flow_instance = FlowMgr().run_flow_instance(flow_instance.pk)
         return self.NodeFuncResult(new_flow_instance.flow_result)

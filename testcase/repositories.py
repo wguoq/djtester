@@ -1,12 +1,12 @@
 import random
 import time
-from djtester.repositories import BaseDBHelper
+from djtester.repositories import BaseRepository
 from .models import *
 
 APP_NAME = 'testcase'
 
 
-class TestCaseDBHelper(BaseDBHelper):
+class TestCaseRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, TestCase.__name__)
 
@@ -20,21 +20,21 @@ class TestCaseDBHelper(BaseDBHelper):
         return super().save_this(data)
 
 
-class TcApiDBHelper(BaseDBHelper):
+class TcApiRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, TcApi.__name__)
 
 
-class TcApiDataDBHelper(BaseDBHelper):
+class TcApiDataRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, TcApiData.__name__)
 
 
-class TcDataDBHelper(BaseDBHelper):
+class TcDataRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, TcData.__name__)
 
 
-class TcCheckPointDBHelper(BaseDBHelper):
+class TcCheckPointRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, TcCheckPoint.__name__)

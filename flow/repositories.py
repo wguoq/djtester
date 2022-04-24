@@ -1,13 +1,13 @@
 import random
 import time
 from django.db import transaction
-from djtester.repositories import BaseDBHelper, save_foreignkey
+from djtester.repositories import BaseRepository, save_foreignkey
 from flow.models import *
 
 APP_NAME = 'flow'
 
 
-class FlowDesignDBHelper(BaseDBHelper):
+class FlowDesignRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, FlowDesign.__name__)
 
@@ -21,17 +21,17 @@ class FlowDesignDBHelper(BaseDBHelper):
         return super().save_this(data)
 
 
-class FlowStatusRuleDBHelper(BaseDBHelper):
+class FlowStatusRuleRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, FlowStatusRule.__name__)
 
 
-class FlowResultRuleDBHelper(BaseDBHelper):
+class FlowResultRuleRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, FlowResultRule.__name__)
 
 
-class NodeDesignDBHelper(BaseDBHelper):
+class NodeDesignRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, NodeDesign.__name__)
 
@@ -45,22 +45,22 @@ class NodeDesignDBHelper(BaseDBHelper):
         return super().save_this(data)
 
 
-class NodeStatusRuleDBHelper(BaseDBHelper):
+class NodeStatusRuleRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, NodeStatusRule.__name__)
 
 
-class FlowInstanceDBHelper(BaseDBHelper):
+class FlowInstanceRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, FlowInstance.__name__)
 
 
-class NodeInstanceDBHelper(BaseDBHelper):
+class NodeInstanceRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, NodeInstance.__name__)
 
 
-class FlowNodeOderDBHelper(BaseDBHelper):
+class FlowNodeOderRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, FlowNodeOder.__name__)
 
@@ -81,6 +81,6 @@ class FlowNodeOderDBHelper(BaseDBHelper):
         return data
 
 
-class NodeStartRuleDBHelper(BaseDBHelper):
+class NodeStartRuleRepository(BaseRepository):
     def __init__(self):
         super().__init__(APP_NAME, NodeStartRule.__name__)

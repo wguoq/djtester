@@ -3,7 +3,7 @@ import operator
 from djtester.tools_man import get_node_func_list
 from flow.domain.enums import NodeStatus
 from flow.models import NodeInstance, NodeStatusRule
-from flow.repositories import NodeStatusRuleDBHelper
+from flow.repositories import NodeStatusRuleRepository
 
 
 def get_node_func_class(node_func_code: str):
@@ -15,7 +15,7 @@ def get_node_func_class(node_func_code: str):
 
 def check_node_status(result: str, node_instance: NodeInstance):
     # 状态规则不应该重复也不应该同时满足多条，所以只匹配一次
-    rule_list = NodeStatusRuleDBHelper().filter_by({'node_design': node_instance.node_design.id})
+    rule_list = NodeStatusRuleRepository().filter_by({'node_design': node_instance.node_design.id})
     for rule in rule_list:
         node_status = _get_node_status_by_rule(rule, result)
         if node_status:

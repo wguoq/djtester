@@ -3,7 +3,7 @@ from djtester.tools_man import verify_str
 from flow.domain.enums import NodeStatus, NodeStartRuleTarget, NodeStartRuleType
 from flow.domain.node_runner import NodeInstanceRunner, check_node_status
 from flow.models import NodeInstance, NodeStartRule
-from flow.repositories import NodeInstanceDBHelper, NodeStartRuleDBHelper
+from flow.repositories import NodeInstanceRepository, NodeStartRuleRepository
 
 
 def _check_rule(start_rule: NodeStartRule, flow_data: dict, node_instance: NodeInstance):
@@ -16,11 +16,11 @@ def _check_rule(start_rule: NodeStartRule, flow_data: dict, node_instance: NodeI
         # 默认是上一节点状态为finish
         node_order = node_instance.node_order
         flow_instance = node_instance.flow_instance
-        if NodeInstanceDBHelper().count_by({'flow_instance': flow_instance.pk, 'node_order__lt': node_order}) == 0:
+        if NodeInstanceRepository().count_by({'flow_instance': flow_instance.pk, 'node_order__lt': node_order}) == 0:
             # 如果没有node_order比当前小的那就说明这是第一条
             return True
         else:
-            node_inst_list = NodeInstanceDBHelper().filter_by(
+            node_inst_list = NodeInstanceRepository().filter_by(
                 {'flow_instance': flow_instance.pk, 'node_order__lt': node_order})
             node_inst_list = sorted(node_inst_list, key=lambda item: item.node_order, reverse=False)
             last: NodeInstance = node_inst_list[-1]
@@ -35,12 +35,12 @@ def _check_rule(start_rule: NodeStartRule, flow_data: dict, node_instance: NodeI
             return verify_str(data, rule_operator, rule_value)
         elif rule_target == NodeStartRuleTarget.NodeResult.value:
             # 约定 rule_where 填的是 node_design_id
-            node_instance_target = NodeInstanceDBHelper().filter_by({'flow_instance_id': node_instance.flow_instance.id,
+            node_instance_target = NodeInstanceRepository().filter_by({'flow_instance_id': node_instance.flow_instance.id,
                                                                      'node_design_id': rule_where})[0]
             return verify_str(node_instance_target.node_result, rule_operator, rule_value)
         elif rule_target == NodeStartRuleTarget.NodeStatus.value:
             # 约定 rule_where 填的是 node_design_id
-            node_instance_target = NodeInstanceDBHelper().filter_by({'flow_instance_id': node_instance.flow_instance.id,
+            node_instance_target = NodeInstanceRepository().filter_by({'flow_instance_id': node_instance.flow_instance.id,
                                                                      'node_design_id': rule_where})[0]
             return verify_str(node_instance_target.node_status, rule_operator, rule_value)
         else:
@@ -51,9 +51,9 @@ def _check_rule(start_rule: NodeStartRule, flow_data: dict, node_instance: NodeI
 
 def check_node_start_rule(node_instance: NodeInstance, flow_data: dict):
     # 没有查询到启动条件就不运行
-    if NodeStartRuleDBHelper().count_by({'node_design': node_instance.node_design.pk}) == 0:
+    if NodeStartRuleRepository().count_by({'node_design': node_instance.node_design.pk}) == 0:
         return False
-    start_rule_list = NodeStartRuleDBHelper().filter_by({'node_design': node_instance.node_design.id})
+    start_rule_list = NodeStartRuleRepository().filter_by({'node_design': node_instance.node_design.id})
     start_rule_type = node_instance.node_design.start_rule_mode
     if start_rule_type == NodeStartRuleType.AND.value:
         for start_rule in start_rule_list:
@@ -95,7 +95,7 @@ class NodeMgr:
                 node_instance = run_node_result.node_instance
                 return_data = run_node_result.return_data
                 # 保存新的 Node_Instance
-                NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
+                NodeInstanceRepository().save_this(model_to_dict(node_instance))
                 return RunNodeInstResult(node_instance, return_data)
             else:
                 print(f'NodeMgr:节点不满足运行状态 node_instance_id = {node_instance.pk}')
@@ -105,8 +105,8 @@ class NodeMgr:
 
     @staticmethod
     def reset_node_status(new_result: str, node_instance_id) -> NodeInstance:
-        node_instance = NodeInstanceDBHelper().get_by_pk(node_instance_id)[0]
+        node_instance = NodeInstanceRepository().get_by_pk(node_instance_id)[0]
         node_instance.node_result = new_result
         node_instance.node_status = check_node_status(new_result, node_instance)
-        NodeInstanceDBHelper().save_this(model_to_dict(node_instance))
+        NodeInstanceRepository().save_this(model_to_dict(node_instance))
         return node_instance

@@ -8,9 +8,9 @@ class TesterMgr:
 
     @staticmethod
     def run_case(test_case_pk, data_config: dict = None):
-        if TestCaseDBHelper().count_by({'pk': test_case_pk}) == 0:
+        if TestCaseRepository().count_by({'pk': test_case_pk}) == 0:
             raise Exception(f'没有查询到test_case pk = {test_case_pk}')
-        test_case: TestCase = TestCaseDBHelper().get_by_pk(test_case_pk)[0]
+        test_case: TestCase = TestCaseRepository().get_by_pk(test_case_pk)[0]
         if test_case.tc_type == 'api':
             r = ApiTester().run(test_case_pk, data_config)
             return dict(id=test_case.pk,

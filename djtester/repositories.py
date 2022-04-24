@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 def save_foreignkey(app_name, model_name, foreignkey_data):
     repo_path = app_name + '.repositories'
-    repo_name = model_name + 'DBHelper'
+    repo_name = model_name + 'Repository'
     repo_models = importlib.import_module(repo_path)
     repository = getattr(repo_models, repo_name)
     if foreignkey_data is None:
@@ -23,7 +23,7 @@ def save_foreignkey(app_name, model_name, foreignkey_data):
             return repository().get_by_pk(foreignkey_data)[0]
 
 
-class BaseDBHelper:
+class BaseRepository:
     def __init__(self, app_name: str, model_name: str):
         # 由于model.objects必须用本来的model来调用,所以import对应的model
         model_path = app_name + '.models'

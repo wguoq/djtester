@@ -42,24 +42,24 @@ class BaseViews:
         return ll
 
     def _do_query(self, repo, action, filters, page_size, page_number):
-        repo_name = str(repo) + 'DBHelper'
-        helper = getattr(self.module, repo_name)
+        repo_name = str(repo) + 'Repository'
+        repository = getattr(self.module, repo_name)
         if action == 'filter':
-            total = helper().count_by(filters)
-            a = self._do_filter(helper, filters, page_size, page_number)
+            total = repository().count_by(filters)
+            a = self._do_filter(repository, filters, page_size, page_number)
             return dict(rows=a, total=total)
         elif action == 'get':
-            a = self._do_filter(helper, filters, page_size, page_number)
+            a = self._do_filter(repository, filters, page_size, page_number)
             return dict(data=a[0], total=1)
         elif action == 'getFieldInfo':
-            result = helper().get_field_info()
+            result = repository().get_field_info()
             return dict(fields=result)
         elif action == 'getTableInfo':
-            result = helper().get_table_info()
+            result = repository().get_table_info()
             return dict(fields=result)
         elif action == 'table_filter':
-            total = helper().count_by(filters)
-            res = self._do_filter(helper, filters, page_size, page_number)
+            total = repository().count_by(filters)
+            res = self._do_filter(repository, filters, page_size, page_number)
             a = {}
             for r in res:
                 for k, v in r.items():
@@ -67,7 +67,7 @@ class BaseViews:
                     a.update({new_k: v})
             return dict(rows=a, total=total)
         elif action == 'table_get':
-            res = self._do_filter(helper, filters, page_size, page_number)[0]
+            res = self._do_filter(repository, filters, page_size, page_number)[0]
             a = {}
             for k, v in res.items():
                 new_k = repo + '__' + k
@@ -131,9 +131,9 @@ class BaseViews:
         res = {}
         # 把所有表都保存一遍，把结果保存下来
         for repo in repos:
-            repo__name = repo + 'DBHelper'
-            helper = getattr(self.module, repo__name)
-            r = helper().save_this(data.get(repo))
+            repo_name = repo + 'Repository'
+            repository = getattr(self.module, repo_name)
+            r = repository().save_this(data.get(repo))
             res.update({repo: model_to_dict(r)})
         # 根据关联关系检查一遍结果，如果有值对不上的就要赋值
         if condition is None or len(condition) == 0:
@@ -166,18 +166,18 @@ class BaseViews:
     def _do_commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == 'save_group':
             return self._group_save(data, condition)
-        helper = getattr(self.module, repo + 'DBHelper')
+        repository = getattr(self.module, repo + 'Repository')
         if action == 'save':
-            res = helper().save_this(data)
+            res = repository().save_this(data)
             return model_to_dict(res)
         elif action == 'saves':
             ll = []
             for d in data:
-                res = helper().save_this(d)
+                res = repository().save_this(d)
                 ll.append(model_to_dict(res))
             return ll
         elif action == 'del':
-            res = helper().del_(data)
+            res = repository().del_(data)
             return res
         else:
             raise Exception(f'不支持的action {action}')

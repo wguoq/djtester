@@ -11,47 +11,47 @@ def get_field_name(field_info):
 
 
 class Flow_Design_Admin(admin.ModelAdmin):
-    field_info = FlowDesignDBHelper().get_field_info()
+    field_info = FlowDesignRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Node_Design_Admin(admin.ModelAdmin):
-    field_info = NodeDesignDBHelper().get_field_info()
+    field_info = NodeDesignRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Flow_Node_Oder_Admin(admin.ModelAdmin):
-    field_info = FlowNodeOderDBHelper().get_field_info()
+    field_info = FlowNodeOderRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Flow_Instance_Admin(admin.ModelAdmin):
-    field_info = FlowInstanceDBHelper().get_field_info()
+    field_info = FlowInstanceRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Node_Instance_Admin(admin.ModelAdmin):
-    field_info = NodeInstanceDBHelper().get_field_info()
+    field_info = NodeInstanceRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Flow_Result_Rule_Admin(admin.ModelAdmin):
-    field_info = FlowResultRuleDBHelper().get_field_info()
+    field_info = FlowResultRuleRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Flow_Status_Rule_Admin(admin.ModelAdmin):
-    field_info = FlowStatusRuleDBHelper().get_field_info()
+    field_info = FlowStatusRuleRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Node_Start_Rule_Admin(admin.ModelAdmin):
-    field_info = NodeStartRuleDBHelper().get_field_info()
+    field_info = NodeStartRuleRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Node_Status_Rule_Admin(admin.ModelAdmin):
-    field_info = NodeStatusRuleDBHelper().get_field_info()
+    field_info = NodeStatusRuleRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 

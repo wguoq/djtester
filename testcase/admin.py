@@ -10,27 +10,27 @@ def get_field_name(field_info):
 
 
 class Test_Case_Admin(admin.ModelAdmin):
-    field_info = TestCaseDBHelper().get_field_info()
+    field_info = TestCaseRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Tc_Api_Admin(admin.ModelAdmin):
-    field_info = TcApiDBHelper().get_field_info()
+    field_info = TcApiRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Tc_Api_DataAdmin(admin.ModelAdmin):
-    field_info = TcApiDataDBHelper().get_field_info()
+    field_info = TcApiDataRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Tc_Data_DataAdmin(admin.ModelAdmin):
-    field_info = TcDataDBHelper().get_field_info()
+    field_info = TcDataRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
 class Tc_CheckPoint_Admin(admin.ModelAdmin):
-    field_info = TcCheckPointDBHelper().get_field_info()
+    field_info = TcCheckPointRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
