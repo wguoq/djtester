@@ -5,21 +5,22 @@ from django.db.models import ManyToOneRel, ManyToManyRel, QuerySet, ForeignKey
 from pydantic import BaseModel
 
 
-def save_foreignkey(app_name, db_helper_name, foreignkey_data):
+def save_foreignkey(app_name, model_name, foreignkey_data):
     repo_path = app_name + '.repositories'
-    models_ = importlib.import_module(repo_path)
-    db_helper = getattr(models_, db_helper_name)
+    repo_name = model_name + 'DBHelper'
+    repo_models = importlib.import_module(repo_path)
+    repository = getattr(repo_models, repo_name)
     if foreignkey_data is None:
         return None
     # 如果传入的是dict就保存
     elif isinstance(foreignkey_data, dict):
-        return db_helper().save_this(foreignkey_data)
+        return repository().save_this(foreignkey_data)
     # 否则认为是pk,去查询出来
     else:
-        if db_helper().count_by({'pk': foreignkey_data}) == 0:
+        if repository().count_by({'pk': foreignkey_data}) == 0:
             return None
         else:
-            return db_helper().get_by_pk(foreignkey_data)[0]
+            return repository().get_by_pk(foreignkey_data)[0]
 
 
 class BaseDBHelper:
@@ -98,11 +99,11 @@ class BaseDBHelper:
     def get_by_pk(self, pk) -> QuerySet:
         return self.filter_by({'pk': pk})
 
-    def _get_fk_inst(self, data: dict):
+    def _replace_fk_data(self, data: dict):
         """
         如果要自己处理外键就重写这个方法
         """
-        # 尝试去读取外键数据，并替换进data
+        # 尝试去读取外键数据，并替换进data,默认data里面外键字段放的是对应数据的pk
         for field in self.model._meta.get_fields():
             if isinstance(field, ForeignKey):
                 field_name = field.name
@@ -118,7 +119,7 @@ class BaseDBHelper:
         return data
 
     def save_this(self, data: dict):
-        data = self._get_fk_inst(data)
+        data = self._replace_fk_data(data)
         new_model = self.model(**data)
         pk = new_model.pk
         if pk:
