@@ -1,10 +1,11 @@
 from djtester.views import BaseViews
+from testcase.apps import TestcaseConfig
 from testcase.domain.tester_mgr import TesterMgr
 
 
 class TestCaseViews(BaseViews):
     def __init__(self):
-        super().__init__('testcase.repositories')
+        super().__init__(TestcaseConfig.name)
 
     def _do_commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == "run":

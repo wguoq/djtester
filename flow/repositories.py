@@ -2,14 +2,13 @@ import random
 import time
 from django.db import transaction
 from djtester.repositories import BaseRepository, save_foreignkey
+from flow.apps import FlowConfig
 from flow.models import *
-
-APP_NAME = 'flow'
 
 
 class FlowDesignRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, FlowDesign.__name__)
+        super().__init__(FlowConfig.name, FlowDesign.__name__)
 
     def save_this(self, data: dict):
         code = data.get('code')
@@ -23,17 +22,17 @@ class FlowDesignRepository(BaseRepository):
 
 class FlowStatusRuleRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, FlowStatusRule.__name__)
+        super().__init__(FlowConfig.name, FlowStatusRule.__name__)
 
 
 class FlowResultRuleRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, FlowResultRule.__name__)
+        super().__init__(FlowConfig.name, FlowResultRule.__name__)
 
 
 class NodeDesignRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, NodeDesign.__name__)
+        super().__init__(FlowConfig.name, NodeDesign.__name__)
 
     def save_this(self, data: dict):
         code = data.get('code')
@@ -47,22 +46,22 @@ class NodeDesignRepository(BaseRepository):
 
 class NodeStatusRuleRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, NodeStatusRule.__name__)
+        super().__init__(FlowConfig.name, NodeStatusRule.__name__)
 
 
 class FlowInstanceRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, FlowInstance.__name__)
+        super().__init__(FlowConfig.name, FlowInstance.__name__)
 
 
 class NodeInstanceRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, NodeInstance.__name__)
+        super().__init__(FlowConfig.name, NodeInstance.__name__)
 
 
 class FlowNodeOderRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, FlowNodeOder.__name__)
+        super().__init__(FlowConfig.name, FlowNodeOder.__name__)
 
     @transaction.atomic
     def _replace_fk_data(self, data: dict):
@@ -83,4 +82,4 @@ class FlowNodeOderRepository(BaseRepository):
 
 class NodeStartRuleRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, NodeStartRule.__name__)
+        super().__init__(FlowConfig.name, NodeStartRule.__name__)

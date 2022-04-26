@@ -1,14 +1,13 @@
 import random
 import time
 from djtester.repositories import BaseRepository
+from .apps import TestcaseConfig
 from .models import *
-
-APP_NAME = 'testcase'
 
 
 class TestCaseRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, TestCase.__name__)
+        super().__init__(TestcaseConfig.name, TestCase.__name__)
 
     def save_this(self, data: dict):
         code = data.get('code')
@@ -22,19 +21,19 @@ class TestCaseRepository(BaseRepository):
 
 class TcApiRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, TcApi.__name__)
+        super().__init__(TestcaseConfig.name, TcApi.__name__)
 
 
 class TcApiDataRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, TcApiData.__name__)
+        super().__init__(TestcaseConfig.name, TcApiData.__name__)
 
 
 class TcDataRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, TcData.__name__)
+        super().__init__(TestcaseConfig.name, TcData.__name__)
 
 
 class TcCheckPointRepository(BaseRepository):
     def __init__(self):
-        super().__init__(APP_NAME, TcCheckPoint.__name__)
+        super().__init__(TestcaseConfig.name, TcCheckPoint.__name__)

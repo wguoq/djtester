@@ -1,10 +1,11 @@
 from djtester.views import BaseViews
+from flow.apps import FlowConfig
 from flow.domain.flow_mgr import FlowMgr
 
 
 class FlowViews(BaseViews):
     def __init__(self):
-        super().__init__('flow.repositories')
+        super().__init__(FlowConfig.name)
 
     def _do_commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == "instance":

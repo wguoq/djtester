@@ -1,12 +1,11 @@
 """
-处理前端传入的参数
-路由到对应的DBhelper方法
-返回json数据
+载入repositories
+根据参数调用对应的CRUD方法
+把返回值转为json
 """
 import importlib
 import json
 import traceback
-
 from django.db import transaction
 from django.forms import model_to_dict
 from django.http import HttpResponseNotFound, JsonResponse
@@ -14,8 +13,8 @@ from django.core import serializers
 
 
 class BaseViews:
-    def __init__(self, module_path: str):
-        self.module = importlib.import_module(module_path)
+    def __init__(self, app_name: str):
+        self.repos = importlib.import_module(app_name + '.repositories')
 
     @staticmethod
     def _do_filter(helper, filters, page_size, page_number):
@@ -43,7 +42,7 @@ class BaseViews:
 
     def _do_query(self, repo, action, filters, page_size, page_number):
         repo_name = str(repo) + 'Repository'
-        repository = getattr(self.module, repo_name)
+        repository = getattr(self.repos, repo_name)
         if action == 'filter':
             total = repository().count_by(filters)
             a = self._do_filter(repository, filters, page_size, page_number)
@@ -60,6 +59,7 @@ class BaseViews:
         elif action == 'table_filter':
             total = repository().count_by(filters)
             res = self._do_filter(repository, filters, page_size, page_number)
+            # 把表名拼到字段名前面
             a = {}
             for r in res:
                 for k, v in r.items():
@@ -132,7 +132,7 @@ class BaseViews:
         # 把所有表都保存一遍，把结果保存下来
         for repo in repos:
             repo_name = repo + 'Repository'
-            repository = getattr(self.module, repo_name)
+            repository = getattr(self.repos, repo_name)
             r = repository().save_this(data.get(repo))
             res.update({repo: model_to_dict(r)})
         # 根据关联关系检查一遍结果，如果有值对不上的就要赋值
@@ -166,7 +166,7 @@ class BaseViews:
     def _do_commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == 'save_group':
             return self._group_save(data, condition)
-        repository = getattr(self.module, repo + 'Repository')
+        repository = getattr(self.repos, repo + 'Repository')
         if action == 'save':
             res = repository().save_this(data)
             return model_to_dict(res)
