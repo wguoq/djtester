@@ -163,7 +163,7 @@ class BaseViews:
                 # self._do_commit(repo, 'save', data, None)
         return {}
 
-    def _do_commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
+    def _commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == 'save_group':
             return self._group_save(data, condition)
         repository = getattr(self.repos, repo + 'Repository')
@@ -193,7 +193,7 @@ class BaseViews:
                 action = payload.get('action')
                 data = payload.get('data')
                 condition = payload.get('condition')
-                context = self._do_commit(repo=repo, action=action, data=data, condition=condition)
+                context = self._commit(repo=repo, action=action, data=data, condition=condition)
                 return JsonResponse(context, status=200, safe=False)
             except Exception as e:
                 traceback.print_exc()
