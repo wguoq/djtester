@@ -17,7 +17,7 @@ class BaseViews:
         self.repos = importlib.import_module(app_name + '.repositories')
 
     @staticmethod
-    def _do_filter(helper, filters, page_size, page_number):
+    def _filter(helper, filters, page_size, page_number):
         if page_size and page_number:
             offset = int(page_size) * (int(page_number) - 1)
             limit = int(page_size) * int(page_number)
@@ -40,16 +40,23 @@ class BaseViews:
                 L['modified_time'] = L.get('modified_time').replace('T', ' ')
         return ll
 
-    def _do_query(self, repo, action, filters, page_size, page_number):
+    def _query(self, repo, action, filters, page_size, page_number):
         repo_name = str(repo) + 'Repository'
         repository = getattr(self.repos, repo_name)
         if action == 'filter':
             total = repository().count_by(filters)
-            a = self._do_filter(repository, filters, page_size, page_number)
-            return dict(rows=a, total=total)
+            if total == 0:
+                return dict(rows=[], total=0)
+            else:
+                a = self._filter(repository, filters, page_size, page_number)
+                return dict(rows=a, total=total)
         elif action == 'get':
-            a = self._do_filter(repository, filters, page_size, page_number)
-            return dict(data=a[0], total=1)
+            total = repository().count_by(filters)
+            if total == 0:
+                return dict(data={}, total=0)
+            else:
+                a = self._filter(repository, filters, page_size, page_number)
+                return dict(data=a[0], total=1)
         elif action == 'getFieldInfo':
             result = repository().get_field_info()
             return dict(fields=result)
@@ -58,7 +65,7 @@ class BaseViews:
             return dict(fields=result)
         elif action == 'table_filter':
             total = repository().count_by(filters)
-            res = self._do_filter(repository, filters, page_size, page_number)
+            res = self._filter(repository, filters, page_size, page_number)
             # 把表名拼到字段名前面
             a = {}
             for r in res:
@@ -67,7 +74,7 @@ class BaseViews:
                     a.update({new_k: v})
             return dict(rows=a, total=total)
         elif action == 'table_get':
-            res = self._do_filter(repository, filters, page_size, page_number)[0]
+            res = self._filter(repository, filters, page_size, page_number)[0]
             a = {}
             for k, v in res.items():
                 new_k = repo + '__' + k
@@ -88,9 +95,9 @@ class BaseViews:
                     action = params.get('action')
                     # filters取出来是str，要转成dict
                     filters = json.loads(params.get('filters')) if params.get('filters') else {}
-                    page_size = params.get('pageSize')
-                    page_number = params.get('pageNumber')
-                    context = self._do_query(repo, action, filters, page_size, page_number)
+                    page_size = params.get('pageSize') or 10
+                    page_number = params.get('pageNumber') or 1
+                    context = self._query(repo, action, filters, page_size, page_number)
                     # safe=False 关闭safe模式才能序列化list数据
                     return JsonResponse(context, status=200, safe=False)
                 except Exception as e:
@@ -115,27 +122,19 @@ class BaseViews:
 
     @transaction.atomic
     def _group_save(self, data: dict, condition: list = None):
-        # data = {'t1@name': '1name',
-        #         't1@code': '1code',
-        #         't2@name': '2name',
-        #         't2@code': '2code',
-        #         't3@name': '3name',
-        #         't3@t1code': '1code',
-        #         't3@t2code': '2code',
-        #         }
-        # constraint = ['t3@t1code=t1@code', 't3@t2code=t2@code']
         if data is None or len(data) == 0:
             return {}
         data = self._format_data(data)
         repos = data.keys()
-        res = {}
+        all_data = {}
         # 把所有表都保存一遍，把结果保存下来
         for repo in repos:
             repo_name = repo + 'Repository'
             repository = getattr(self.repos, repo_name)
             r = repository().save_this(data.get(repo))
-            res.update({repo: model_to_dict(r)})
+            all_data.update({repo: model_to_dict(r)})
         # 根据关联关系检查一遍结果，如果有值对不上的就要赋值
+        # condition = ['t3@t1code=t1@code', 't3@t2code=t2@code']
         if condition is None or len(condition) == 0:
             pass
         else:
@@ -145,22 +144,23 @@ class BaseViews:
                 left = c[0].split('__')
                 left_repo_name = left[0]
                 left_key = left[1]
-                left_value = res.get(left_repo_name).get(left_key)
+                left_value = all_data.get(left_repo_name).get(left_key)
                 right = c[1].split('__')
                 right_repo_name = right[0]
                 right_key = right[1]
-                right_value = res.get(right_repo_name).get(right_key)
+                right_value = all_data.get(right_repo_name).get(right_key)
                 if left_value == right_value:
                     continue
                 else:
-                    res[left_repo_name][left_key] = right_value
+                    all_data[left_repo_name][left_key] = right_value
                     flag.append(left_repo_name)
             # 用set方法去重
             flag = set(flag)
-            for f in flag:
-                repo_name = f + 'DBHelper'
-                data = res.get(f)
-                self._do_commit(repo_name, 'save', data, None)
+            for repo in flag:
+                repo_name = repo + 'Repository'
+                repository = getattr(self.repos, repo_name)
+                repository().save_this(all_data.get(repo))
+                # self._do_commit(repo, 'save', data, None)
         return {}
 
     def _do_commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
