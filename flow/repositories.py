@@ -68,11 +68,11 @@ class FlowNodeOderRepository(BaseRepository):
         flow_design = data.get('flow_design')
         node_design = data.get('node_design')
         if node_design:
-            node_design = save_foreignkey(APP_NAME, NodeDesign.__name__, node_design)
+            node_design = save_foreignkey(FlowConfig.name, NodeDesign.__name__, node_design)
         else:
             node_design = None
         if flow_design:
-            flow_design = save_foreignkey(APP_NAME, FlowDesign.__name__, flow_design)
+            flow_design = save_foreignkey(FlowConfig.name, FlowDesign.__name__, flow_design)
         else:
             flow_design = None
         data['node_design'] = node_design
