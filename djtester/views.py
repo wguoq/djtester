@@ -17,14 +17,14 @@ class BaseViews:
         self.repos = importlib.import_module(app_name + '.repositories')
 
     @staticmethod
-    def _filter(helper, filters, page_size, page_number):
+    def _filter(repository, filters, page_size, page_number):
         if page_size and page_number:
             offset = int(page_size) * (int(page_number) - 1)
             limit = int(page_size) * int(page_number)
         else:
             offset = None
             limit = None
-        res = helper().filter_by(kwargs=filters, offset=offset, limit=limit)
+        res = repository().filter_by(kwargs=filters, offset=offset, limit=limit)
         # res是QuerySet，需要转成dict才能以json格式返回，并且主键名字被显示成pk，需要把model字段的名字替换进来
         ss = serializers.serialize('json', res)
         res_list = json.loads(ss)
@@ -32,12 +32,12 @@ class BaseViews:
         for r in res_list:
             pk = r.pop('pk')
             fields = r.get('fields')
-            fields.update({helper().get_pk_name(): pk})
+            fields.update({repository().get_pk_name(): pk})
             ll.append(fields)
             # 处理时间字段里面那个T
             for L in ll:
-                L['created_time'] = L.get('created_time').replace('T', ' ')
-                L['modified_time'] = L.get('modified_time').replace('T', ' ')
+                L['created_time'] = L.get('created_time').replace('T', ' ') if L.get('created_time') else None
+                L['modified_time'] = L.get('modified_time').replace('T', ' ') if L.get('modified_time') else None
         return ll
 
     def _query(self, repo, action, filters, page_size, page_number):
