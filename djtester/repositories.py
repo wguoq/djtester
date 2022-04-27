@@ -80,20 +80,13 @@ class BaseRepository:
         return self.model.objects.filter(**kwargs).count()
 
     def filter_by(self, kwargs: dict = None, offset: int = 0, limit: int = 1000) -> QuerySet:
-        if offset <= 0:
-            offset = 0
-        else:
-            pass
-        if limit <= 0:
-            limit = 1000
-        else:
-            pass
+        offset = 0 if offset <= 0 else offset
+        limit = 1000 if limit <= 0 else limit
         if limit - offset > 1000:
             limit = offset + 1000
         else:
             pass
-        if kwargs is None:
-            kwargs = {}
+        kwargs = kwargs or {}
         return self.model.objects.filter(**kwargs)[offset: limit]
 
     def get_by_pk(self, pk) -> QuerySet:
