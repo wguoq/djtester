@@ -92,8 +92,8 @@ class BaseViews:
             repo = params.get('repo')
             action = params.get('action')
             filters = json.loads(params.get('filters')) if params.get('filters') else {}
-            page_size = params.get('pageSize') or 10
-            page_number = params.get('pageNumber') or 1
+            page_size = int(params.get('pageSize')) or 10
+            page_number = int(params.get('pageNumber')) or 1
             if repo is None or action is None:
                 context = dict(message="参数错误"),
                 return JsonResponse(context, status=500, safe=False)
