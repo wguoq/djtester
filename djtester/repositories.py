@@ -20,7 +20,7 @@ def save_foreignkey(app_name, model_name, foreignkey_data):
         if repository().count_by({'pk': foreignkey_data}) == 0:
             return None
         else:
-            return repository().get_by_pk(foreignkey_data)[0]
+            return repository().filter_by_pk(foreignkey_data)[0]
 
 
 class BaseRepository:
@@ -89,7 +89,7 @@ class BaseRepository:
         kwargs = kwargs or {}
         return self.model.objects.filter(**kwargs)[offset: limit]
 
-    def get_by_pk(self, pk) -> QuerySet:
+    def filter_by_pk(self, pk) -> QuerySet:
         return self.filter_by({'pk': pk})
 
     def _replace_fk_data(self, data: dict):

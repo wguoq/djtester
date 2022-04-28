@@ -105,7 +105,7 @@ class NodeMgr:
 
     @staticmethod
     def reset_node_status(new_result: str, node_instance_id) -> NodeInstance:
-        node_instance = NodeInstanceRepository().get_by_pk(node_instance_id)[0]
+        node_instance = NodeInstanceRepository().filter_by_pk(node_instance_id)[0]
         node_instance.node_result = new_result
         node_instance.node_status = check_node_status(new_result, node_instance)
         NodeInstanceRepository().save_this(model_to_dict(node_instance))

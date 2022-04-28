@@ -17,13 +17,9 @@ class BaseViews:
         self.repos = importlib.import_module(app_name + '.repositories')
 
     @staticmethod
-    def _filter(repository, filters, page_size, page_number):
-        if page_size and page_number:
-            offset = int(page_size) * (int(page_number) - 1)
-            limit = int(page_size) * int(page_number)
-        else:
-            offset = None
-            limit = None
+    def _filter(repository, filters: dict, page_size: int, page_number: int):
+        offset = page_size * (page_number - 1)
+        limit = page_size * page_number
         res = repository().filter_by(kwargs=filters, offset=offset, limit=limit)
         # res是QuerySet，需要转成dict才能以json格式返回，并且主键名字被显示成pk，需要把model字段的名字替换进来
         ss = serializers.serialize('json', res)
@@ -40,8 +36,8 @@ class BaseViews:
                 L['modified_time'] = L.get('modified_time').replace('T', ' ') if L.get('modified_time') else None
         return ll
 
-    def _query(self, repo, action, filters, page_size, page_number):
-        repo_name = str(repo) + 'Repository'
+    def _query(self, repo: str, action: str, filters: dict, page_size: int, page_number: int):
+        repo_name = repo + 'Repository'
         repository = getattr(self.repos, repo_name)
         if action == 'filter':
             total = repository().count_by(filters)
@@ -51,12 +47,11 @@ class BaseViews:
                 a = self._filter(repository, filters, page_size, page_number)
                 return dict(rows=a, total=total)
         elif action == 'get':
-            total = repository().count_by(filters)
-            if total == 0:
+            if repository().count_by(filters) == 0:
                 return dict(data={}, total=0)
             else:
-                a = self._filter(repository, filters, page_size, page_number)
-                return dict(data=a[0], total=1)
+                a = self._filter(repository, filters, page_size, page_number)[0]
+                return dict(data=a, total=1)
         elif action == 'getFieldInfo':
             result = repository().get_field_info()
             return dict(fields=result)
@@ -65,38 +60,45 @@ class BaseViews:
             return dict(fields=result)
         elif action == 'table_filter':
             total = repository().count_by(filters)
-            res = self._filter(repository, filters, page_size, page_number)
-            # 把表名拼到字段名前面
-            a = {}
-            for r in res:
-                for k, v in r.items():
+            if total == 0:
+                return dict(data={}, total=0)
+            else:
+                res = self._filter(repository, filters, page_size, page_number)
+                # 把表名拼到字段名前面
+                a = {}
+                for r in res:
+                    for k, v in r.items():
+                        new_k = repo + '__' + k
+                        a.update({new_k: v})
+                return dict(rows=a, total=total)
+        elif action == 'table_get':
+            if repository().count_by(filters) == 0:
+                return dict(data={}, total=0)
+            else:
+                res = self._filter(repository, filters, page_size, page_number)[0]
+                a = {}
+                for k, v in res.items():
                     new_k = repo + '__' + k
                     a.update({new_k: v})
-            return dict(rows=a, total=total)
-        elif action == 'table_get':
-            res = self._filter(repository, filters, page_size, page_number)[0]
-            a = {}
-            for k, v in res.items():
-                new_k = repo + '__' + k
-                a.update({new_k: v})
-            return dict(data=a, total=1)
+                return dict(data=a, total=1)
         else:
             return {}
 
     def query(self, request):
-        if request.method != 'GET':
-            return HttpResponseNotFound
-        else:
-            params = request.GET
-            print(f'params = {params}')
-            if params and len(params) >= 1:
+        params = request.GET
+        print(f'request.GET = {params}')
+        # get发过来的参数是str，所以filters需要转成dict
+        if params is not None and len(params) > 0:
+            repo = params.get('repo')
+            action = params.get('action')
+            filters = json.loads(params.get('filters')) if params.get('filters') else {}
+            page_size = params.get('pageSize') or 10
+            page_number = params.get('pageNumber') or 1
+            if repo is None or action is None:
+                context = dict(message="参数错误"),
+                return JsonResponse(context, status=500, safe=False)
+            else:
                 try:
-                    repo = params.get('repo')
-                    action = params.get('action')
-                    # filters取出来是str，要转成dict
-                    filters = json.loads(params.get('filters')) if params.get('filters') else {}
-                    page_size = params.get('pageSize') or 10
-                    page_number = params.get('pageNumber') or 1
                     context = self._query(repo, action, filters, page_size, page_number)
                     # safe=False 关闭safe模式才能序列化list数据
                     return JsonResponse(context, status=200, safe=False)
@@ -105,12 +107,12 @@ class BaseViews:
                     traceback.print_exc()
                     context = dict(message=str(e)),
                     return JsonResponse(context, status=500, safe=False)
-            else:
-                return JsonResponse({}, status=200)
+        else:
+            return JsonResponse({}, status=200)
 
     @staticmethod
     def _format_data(data: dict):
-        # 把 {'t1@name': '1name','t2@name': '2name'}
+        # 把 {'t1__name': '1name','t2__name': '2name'}
         # 转成 {'t1': {'name': '1name'}, 't2': {'name': '2name'}}
         res = {}
         for k, v in data.items():
@@ -134,7 +136,7 @@ class BaseViews:
             r = repository().save_this(data.get(repo))
             all_data.update({repo: model_to_dict(r)})
         # 根据关联关系检查一遍结果，如果有值对不上的就要赋值
-        # condition = ['t3@t1code=t1@code', 't3@t2code=t2@code']
+        # condition = ['t3__t1code=t1__code', 't3__t2code=t2__code']
         if condition is None or len(condition) == 0:
             pass
         else:
@@ -183,19 +185,17 @@ class BaseViews:
             raise Exception(f'不支持的action {action}')
 
     def commit(self, request):
-        if request.method != 'POST':
-            return HttpResponseNotFound
-        else:
-            payload = json.loads(request.body)
-            print(f"payload = {payload}")
-            try:
-                repo = payload.get('repo')
-                action = payload.get('action')
-                data = payload.get('data')
-                condition = payload.get('condition')
-                context = self._commit(repo=repo, action=action, data=data, condition=condition)
-                return JsonResponse(context, status=200, safe=False)
-            except Exception as e:
-                traceback.print_exc()
-                context = dict(message=str(e))
-                return JsonResponse(context, status=500, safe=False)
+        # post进来的是对象所以可以直接转成dict
+        payload = json.loads(request.body) or {}
+        print(f"payload = {payload}")
+        repo = payload.get('repo')
+        action = payload.get('action')
+        data = payload.get('data')
+        condition = payload.get('condition')
+        try:
+            context = self._commit(repo=repo, action=action, data=data, condition=condition)
+            return JsonResponse(context, status=200, safe=False)
+        except Exception as e:
+            traceback.print_exc()
+            context = dict(message=str(e))
+            return JsonResponse(context, status=500, safe=False)

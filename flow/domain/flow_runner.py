@@ -61,7 +61,7 @@ def check_flow_result(flow_instance: FlowInstance):
             or FlowResultRuleRepository().count_by({'pk': flow_instance.flow_design.fw_result_rule}) == 0:
         return None
     # 查出对应的 flow_result_rules
-    result_rule = FlowResultRuleRepository().get_by_pk(flow_instance.flow_design.fw_result_rule)[0]
+    result_rule = FlowResultRuleRepository().filter_by_pk(flow_instance.flow_design.fw_result_rule)[0]
     if result_rule.rule_type == FlowRuleType.Default.value:
         return get_last_node_inst_attr(flow_instance, 'node_result')
     elif result_rule.rule_type == FlowRuleType.Script.value:
@@ -77,7 +77,7 @@ def check_flow_status(flow_instance: FlowInstance):
             or len(status_rule) == 0 \
             or FlowStatusRuleRepository().count_by({"pk": status_rule}) == 0:
         return None
-    status_rule = FlowStatusRuleRepository().get_by_pk(flow_instance.flow_design.fw_status_rule)[0]
+    status_rule = FlowStatusRuleRepository().filter_by_pk(flow_instance.flow_design.fw_status_rule)[0]
     if status_rule.rule_type == FlowRuleType.Default.value:
         last_node_status = get_last_node_inst_attr(flow_instance, 'node_status')
         if last_node_status:

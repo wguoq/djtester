@@ -78,12 +78,12 @@ class ApiTester:
             raise Exception(f'不支持的 check.operator {check.operator}')
 
     def run(self, test_case_pk, data_config: dict = None) -> dict:
-        test_case: TestCase = TestCaseRepository().get_by_pk(test_case_pk)[0]
+        test_case: TestCase = TestCaseRepository().filter_by_pk(test_case_pk)[0]
         # 一条用例对应一个接口
         if TcApiRepository().count_by({'pk': test_case.tc_action_id}) == 0:
             raise Exception(f'没有查询到对应的tc_api')
         else:
-            tc_api: TcApi = TcApiRepository().get_by_pk(test_case.tc_action_id)[0]
+            tc_api: TcApi = TcApiRepository().filter_by_pk(test_case.tc_action_id)[0]
         # 一条用例可以有多条数据
         if TcApiDataRepository().count_by({'test_case': test_case.pk}) == 0:
             raise Exception(f'没有查询到对应的tc_data')

@@ -337,7 +337,7 @@ class Test_Flow(TestCase):
             print(model_to_dict(a))
 
         print(f'==== 查询 nd1 by pk ==== ')
-        query_nd1 = NodeDesignRepository().get_by_pk(1)[0]
+        query_nd1 = NodeDesignRepository().filter_by_pk(1)[0]
         print(model_to_dict(query_nd1))
 
         print(f'==== 查询 nd1 node_status_rule_set.all ==== ')
@@ -369,7 +369,7 @@ class Test_Flow(TestCase):
             print(model_to_dict(a))
 
         print(f'==== instance_flow_design fd1 ====')
-        fd1 = FlowDesignRepository().get_by_pk(1)[0]
+        fd1 = FlowDesignRepository().filter_by_pk(1)[0]
         flow_data = {'flag': 'ok'}
         FlowMgr.instance_flow(fd1, flow_data)
 
@@ -407,16 +407,16 @@ class Test_Flow(TestCase):
         print(model_to_dict(a))
 
         print(f'==== 回滚到3号节点 rollback_to_node  ====')
-        node_ins_2 = NodeInstanceRepository().get_by_pk(3)[0]
+        node_ins_2 = NodeInstanceRepository().filter_by_pk(3)[0]
         a = FlowMgr.rollback_to_node(node_ins_2)
         print(model_to_dict(a))
         aaa = NodeInstanceRepository().filter_by()
         for a in aaa:
             print(model_to_dict(a))
-        flow_inst_1 = FlowInstanceRepository().get_by_pk(1)[0]
+        flow_inst_1 = FlowInstanceRepository().filter_by_pk(1)[0]
         print(f'==== 重新运行flow_inst_1 ====')
         FlowMgr.run_flow_instance(flow_inst_1)
-        flow_inst_1 = FlowInstanceRepository().get_by_pk(1)[0]
+        flow_inst_1 = FlowInstanceRepository().filter_by_pk(1)[0]
         print(flow_inst_1)
         aaa = NodeInstanceRepository().filter_by()
         for a in aaa:

@@ -38,7 +38,7 @@ class FlowMgr:
     @staticmethod
     def run_flow_instance(flow_instance_pk) -> FlowInstance:
         # 先判断流程状态 Finish Stop Cancelled 不运行
-        flow_instance = FlowInstanceRepository().get_by_pk(flow_instance_pk)[0]
+        flow_instance = FlowInstanceRepository().filter_by_pk(flow_instance_pk)[0]
         if flow_instance.flow_status in [FlowStatus.Finish.value, FlowStatus.Stop.value, FlowStatus.Cancelled.value]:
             print(f'流程状态是 {flow_instance.flow_status} 不运行; pk = {flow_instance.pk}')
             return flow_instance
@@ -102,7 +102,7 @@ class NodeFuncRunFLowDesign(NodeFuncBase):
 
     def do_func(self, node_func_param: dict, flow_data: dict):
         flow_design_id = node_func_param.get('pk')
-        flow_design = FlowDesignRepository().get_by_pk(flow_design_id)
+        flow_design = FlowDesignRepository().filter_by_pk(flow_design_id)
         flow_instance = FlowMgr().instance_flow(flow_design, flow_data)
         new_flow_instance = FlowMgr().run_flow_instance(flow_instance.pk)
         return self.NodeFuncResult(new_flow_instance.flow_result)
