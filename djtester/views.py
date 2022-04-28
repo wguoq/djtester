@@ -199,3 +199,62 @@ class BaseViews:
             traceback.print_exc()
             context = dict(message=str(e))
             return JsonResponse(context, status=500, safe=False)
+
+    def get_fields(self, request):
+        params = request.GET
+        repo = params.get('repo')
+        replaced = params.get('replaced') or False
+        if repo is None:
+            return JsonResponse(dict(message="repo 不能为空"), status=500, safe=False)
+        else:
+            repo_name = repo + 'Repository'
+            repository = getattr(self.repos, repo_name)
+            field_info = repository().get_field_info()
+            if replaced:
+                for field in field_info:
+                    field['name'] = repo + '__' + field.get('name')
+                return JsonResponse(dict(fields=field_info), status=200, safe=False)
+            else:
+                return JsonResponse(dict(fields=field_info), status=200, safe=False)
+
+    class FilterResponse:
+        def __init__(self, rows: list = None, total: int = None, message: str = None):
+            self.rows = rows or []
+            self.total = total or 0
+            self.message = message or None
+
+    def filter(self, request):
+        payload = json.loads(request.body) or {}
+        repo = payload.get('repo')
+        filters = payload.get('filters') or {}
+        page_size = int(payload.get('pageSize')) or 10
+        page_number = int(payload.get('pageNumber')) or 1
+        replaced = payload.get('replaced') or False
+        if repo is None:
+            return JsonResponse(self.FilterResponse(message='repo 不能为空').__dict__, status=500, safe=False)
+        else:
+            repo_name = repo + 'Repository'
+            repository = getattr(self.repos, repo_name)
+            total = repository().count_by(filters)
+            if total == 0:
+                return JsonResponse(self.FilterResponse().__dict__, status=200, safe=False)
+            else:
+                try:
+                    res = self._filter(repository, filters, page_size, page_number)
+                except Exception as e:
+                    traceback.print_exc()
+                    return JsonResponse(self.FilterResponse(message=str(e)).__dict__, status=500, safe=False)
+                if replaced:
+                    # 把表名拼到字段名前面
+                    ll = []
+                    for r in res:
+                        a = {}
+                        for k, v in r.items():
+                            new_k = repo + '__' + k
+                            a.update({new_k: v})
+                        ll.append(a)
+                    return JsonResponse(self.FilterResponse(rows=ll, total=total, message='ok').__dict__, status=200,
+                                        safe=False)
+                else:
+                    return JsonResponse(self.FilterResponse(rows=res, total=total, message='ok').__dict__, status=200,
+                                        safe=False)
