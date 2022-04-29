@@ -5,10 +5,11 @@
 """
 import importlib
 import json
+import time
 import traceback
 from django.db import transaction
 from django.forms import model_to_dict
-from django.http import HttpResponseNotFound, JsonResponse
+from django.http import JsonResponse
 from django.core import serializers
 
 
@@ -84,7 +85,7 @@ class BaseViews:
         else:
             return {}
 
-    def query(self, request):
+    def query_a(self, request):
         params = request.GET
         print(f'request.GET = {params}')
         # get发过来的参数是str，所以filters需要转成dict
@@ -123,9 +124,9 @@ class BaseViews:
         return res
 
     @transaction.atomic
-    def _group_save(self, data: dict, condition: list = None):
+    def _save_group(self, data: dict, condition: list = None):
         if data is None or len(data) == 0:
-            return {}
+            return {dict(message="ok")}
         data = self._format_data(data)
         repos = data.keys()
         all_data = {}
@@ -136,7 +137,7 @@ class BaseViews:
             r = repository().save_this(data.get(repo))
             all_data.update({repo: model_to_dict(r)})
         # 根据关联关系检查一遍结果，如果有值对不上的就要赋值
-        # condition = ['t3__t1code=t1__code', 't3__t2code=t2__code']
+        # condition = ['t3__t1_id=t1__id', 't3__t2_id=t2__id']
         if condition is None or len(condition) == 0:
             pass
         else:
@@ -162,12 +163,11 @@ class BaseViews:
                 repo_name = repo + 'Repository'
                 repository = getattr(self.repos, repo_name)
                 repository().save_this(all_data.get(repo))
-                # self._do_commit(repo, 'save', data, None)
         return {}
 
     def _commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
         if action == 'save_group':
-            return self._group_save(data, condition)
+            return self._save_group(data, condition)
         repository = getattr(self.repos, repo + 'Repository')
         if action == 'save':
             res = repository().save_this(data)
@@ -201,9 +201,10 @@ class BaseViews:
             return JsonResponse(context, status=500, safe=False)
 
     def get_fields(self, request):
+        # time.sleep(2)
         params = request.GET
         repo = params.get('repo')
-        replaced = params.get('replaced') or False
+        replaced = int(params.get('replaced')) or 0  # 0 | 1
         if repo is None:
             return JsonResponse(dict(message="repo 不能为空"), status=500, safe=False)
         else:
@@ -223,13 +224,14 @@ class BaseViews:
             self.total = total or 0
             self.message = message or None
 
-    def filter(self, request):
+    def query(self, request):
         payload = json.loads(request.body) or {}
+        print(f" query payload = {payload}")
         repo = payload.get('repo')
         filters = payload.get('filters') or {}
         page_size = int(payload.get('pageSize')) or 10
         page_number = int(payload.get('pageNumber')) or 1
-        replaced = payload.get('replaced') or False
+        replaced = payload.get('replaced') or 0
         if repo is None:
             return JsonResponse(self.FilterResponse(message='repo 不能为空').__dict__, status=500, safe=False)
         else:
@@ -258,3 +260,40 @@ class BaseViews:
                 else:
                     return JsonResponse(self.FilterResponse(rows=res, total=total, message='ok').__dict__, status=200,
                                         safe=False)
+
+    def _save(self, repo: str, action: str, data: dict):
+        repository = getattr(self.repos, repo + 'Repository')
+        if action == 'save':
+            res = repository().save_this(data)
+            return model_to_dict(res)
+        elif action == 'del':
+            res = repository().del_(data)
+            return res
+        else:
+            raise Exception(f'不支持的action {action}')
+
+    def save(self, request):
+        # post进来的是对象所以可以直接转成dict
+        payload = json.loads(request.body) or {}
+        print(f" save payload = {payload}")
+        repo = payload.get('repo')
+        action = payload.get('action')  # save | del
+        data = payload.get('data')
+        is_group = payload.get('is_group') or 0
+        condition = payload.get('condition') or []
+        if is_group:
+            try:
+                context = self._save_group(data=data, condition=condition)
+                return JsonResponse(context, status=200, safe=False)
+            except Exception as e:
+                traceback.print_exc()
+                context = dict(message=str(e))
+                return JsonResponse(context, status=500, safe=False)
+        else:
+            try:
+                context = self._save(repo=repo, action=action, data=data)
+                return JsonResponse(context, status=200, safe=False)
+            except Exception as e:
+                traceback.print_exc()
+                context = dict(message=str(e))
+                return JsonResponse(context, status=500, safe=False)
