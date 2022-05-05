@@ -7,9 +7,9 @@ from testcase.repositories import *
 class TesterMgr:
 
     @staticmethod
-    def run_case(test_case_pk, data_config: dict = None):
+    def run_case(test_case_pk, data_config: dict = None) -> dict:
         if TestCaseRepository().count_by({'pk': test_case_pk}) == 0:
-            raise Exception(f'没有查询到test_case pk = {test_case_pk}')
+            raise Exception(f' 没有查询到test_case pk = {test_case_pk} ')
         test_case: TestCase = TestCaseRepository().filter_by_pk(test_case_pk)[0]
         if test_case.tc_type == 'api':
             r = ApiTester().run(test_case_pk, data_config)
