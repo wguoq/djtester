@@ -85,31 +85,31 @@ class BaseViews:
         else:
             return {}
 
-    def query_a(self, request):
-        params = request.GET
-        print(f'request.GET = {params}')
-        # get发过来的参数是str，所以filters需要转成dict
-        if params is not None and len(params) > 0:
-            repo = params.get('repo')
-            action = params.get('action')
-            filters = json.loads(params.get('filters')) if params.get('filters') else {}
-            page_size = int(params.get('pageSize')) or 10
-            page_number = int(params.get('pageNumber')) or 1
-            if repo is None or action is None:
-                context = dict(message="参数错误"),
-                return JsonResponse(context, status=500, safe=False)
-            else:
-                try:
-                    context = self._query(repo, action, filters, page_size, page_number)
-                    # safe=False 关闭safe模式才能序列化list数据
-                    return JsonResponse(context, status=200, safe=False)
-                except Exception as e:
-                    # 把错误打印出来
-                    traceback.print_exc()
-                    context = dict(message=str(e)),
-                    return JsonResponse(context, status=500, safe=False)
-        else:
-            return JsonResponse({}, status=200)
+    # def query_a(self, request):
+    #     params = request.GET
+    #     print(f'request.GET = {params}')
+    #     # get发过来的参数是str，所以filters需要转成dict
+    #     if params is not None and len(params) > 0:
+    #         repo = params.get('repo')
+    #         action = params.get('action')
+    #         filters = json.loads(params.get('filters')) if params.get('filters') else {}
+    #         page_size = int(params.get('pageSize')) or 10
+    #         page_number = int(params.get('pageNumber')) or 1
+    #         if repo is None or action is None:
+    #             context = dict(message="参数错误"),
+    #             return JsonResponse(context, status=500, safe=False)
+    #         else:
+    #             try:
+    #                 context = self._query(repo, action, filters, page_size, page_number)
+    #                 # safe=False 关闭safe模式才能序列化list数据
+    #                 return JsonResponse(context, status=200, safe=False)
+    #             except Exception as e:
+    #                 # 把错误打印出来
+    #                 traceback.print_exc()
+    #                 context = dict(message=str(e)),
+    #                 return JsonResponse(context, status=500, safe=False)
+    #     else:
+    #         return JsonResponse({}, status=200)
 
     @staticmethod
     def _format_data(data: dict):
@@ -165,40 +165,40 @@ class BaseViews:
                 repository().save_this(all_data.get(repo))
         return {}
 
-    def _commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
-        if action == 'save_group':
-            return self._save_group(data, condition)
-        repository = getattr(self.repos, repo + 'Repository')
-        if action == 'save':
-            res = repository().save_this(data)
-            return model_to_dict(res)
-        elif action == 'saves':
-            ll = []
-            for d in data:
-                res = repository().save_this(d)
-                ll.append(model_to_dict(res))
-            return ll
-        elif action == 'del':
-            res = repository().del_(data)
-            return res
-        else:
-            raise Exception(f'不支持的action {action}')
-
-    def commit(self, request):
-        # post进来的是对象所以可以直接转成dict
-        payload = json.loads(request.body) or {}
-        print(f"payload = {payload}")
-        repo = payload.get('repo')
-        action = payload.get('action')
-        data = payload.get('data')
-        condition = payload.get('condition')
-        try:
-            context = self._commit(repo=repo, action=action, data=data, condition=condition)
-            return JsonResponse(context, status=200, safe=False)
-        except Exception as e:
-            traceback.print_exc()
-            context = dict(message=str(e))
-            return JsonResponse(context, status=500, safe=False)
+    # def _commit(self, repo: str, action: str, data: dict, condition: list = None) -> dict or list:
+    #     if action == 'save_group':
+    #         return self._save_group(data, condition)
+    #     repository = getattr(self.repos, repo + 'Repository')
+    #     if action == 'save':
+    #         res = repository().save_this(data)
+    #         return model_to_dict(res)
+    #     elif action == 'saves':
+    #         ll = []
+    #         for d in data:
+    #             res = repository().save_this(d)
+    #             ll.append(model_to_dict(res))
+    #         return ll
+    #     elif action == 'del':
+    #         res = repository().del_(data)
+    #         return res
+    #     else:
+    #         raise Exception(f'不支持的action {action}')
+    #
+    # def commit(self, request):
+    #     # post进来的是对象所以可以直接转成dict
+    #     payload = json.loads(request.body) or {}
+    #     print(f"payload = {payload}")
+    #     repo = payload.get('repo')
+    #     action = payload.get('action')
+    #     data = payload.get('data')
+    #     condition = payload.get('condition')
+    #     try:
+    #         context = self._commit(repo=repo, action=action, data=data, condition=condition)
+    #         return JsonResponse(context, status=200, safe=False)
+    #     except Exception as e:
+    #         traceback.print_exc()
+    #         context = dict(message=str(e))
+    #         return JsonResponse(context, status=500, safe=False)
 
     def get_fields(self, request):
         # time.sleep(2)
@@ -229,9 +229,9 @@ class BaseViews:
         print(f" query payload = {payload}")
         repo = payload.get('repo')
         filters = payload.get('filters') or {}
-        page_size = int(payload.get('pageSize')) or 10
-        page_number = int(payload.get('pageNumber')) or 1
-        replaced = payload.get('replaced') or 0
+        page_size = int(payload.get('pageSize')) if payload.get('pageSize') is not None else 10
+        page_number = int(payload.get('pageNumber')) if payload.get('pageNumber') is not None else 1
+        replaced = int(payload.get('replaced')) if payload.get('replaced') is not None else 0
         if repo is None:
             return JsonResponse(self.FilterResponse(message='repo 不能为空').__dict__, status=500, safe=False)
         else:
