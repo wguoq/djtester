@@ -1,40 +1,21 @@
 from django.db import models
-
-from djtester.models import TimeField, CodeField
-
-
-class TestCase(CodeField, TimeField):
-    tc_name = models.CharField(max_length=128,
-                               null=True,
-                               verbose_name="测试名称")
-
-    tc_type = models.CharField(max_length=64,
-                               null=True,
-                               blank=True,
-                               default="api",
-                               verbose_name="测试类型",
-                               help_text="api")
-
-    tc_action_id = models.CharField(max_length=64,
-                                    null=True,
-                                    blank=True,
-                                    verbose_name="测试行为id")
-
-    objects = models.Manager()
-
-    class Meta:
-        ordering = ['-created_time']
+from djtester.models import TimeField
 
 
-class TcApi(TimeField):
-    api_name = models.CharField(max_length=128,
-                                null=True,
-                                verbose_name="api名称")
+class TestApi(TimeField):
 
-    api_type = models.CharField(max_length=64,
-                                null=True,
-                                default="RESTful",
-                                verbose_name="api类型")
+    name = models.TextField(blank=True,
+                            null=True,
+                            verbose_name="api名称")
+
+    description = models.TextField(null=True,
+                                   blank=True,
+                                   verbose_name="api描述")
+
+    type = models.CharField(max_length=64,
+                            null=True,
+                            default="RESTful",
+                            verbose_name="api类型")
 
     protocol = models.CharField(max_length=32,
                                 null=True,
@@ -56,7 +37,7 @@ class TcApi(TimeField):
 
     param_script = models.JSONField(null=True,
                                     blank=True,
-                                    verbose_name="api参数脚本")
+                                    verbose_name="api参数")
 
     objects = models.Manager()
 
@@ -64,17 +45,41 @@ class TcApi(TimeField):
         ordering = ['-created_time']
 
 
-class TcApiData(TimeField):
-    test_case = models.ForeignKey(to=TestCase,
-                                  null=True,
-                                  on_delete=models.SET_NULL,
-                                  blank=True,
-                                  verbose_name="测试用例id")
+class ApiTestCase(TimeField):
 
-    data_name = models.CharField(max_length=256,
-                                 null=True,
-                                 blank=True,
-                                 verbose_name="数据名称")
+    name = models.TextField(blank=True,
+                            null=True,
+                            verbose_name="测试用例名称")
+
+    description = models.TextField(null=True,
+                                   blank=True,
+                                   verbose_name="测试用例描述")
+
+    FK_TestApi_pk = models.CharField(max_length=65,
+                                     null=True,
+                                     blank=True,
+                                     verbose_name="关联测试Api")
+
+    objects = models.Manager()
+
+    class Meta:
+        ordering = ['-created_time']
+
+
+class ApiTestData(TimeField):
+
+    FK_ApiTestCase_pk = models.CharField(max_length=65,
+                                         null=True,
+                                         blank=True,
+                                         verbose_name="关联测试用例id")
+
+    name = models.TextField(blank=True,
+                            null=True,
+                            verbose_name="测试数据名称")
+
+    description = models.TextField(null=True,
+                                   blank=True,
+                                   verbose_name="测试数据描述")
 
     host = models.CharField(max_length=256,
                             null=True,
@@ -100,43 +105,26 @@ class TcApiData(TimeField):
                                verbose_name="cookies")
 
     data = models.JSONField(null=True,
-                            blank=True,
                             verbose_name="data")
 
     class Meta:
         ordering = ['-created_time']
 
 
-class TcData(TimeField):
-    test_case = models.ForeignKey(to=TestCase,
-                                  null=True,
-                                  on_delete=models.SET_NULL,
-                                  blank=True,
-                                  verbose_name="测试用例id")
-    data_name = models.CharField(max_length=128,
-                                 blank=True,
-                                 null=True,
-                                 verbose_name="数据名称")
-    data_script = models.JSONField(null=True,
+class ApiTestCheckPoint(TimeField):
+
+    FK_ApiTestData_pk = models.CharField(max_length=65,
+                                         null=True,
+                                         blank=True,
+                                         verbose_name="关联测试数据id")
+
+    name = models.TextField(blank=True,
+                            null=True,
+                            verbose_name="测试验证点名称")
+
+    description = models.TextField(null=True,
                                    blank=True,
-                                   verbose_name="数据脚本")
-
-    objects = models.Manager()
-
-    class Meta:
-        ordering = ['-created_time']
-
-
-class TcCheckPoint(TimeField):
-    tc_data_id = models.CharField(max_length=64,
-                                  null=True,
-                                  blank=True,
-                                  verbose_name="测试数据id")
-
-    check_name = models.CharField(max_length=128,
-                                  blank=True,
-                                  null=True,
-                                  verbose_name="验证点名称")
+                                   verbose_name="测试验证点描述")
 
     target = models.CharField(max_length=32,
                               blank=True,
