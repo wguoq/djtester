@@ -22,7 +22,7 @@ class TestCaseViews(BaseViews):
                 test_case_pk = data.get('pk')
                 test_config = data.get('config') or {}
                 try:
-                    context = TesterMgr().run_case(test_case_pk, test_config)
+                    context = TesterMgr().run_api_case(test_case_pk, test_config)
                     return JsonResponse(context, status=200, safe=False)
                 except Exception as e:
                     context = dict(message=str(e))

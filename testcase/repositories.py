@@ -1,39 +1,23 @@
-import random
-import time
 from djtester.repositories import BaseRepository
 from .apps import TestcaseConfig
 from .models import *
 
 
-class TestCaseRepository(BaseRepository):
+class TestApiRepository(BaseRepository):
     def __init__(self):
-        super().__init__(TestcaseConfig.name, TestCase.__name__)
-
-    def save_this(self, data: dict):
-        code = data.get('code')
-        if code is None or len(code) == 0:
-            code = 'tc' + str(round(time.time()) + random.randint(0, 99))
-            data.update({"code": code})
-        else:
-            pass
-        return super().save_this(data)
+        super().__init__(TestcaseConfig.name, TestApi.__name__)
 
 
-class TcApiRepository(BaseRepository):
+class ApiTestCaseRepository(BaseRepository):
     def __init__(self):
-        super().__init__(TestcaseConfig.name, TcApi.__name__)
+        super().__init__(TestcaseConfig.name, ApiTestCase.__name__)
 
 
-class TcApiDataRepository(BaseRepository):
+class ApiTestDataRepository(BaseRepository):
     def __init__(self):
-        super().__init__(TestcaseConfig.name, TcApiData.__name__)
+        super().__init__(TestcaseConfig.name, ApiTestData.__name__)
 
 
-class TcDataRepository(BaseRepository):
+class ApiTestCheckPointRepository(BaseRepository):
     def __init__(self):
-        super().__init__(TestcaseConfig.name, TcData.__name__)
-
-
-class TcCheckPointRepository(BaseRepository):
-    def __init__(self):
-        super().__init__(TestcaseConfig.name, TcCheckPoint.__name__)
+        super().__init__(TestcaseConfig.name, ApiTestCheckPoint.__name__)

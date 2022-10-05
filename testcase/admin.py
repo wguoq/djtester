@@ -9,33 +9,27 @@ def get_field_name(field_info):
     return ll
 
 
-class Test_Case_Admin(admin.ModelAdmin):
-    field_info = TestCaseRepository().get_field_info()
+class ApiTestCaseAdmin(admin.ModelAdmin):
+    field_info = ApiTestCaseRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
-class Tc_Api_Admin(admin.ModelAdmin):
-    field_info = TcApiRepository().get_field_info()
+class TestApiAdmin(admin.ModelAdmin):
+    field_info = TestApiRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
-class Tc_Api_DataAdmin(admin.ModelAdmin):
-    field_info = TcApiDataRepository().get_field_info()
+class ApiTestDataAdmin(admin.ModelAdmin):
+    field_info = ApiTestDataRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
-class Tc_Data_DataAdmin(admin.ModelAdmin):
-    field_info = TcDataRepository().get_field_info()
+class ApiTestCheckPointAdmin(admin.ModelAdmin):
+    field_info = ApiTestCheckPointRepository().get_field_info()
     list_display = get_field_name(field_info)
 
 
-class Tc_CheckPoint_Admin(admin.ModelAdmin):
-    field_info = TcCheckPointRepository().get_field_info()
-    list_display = get_field_name(field_info)
-
-
-admin.site.register(TestCase, Test_Case_Admin)
-admin.site.register(TcApi, Tc_Api_Admin)
-admin.site.register(TcApiData, Tc_Api_DataAdmin)
-admin.site.register(TcData, Tc_Data_DataAdmin)
-admin.site.register(TcCheckPoint, Tc_CheckPoint_Admin)
+admin.site.register(ApiTestCase, ApiTestCaseAdmin)
+admin.site.register(TestApi, TestApiAdmin)
+admin.site.register(ApiTestData, ApiTestDataAdmin)
+admin.site.register(ApiTestCheckPoint, ApiTestCheckPointAdmin)

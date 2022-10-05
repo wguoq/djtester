@@ -1,16 +1,12 @@
 import json
-
-import requests
-from django.forms import model_to_dict
-from django.http import response
-
-from testcase.utils import *
+from testcase.domain.core.utils import *
+from testcase.domain.sub.http_request import *
 from testcase.repositories import *
 
 
 class ApiTester:
     @staticmethod
-    def _set_data_config(data: TcApiData, data_config: dict):
+    def _set_data_config(data: ApiTestData, data_config: dict):
         data.host = data_config.get('host') or data.host
         data.port = data_config.get('port') if data_config.get('port') is not None else data.port
         data.timeout = data_config.get('timeout') if data_config.get('timeout') is not None else data.timeout
@@ -20,7 +16,7 @@ class ApiTester:
         return data
 
     @staticmethod
-    def _request_send(api: TcApi, data: TcApiData):
+    def _http_request(api: TestApi, data: ApiTestData):
         protocol = api.protocol or 'http'
         if data.host is None:
             raise Exception(f'host 不能为空')
@@ -46,16 +42,16 @@ class ApiTester:
                 else:
                     continue
             payload.update(dict(params=data_))
-            return requests.get(**payload)
+            return http_get(payload)
         elif api.method == 'post':
             # post发送的是对象，所以保持完整的json结构不用管
             payload.update(dict(json=data_))
-            return requests.post(**payload)
+            return http_post(payload)
         else:
             raise Exception(f'不支持的 api.method {api.method}')
 
     @staticmethod
-    def _get_target(res, check: TcCheckPoint):
+    def _get_target(res, check: ApiTestCheckPoint):
         if check.target == 'status_code':
             data = res.status_code
         elif check.target == 'json':
@@ -68,7 +64,7 @@ class ApiTester:
             return data
 
     def _verify_check_point(self, res, check):
-        check: TcCheckPoint
+        check: ApiTestCheckPoint
         target = self._get_target(res, check)
         if check.operator == 'eq':
             return operator.eq(str(target), str(check.expect))
@@ -77,35 +73,37 @@ class ApiTester:
         else:
             raise Exception(f'不支持的 check.operator {check.operator}')
 
-    def run(self, test_case_pk, data_config: dict = None) -> dict:
-        test_case: TestCase = TestCaseRepository().filter_by_pk(test_case_pk)[0]
-        # 一条用例对应一个接口
-        if TcApiRepository().count_by({'pk': test_case.tc_action_id}) == 0:
-            raise Exception(f'没有查询到对应的tc_api')
+    def run(self, api_test_case_pk, data_config: dict = None) -> dict:
+        if ApiTestCaseRepository().count_by({'pk':api_test_case_pk}) == 0:
+            raise Exception(f'没有查询到ApiTestCase数据')
         else:
-            tc_api: TcApi = TcApiRepository().filter_by_pk(test_case.tc_action_id)[0]
-        # 一条用例可以有多条数据
-        if TcApiDataRepository().count_by({'test_case': test_case.pk}) == 0:
-            raise Exception(f'没有查询到对应的tc_data')
+            api_test_case: ApiTestCase = ApiTestCaseRepository().filter_by_pk(api_test_case_pk)[0]
+        if TestApiRepository().count_by({'pk': api_test_case.FK_TestApi_pk}) == 0:
+            raise Exception(f'没有查询到应该关联的TestApi数据')
         else:
-            tc_data_list = TcApiDataRepository().filter_by({'test_case': test_case.pk})
+            test_api: TestApi = TestApiRepository().filter_by_pk(api_test_case.FK_TestApi_pk)[0]
+        if ApiTestDataRepository().count_by({'FK_ApiTestCase_pk': api_test_case.pk}) == 0:
+            raise Exception(f'没有查询到应该关联的ApiTestData数据')
+        else:
+            # 一条用例关联多条测试数据
+            test_data_list = ApiTestDataRepository().filter_by({'FK_ApiTestCase_pk': api_test_case.pk})
         test_verify_list = []
-        for data in tc_data_list:
+        for data in test_data_list:
             if data_config:
                 data = self._set_data_config(data, data_config)
             else:
                 pass
             # 发包
-            res = self._request_send(tc_api, data)
-            # 一条数据可以对应多条验证点
-            if TcCheckPointRepository().count_by({'tc_data_id': data.pk}) == 0:
+            res = self._http_request(test_api, data)
+            if ApiTestCheckPointRepository().count_by({'FK_ApiTestData_pk': data.pk}) == 0:
                 # 如果没有检查点，默认通过
-                test_verify_list.append(dict(data_name=data.data_name, check_name=None, result=True))
+                test_verify_list.append(dict(data_name=data.name, check_name=None, result=True))
             else:
-                check_list = TcCheckPointRepository().filter_by({'tc_data_id': data.pk})
+                # 一条数据关联多条验证点
+                check_list = ApiTestCheckPointRepository().filter_by({'FK_ApiTestData_pk': data.pk})
                 for check in check_list:
-                    test_verify_list.append(dict(data_name=data.data_name,
-                                                 check_name=check.check_name,
+                    test_verify_list.append(dict(data_name=data.name,
+                                                 check_name=check.name,
                                                  result=self._verify_check_point(res, check)))
         # 所有检查点必须都是True才算pass
         for check_res in test_verify_list:

@@ -41,7 +41,7 @@ def get_json_value_by_rule(data, rule: str):
         return None
     # 是key模式data需要是dict
     else:
-        return data.get(rule)
+        return data.http_get(rule)
 
 
 def get_json_value(data, rules):
