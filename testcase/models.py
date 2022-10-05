@@ -3,8 +3,7 @@ from djtester.models import TimeField
 
 
 class TestApi(TimeField):
-
-    name = models.TextField(blank=True,
+    name = models.CharField(max_length=128,
                             null=True,
                             verbose_name="api名称")
 
@@ -46,8 +45,8 @@ class TestApi(TimeField):
 
 
 class ApiTestCase(TimeField):
-
-    name = models.TextField(blank=True,
+    name = models.CharField(max_length=128,
+                            blank=True,
                             null=True,
                             verbose_name="测试用例名称")
 
@@ -67,13 +66,12 @@ class ApiTestCase(TimeField):
 
 
 class ApiTestData(TimeField):
-
     FK_ApiTestCase_pk = models.CharField(max_length=65,
                                          null=True,
                                          blank=True,
                                          verbose_name="关联测试用例id")
 
-    name = models.TextField(blank=True,
+    name = models.CharField(max_length=128,
                             null=True,
                             verbose_name="测试数据名称")
 
@@ -112,13 +110,12 @@ class ApiTestData(TimeField):
 
 
 class ApiTestCheckPoint(TimeField):
-
     FK_ApiTestData_pk = models.CharField(max_length=65,
                                          null=True,
                                          blank=True,
                                          verbose_name="关联测试数据id")
 
-    name = models.TextField(blank=True,
+    name = models.CharField(max_length=128,
                             null=True,
                             verbose_name="测试验证点名称")
 
