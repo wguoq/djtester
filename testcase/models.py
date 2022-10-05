@@ -32,6 +32,7 @@ class TestApi(TimeField):
     path = models.CharField(max_length=256,
                             null=True,
                             blank=True,
+                            default='/',
                             verbose_name="api路径")
 
     param_script = models.JSONField(null=True,
